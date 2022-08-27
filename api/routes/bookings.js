@@ -5,7 +5,14 @@ import {
   deleteBooking,
   getBooking,
   getBookings,
+  getBookingsByRoomId,
+  getBookingsPaidThisMonth,
+  getBookingsPaidLastMonth,
+  getIncomeThisMonth,
+  getIncomeLastMonth,
+  getBookingByUserId,
 } from "../controllers/BookingController.js";
+import { getRoomNumbers } from "../controllers/roomController.js";
 import {
   verifyAdmin,
   verifyUser,
@@ -18,10 +25,30 @@ router.post("/", verifyUser, createBooking);
 //UPDATE
 router.put("/:id", verifyUser, updateBooking);
 //DELETE
-router.delete("/:id", verifyUser, deleteBooking);
+router.delete("/:id", verifyAdmin, deleteBooking);
 //GET
 router.get("/:id", verifyUser, getBooking);
 //GETALL
 router.get("/", verifyAdmin, getBookings);
+//GETALLBYROOMID
+router.get("/room/:id", verifyUser, getBookingsByRoomId);
+//GETBOOKINGSPAIDTHISMONTH
+router.get(
+  "/paid/now",
+  verifyUser,
+  getBookingsPaidThisMonth
+);
+//GETINCOMETHISMONTH
+router.get("/income/now", verifyUser, getIncomeThisMonth);
+//GETBOOKINGSPAIDLASTMONTH
+router.get(
+  "/paid/last",
+  verifyUser,
+  getBookingsPaidLastMonth
+);
+//GETINCOMELASTMONTH
+router.get("/income/last", verifyUser, getIncomeLastMonth);
+//GETBOOKINGBYUSERID
+router.get("/user/:id", verifyUser, getBookingByUserId);
 
 export default router;

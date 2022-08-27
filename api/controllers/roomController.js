@@ -57,6 +57,39 @@ export const updateRoomAvailability = async (
   }
 };
 
+// get roomNumbers from a rooom
+export const getRoomNumbers = async (req, res, next) => {
+  try {
+    const room = await Room.findById(req.params.id);
+    res.status(200).json(room.roomNumbers);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// delete RoomAvailability
+export const deleteRoomAvailability = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    await Room.update(
+      { "roomNumbers._id": req.params.id },
+      {
+        $pullAll: {
+          "roomNumbers.$.unavailableDates": req.body.dates,
+        },
+      }
+    );
+    res
+      .status(200)
+      .json({ message: "Room availability deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deleteRoom = async (req, res, next) => {
   const hotelId = req.params.hotelid;
   try {
@@ -79,6 +112,41 @@ export const deleteRooms = async (req, res, next) => {
   try {
     await Room.findByIdAndDelete(req.params.id);
     res.status(200).json("Room is deleted");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteRoomNumbers = async (req, res, next) => {
+  const id = req.params.id;
+  const roomId = req.params.roomId;
+  try {
+    await Room.findByIdAndUpdate(id, {
+      $pull: {
+        roomNumbers: { _id: roomId },
+      },
+    });
+
+    res.status(200).json("RoomNumber is deleted");
+  } catch (error) {
+    next(error);
+  }
+};
+
+//get number in roomNumbers by roomNumbersId
+export const getRoomNumber = async (req, res, next) => {
+  try {
+    const rooms = await Room.find();
+    // get number and _id in roomNumbers by roomNumbersId
+    const roomNumber = rooms.map((room) => {
+      return room.roomNumbers.map((roomNumber) => {
+        return {
+          number: roomNumber.number,
+          _id: roomNumber._id,
+        };
+      });
+    });
+    res.status(200).json(roomNumber);
   } catch (error) {
     next(error);
   }
