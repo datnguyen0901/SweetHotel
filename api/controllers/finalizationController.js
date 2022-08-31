@@ -298,3 +298,32 @@ export const getFinalizationsPaidThisYearByUserId = async (
     next(error);
   }
 };
+
+// get unpaid of booking by userId today if paymentMethod is cash
+export const getUnpaidByUserIdToday = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const finalizations = await Finalization.find({
+      employeeId: req.params.id,
+      paymentMethod: "cash",
+      createdAt: {
+        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+        $lte: new Date(
+          new Date().setHours(23, 59, 59, 999)
+        ),
+      },
+    });
+    const total = finalizations.reduce(
+      (acc, finalization) => {
+        return acc + finalization.unpaid;
+      },
+      0
+    );
+    res.status(200).json(total);
+  } catch (error) {
+    next(error);
+  }
+};

@@ -1,10 +1,10 @@
 import "./datatable.scss";
 import { DataGrid } from "@mui/x-data-grid";
-import { userColumns } from "../../datatablesource";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 const Datatable = ({ columns }) => {
   const location = useLocation();
@@ -16,13 +16,11 @@ const Datatable = ({ columns }) => {
     setList(data);
   }, [data]);
 
+  const [t] = useTranslation("common");
+
   const handleDelete = async (id) => {
     try {
-      if (
-        window.confirm(
-          "Are you sure you want to delete this item?"
-        ) === true
-      ) {
+      if (window.confirm(t("dataTable.confirm")) === true) {
         await axios.delete(`/${path}/${id}`);
         setList(list.filter((item) => item._id !== id));
       }
@@ -34,7 +32,7 @@ const Datatable = ({ columns }) => {
   const actionColumn = [
     {
       field: "action",
-      headerName: "Action",
+      headerName: t("dataTable.action"),
       width: 300,
       renderCell: (params) => {
         return (
@@ -44,7 +42,7 @@ const Datatable = ({ columns }) => {
                 to={`/${path}/roomnumbers/${params.row._id}`}
               >
                 <div className="viewButton">
-                  Room Numbers
+                  {t("dataTable.roomNumbers")}
                 </div>
               </Link>
             )}
@@ -52,13 +50,15 @@ const Datatable = ({ columns }) => {
               to={`/${path}/${params.row._id}`}
               className="link"
             >
-              <div className="viewButton">View</div>
+              <div className="viewButton">
+                {t("dataTable.view/edit")}
+              </div>
             </Link>
             <div
               className="deleteButton"
               onClick={() => handleDelete(params.row._id)}
             >
-              Delete
+              {t("dataTable.delete")}
             </div>
           </div>
         );
@@ -68,9 +68,9 @@ const Datatable = ({ columns }) => {
   return (
     <div className="datatable">
       <div className="datatableTitle">
-        Manage {path}
+        {t("dataTable.manage")} {path.toUpperCase()}
         <Link to={`/${path}/new`} className="link">
-          Add New
+          {t("dataTable.add")}
         </Link>
       </div>
       <DataGrid

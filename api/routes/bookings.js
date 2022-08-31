@@ -11,6 +11,7 @@ import {
   getIncomeThisMonth,
   getIncomeLastMonth,
   getBookingByUserId,
+  getIncomeBookingByUserId,
 } from "../controllers/BookingController.js";
 import { getRoomNumbers } from "../controllers/roomController.js";
 import {
@@ -50,5 +51,7 @@ router.get(
 router.get("/income/last", verifyUser, getIncomeLastMonth);
 //GETBOOKINGBYUSERID
 router.get("/user/:id", verifyUser, getBookingByUserId);
+//GETTOTALPAIDTODAYBYUSERID
+router.get("/user/income/today/:id", verifyUser, getIncomeBookingByUserId);
 
 export default router;

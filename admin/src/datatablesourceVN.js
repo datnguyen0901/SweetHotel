@@ -1,8 +1,8 @@
-export const userColumns = [
+export const userColumnsVN = [
   { field: "_id", headerName: "ID", width: 120 },
   {
     field: "user",
-    headerName: "User",
+    headerName: "Người dùng",
     width: 150,
     renderCell: (params) => {
       return (
@@ -22,150 +22,150 @@ export const userColumns = [
   },
   {
     field: "fullName",
-    headerName: "Full Name",
+    headerName: "Họ tên",
     width: 150,
   },
-  { field: "gender", headerName: " Gender", width: 65 },
-  { field: "address", headerName: "Address", width: 200 },
-  { field: "cid", headerName: "CID", width: 125 },
+  { field: "gender", headerName: " Giới tính", width: 65 },
+  { field: "address", headerName: "Địa chỉ", width: 200 },
+  { field: "cid", headerName: "CCCD", width: 125 },
   {
     field: "email",
-    headerName: "Email",
+    headerName: "Thư điện tử",
     width: 150,
   },
 
   {
     field: "country",
-    headerName: "Country",
+    headerName: "Quốc gia",
     width: 100,
   },
   {
     field: "city",
-    headerName: "City",
+    headerName: "Thành Phố",
     width: 100,
   },
   {
     field: "phone",
-    headerName: "Phone",
+    headerName: "Điện thoại",
     width: 125,
   },
 ];
 
-export const hotelColumns = [
+export const hotelColumnsVN = [
   { field: "_id", headerName: "ID", width: 250 },
   {
     field: "name",
-    headerName: "Name",
+    headerName: "Tên",
     width: 150,
   },
   {
     field: "type",
-    headerName: "Type",
+    headerName: "Loại",
     width: 100,
   },
   {
     field: "title",
-    headerName: "Title",
+    headerName: "Tiêu đề",
     width: 230,
   },
   {
     field: "city",
-    headerName: "City",
+    headerName: "Thành phố",
     width: 100,
   },
 ];
 
-export const roomColumns = [
+export const roomColumnsVN = [
   { field: "_id", headerName: "ID", width: 230 },
   {
     field: "title",
-    headerName: "Title",
+    headerName: "Tiêu đề",
     width: 230,
   },
   {
     field: "desc",
-    headerName: "Description",
+    headerName: "Mô tả",
     width: 200,
   },
   {
     field: "price",
-    headerName: "Price",
+    headerName: "Giá",
     width: 100,
   },
   {
     field: "maxPeople",
-    headerName: "Max People",
+    headerName: "Số người tối đa",
     width: 100,
   },
 ];
 
-export const roleColumns = [
+export const roleColumnsVN = [
   { field: "_id", headerName: "ID", width: 230 },
   {
     field: "name",
-    headerName: "Name",
+    headerName: "Tên",
     width: 230,
   },
   {
     field: "type",
-    headerName: "Type",
+    headerName: "Loại",
     width: 200,
   },
 ];
 
-export const bookingColumns = [
+export const bookingColumnsVN = [
   { field: "_id", headerName: "ID", width: 230 },
   {
     field: "roomNumber",
-    headerName: "Room Number",
+    headerName: "Số phòng",
     width: 110,
   },
   {
     field: "checkinDate",
-    headerName: "Check In Date",
+    headerName: "Ngày đến",
     width: 150,
   },
   {
     field: "checkoutDate",
-    headerName: "Check Out Date",
+    headerName: "Ngày đi",
     width: 150,
   },
   {
     field: "status",
-    headerName: "Status",
+    headerName: "Trạng thái",
     width: 180,
   },
   {
     field: "paymentMethod",
-    headerName: "Payment Method",
+    headerName: "Phương thức thanh toán",
     width: 180,
   },
   {
     field: "note",
-    headerName: "Note",
+    headerName: "Ghi chú",
     width: 180,
   },
 ];
 
-export const roomNumbersColumns = [
+export const roomNumbersColumnsVN = [
   { field: "_id", headerName: "ID", width: 230 },
   {
     field: "number",
-    headerName: "Number",
+    headerName: "Số phòng",
     width: 130,
   },
   {
     field: "unavailableDates",
-    headerName: "UnavailableDates",
+    headerName: "Ngày không thể đặt",
     width: 220,
   },
 ];
 
-export const serviceColumns = [
+export const serviceColumnsVN = [
   { field: "_id", headerName: "ID", width: 230 },
   {
     field: "service",
-    headerName: "Service",
+    headerName: "Dịch vụ",
     width: 230,
     renderCell: (params) => {
       return (
@@ -185,90 +185,90 @@ export const serviceColumns = [
   },
   {
     field: "desc",
-    headerName: "Description",
+    headerName: "Mô tả",
     width: 200,
   },
   {
     field: "price",
-    headerName: "Price",
+    headerName: "Giá",
     width: 130,
   },
   {
     field: "type",
-    headerName: "Type",
+    headerName: "Loại",
     width: 130,
   },
 ];
 
-export const orderColumns = [
+export const orderColumnsVN = [
   { field: "_id", headerName: "ID", width: 230 },
   {
     field: "bookingId",
-    headerName: "Booking ID",
+    headerName: "ID đặt phòng",
     width: 230,
   },
   {
     field: "status",
-    headerName: "Status",
+    headerName: "Trạng thái",
     width: 70,
   },
   {
     field: "paymentMethod",
-    headerName: "Payment Method",
+    headerName: "Phương thức thanh toán",
     width: 150,
   },
   {
     field: "note",
-    headerName: "Note",
+    headerName: "Ghi chú",
     width: 150,
   },
   {
     field: "createdAt",
-    headerName: "Created At",
+    headerName: "Ngày tạo",
     width: 120,
   },
   {
     field: "updatedAt",
-    headerName: "Updated At",
+    headerName: "Ngày cập nhật",
     width: 120,
   },
 ];
 
-export const finalizationColumns = [
+export const finalizationColumnsVN = [
   { field: "_id", headerName: "ID", width: 150 },
   {
     field: "bookingId",
-    headerName: "Booking ID",
+    headerName: "ID đặt phòng",
     width: 210,
   },
   {
     field: "paid",
-    headerName: "Paid",
+    headerName: "Đã thanh toán",
     width: 60,
   },
   {
     field: "unpaid",
-    headerName: "Unpaid",
+    headerName: "Chưa thanh toán",
     width: 60,
   },
   {
     field: "paymentMethod",
-    headerName: "Payment Method",
+    headerName: "Phương thức thanh toán",
     width: 125,
   },
   {
     field: "createdAt",
-    headerName: "Created At",
+    headerName: "Ngày tạo",
     width: 150,
   },
   {
     field: "updatedAt",
-    headerName: "Updated At",
+    headerName: "Ngày cập nhật",
     width: 150,
   },
   {
     field: "note",
-    headerName: "Note",
+    headerName: "Ghi chú",
     width: 250,
   },
 ];

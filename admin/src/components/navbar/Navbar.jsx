@@ -12,6 +12,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { SearchContext } from "../../context/SearchContext";
 import useFetch from "../../hooks/useFetch";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Navbar = () => {
   const { dispatchDark } = useContext(DarkModeContext);
@@ -23,20 +24,41 @@ const Navbar = () => {
   ).length;
   const navigate = useNavigate();
 
+  const [t, i18n] = useTranslation("common");
+
+  // change className to be active when click
+  const handleClick = (e) => {
+    i18n.changeLanguage(e.target.id);
+  };
+
   return (
     <div className="navbar">
       <div className="wrapper">
-        <div className="search">
-          The best home is our hotel !
-        </div>
+        <div className="search">{t("welcome.title")}</div>
         <div className="items">
-          <div className="item">
+          <div
+            className={
+              i18n.language === "en"
+                ? "item english active"
+                : "item english"
+            }
+            onClick={handleClick}
+            id="en"
+          >
             <LanguageOutlinedIcon className="icon" />
-            English
+            {t("language.english")}
           </div>
-          <div className="item">
+          <div
+            className={
+              i18n.language === "vn"
+                ? "item vietnamese active"
+                : "item vietnamese"
+            }
+            onClick={handleClick}
+            id="vn"
+          >
             <LanguageOutlinedIcon className="icon" />
-            Vietnamese
+            {t("language.vietnamese")}
           </div>
           <div className="item">
             <DarkModeOutlinedIcon

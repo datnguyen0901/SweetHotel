@@ -12,6 +12,7 @@ import {
   getFinalizationsPaidThisYear,
   getFinalizationByUserId,
   getFinalizationsPaidThisYearByUserId,
+  getUnpaidByUserIdToday,
 } from "../controllers/finalizationController.js";
 import {
   verifyAdmin,
@@ -47,10 +48,28 @@ router.get(
 //GETINCOMELASTMONTH
 router.get("/income/last", verifyUser, getIncomeLastMonth);
 //GETINCOMEEACHMONTHINTHISYEAR
-router.get("/income/each", verifyUser, getFinalizationsPaidThisYear);
+router.get(
+  "/income/each",
+  verifyUser,
+  getFinalizationsPaidThisYear
+);
 //GETFINALIZATIONBYUSERID
-router.get("/user/:id", verifyUser, getFinalizationByUserId);
+router.get(
+  "/user/:id",
+  verifyUser,
+  getFinalizationByUserId
+);
 //GETFINALIZATIONBYUSERIDINTHISYEAR
-router.get("/user/each/:id", verifyUser, getFinalizationsPaidThisYearByUserId);
+router.get(
+  "/user/each/:id",
+  verifyUser,
+  getFinalizationsPaidThisYearByUserId
+);
+//GETTOTALPAIDTODAYBYUSERID
+router.get(
+  "/user/income/today/:id",
+  verifyUser,
+  getUnpaidByUserIdToday
+);
 
 export default router;

@@ -5,6 +5,7 @@ import useFetch from "../../hooks/useFetch";
 import { useNavigate } from "react-router-dom";
 import ChartIndividualUser from "../../components/chart/ChartIndividualUser";
 import ListIndividualUser from "../../components/table/TableIndividual";
+import { useTranslation } from "react-i18next";
 
 const Single = () => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -13,6 +14,8 @@ const Single = () => {
   );
 
   const navigate = useNavigate();
+
+  const [t] = useTranslation("common");
 
   return (
     <div className="single">
@@ -25,9 +28,9 @@ const Single = () => {
               className="editButton"
               onClick={() => navigate(`/users/${user._id}`)}
             >
-              Edit
+              {t("single.edit")}
             </div>
-            <h1 className="title">Information</h1>
+            <h1 className="title">{t("single.info")}</h1>
             <div className="item">
               <img
                 src="https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
@@ -39,25 +42,33 @@ const Single = () => {
                   {data.fullName}
                 </h1>
                 <div className="detailItem">
-                  <span className="itemKey">Email:</span>
+                  <span className="itemKey">
+                    {t("single.email")}:
+                  </span>
                   <span className="itemValue">
                     {data.email}
                   </span>
                 </div>
                 <div className="detailItem">
-                  <span className="itemKey">Phone:</span>
+                  <span className="itemKey">
+                    {t("single.phone")}:
+                  </span>
                   <span className="itemValue">
                     {data.phone}
                   </span>
                 </div>
                 <div className="detailItem">
-                  <span className="itemKey">Address:</span>
+                  <span className="itemKey">
+                    {t("single.address")}:
+                  </span>
                   <span className="itemValue">
                     {data.address}
                   </span>
                 </div>
                 <div className="detailItem">
-                  <span className="itemKey">Country:</span>
+                  <span className="itemKey">
+                    {t("single.country")}:
+                  </span>
                   <span className="itemValue">
                     {data.country}
                   </span>
@@ -68,12 +79,12 @@ const Single = () => {
           <div className="right">
             <ChartIndividualUser
               aspect={3 / 1}
-              title="User Spending ( Last 6 Months)"
+              title={t("single.chart")}
             />
           </div>
         </div>
         <div className="bottom">
-          <h1 className="title">Last Transactions</h1>
+          <h1 className="title">{t("single.title")}</h1>
           <ListIndividualUser />
         </div>
       </div>

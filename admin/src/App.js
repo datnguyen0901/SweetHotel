@@ -45,6 +45,22 @@ import ViewBooking from "./pages/newBooking/ViewBooking";
 import ListBooking from "./pages/newBooking/ListBooking";
 import NewFinalization from "./pages/newFinalization/NewFinalization";
 import EditFinalization from "./pages/newFinalization/EditFinalization";
+import {
+  Trans,
+  useTranslation,
+  withTranslation,
+} from "react-i18next";
+import {
+  bookingColumnsVN,
+  finalizationColumnsVN,
+  hotelColumnsVN,
+  orderColumnsVN,
+  roleColumnsVN,
+  roomColumnsVN,
+  roomNumbersColumnsVN,
+  serviceColumnsVN,
+  userColumnsVN,
+} from "./datatablesourceVN";
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
@@ -58,6 +74,8 @@ function App() {
 
     return children;
   };
+
+  const [t, i18n] = useTranslation("common");
 
   return (
     <div className={darkMode ? "app dark" : "app"}>
@@ -78,7 +96,11 @@ function App() {
                 index
                 element={
                   <ProtectedRoute>
-                    <List columns={userColumns} />
+                    {i18n.language === "en" ? (
+                      <List columns={userColumns} />
+                    ) : (
+                      <List columns={userColumnsVN} />
+                    )}
                   </ProtectedRoute>
                 }
               />
@@ -110,7 +132,11 @@ function App() {
                 index
                 element={
                   <ProtectedRoute>
-                    <List columns={roleColumns} />
+                    {i18n.language === "en" ? (
+                      <List columns={roleColumns} />
+                    ) : (
+                      <List columns={roleColumnsVN} />
+                    )}
                   </ProtectedRoute>
                 }
               />
@@ -136,7 +162,11 @@ function App() {
                 index
                 element={
                   <ProtectedRoute>
-                    <List columns={hotelColumns} />
+                    {i18n.language === "en" ? (
+                      <List columns={hotelColumns} />
+                    ) : (
+                      <List columns={hotelColumnsVN} />
+                    )}
                   </ProtectedRoute>
                 }
               />
@@ -162,7 +192,11 @@ function App() {
                 index
                 element={
                   <ProtectedRoute>
-                    <List columns={roomColumns} />
+                    {i18n.language === "en" ? (
+                      <List columns={roomColumns} />
+                    ) : (
+                      <List columns={roomColumnsVN} />
+                    )}
                   </ProtectedRoute>
                 }
               />
@@ -186,9 +220,15 @@ function App() {
                 path="roomnumbers/:roomId"
                 element={
                   <ProtectedRoute>
-                    <RoomNumbers
-                      columns={roomNumbersColumns}
-                    />
+                    {i18n.language === "en" ? (
+                      <RoomNumbers
+                        columns={roomNumbersColumns}
+                      />
+                    ) : (
+                      <RoomNumbers
+                        columns={roomNumbersColumnsVN}
+                      />
+                    )}
                   </ProtectedRoute>
                 }
               />
@@ -206,7 +246,15 @@ function App() {
                 index
                 element={
                   <ProtectedRoute>
-                    <ListBooking columns={bookingColumns} />
+                    {i18n.language === "en" ? (
+                      <ListBooking
+                        columns={bookingColumns}
+                      />
+                    ) : (
+                      <ListBooking
+                        columns={bookingColumnsVN}
+                      />
+                    )}
                   </ProtectedRoute>
                 }
               />
@@ -232,7 +280,11 @@ function App() {
                 index
                 element={
                   <ProtectedRoute>
-                    <List columns={serviceColumns} />
+                    {i18n.language === "en" ? (
+                      <List columns={serviceColumns} />
+                    ) : (
+                      <List columns={serviceColumnsVN} />
+                    )}
                   </ProtectedRoute>
                 }
               />
@@ -258,7 +310,11 @@ function App() {
                 index
                 element={
                   <ProtectedRoute>
-                    <List columns={orderColumns} />
+                    {i18n.language === "en" ? (
+                      <List columns={orderColumns} />
+                    ) : (
+                      <List columns={orderColumnsVN} />
+                    )}
                   </ProtectedRoute>
                 }
               />
@@ -292,7 +348,13 @@ function App() {
                 index
                 element={
                   <ProtectedRoute>
-                    <List columns={finalizationColumns} />
+                    {i18n.language === "en" ? (
+                      <List columns={finalizationColumns} />
+                    ) : (
+                      <List
+                        columns={finalizationColumnsVN}
+                      />
+                    )}
                   </ProtectedRoute>
                 }
               />
@@ -336,4 +398,4 @@ function App() {
   );
 }
 
-export default App;
+export default withTranslation("common")(App);

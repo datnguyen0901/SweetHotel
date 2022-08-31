@@ -31,7 +31,6 @@ const NewFinalization = () => {
         setTotalPaidValue(booking.data.totalPaid);
         setTotalUnPaidValue(0);
       }
-      console.log(totalPaidValue, totalUnPaidValue);
     }
   }, [booking.data]);
 

@@ -7,10 +7,12 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import useFetch from "../../hooks/useFetch";
+import { useTranslation } from "react-i18next";
 
 const ListIndividualUser = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const rows = useFetch(`/finalizations/user/${user._id}`);
+  const [t] = useTranslation("common");
   return (
     <TableContainer component={Paper} className="table">
       <Table
@@ -20,25 +22,25 @@ const ListIndividualUser = () => {
         <TableHead>
           <TableRow>
             <TableCell className="tableCell">
-              Tracking ID
+              {t("tableIndividual.trackId")}
             </TableCell>
             <TableCell className="tableCell">
-              Booking ID
+              {t("tableIndividual.bookingId")}
             </TableCell>
             <TableCell className="tableCell">
-              Paid
+              {t("tableIndividual.paid")}
             </TableCell>
             <TableCell className="tableCell">
-              Unpaid
+              {t("tableIndividual.unpaid")}
             </TableCell>
             <TableCell className="tableCell">
-              Payment Method
+              {t("tableIndividual.paymentMethod")}
             </TableCell>
             <TableCell className="tableCell">
-              Total Price
+              {t("tableIndividual.totalPrice")}
             </TableCell>
             <TableCell className="tableCell">
-              Create At
+              {t("tableIndividual.createdAt")}
             </TableCell>
           </TableRow>
         </TableHead>

@@ -22,6 +22,7 @@ import { DarkModeContext } from "../../context/darkModeContext";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 const Sidebar = () => {
   const { dispatchDark } = useContext(DarkModeContext);
@@ -36,6 +37,12 @@ const Sidebar = () => {
       console.log(error);
     }
   };
+
+  // get pathname to show active className
+  const pathname = window.location.pathname;
+
+  const [t, i18n] = useTranslation("common");
+
   return (
     <div className="sidebar">
       <div className="top">
@@ -46,21 +53,33 @@ const Sidebar = () => {
       <hr />
       <div className="center">
         <ul>
-          <p className="title">MAIN</p>
+          <p className="title">{t("sidebar.main.main")}</p>
           <Link to="/" style={{ textDecoration: "none" }}>
             <li>
               <DashboardIcon className="icon" />
-              <span>Dashboard</span>
+              <span
+                className={pathname == `/` ? "active" : ""}
+              >
+                {t("sidebar.main.dashboard")}
+              </span>
             </li>
           </Link>
-          <p className="title">LISTS</p>
+          <p className="title">
+            {t("sidebar.lists.lists")}
+          </p>
           <Link
             to="/users"
             style={{ textDecoration: "none" }}
           >
             <li>
               <PersonOutlineIcon className="icon" />
-              <span>Users</span>
+              <span
+                className={
+                  pathname == `/users` ? "active" : ""
+                }
+              >
+                {t("sidebar.lists.Users")}
+              </span>
             </li>
           </Link>
           <Link
@@ -69,7 +88,13 @@ const Sidebar = () => {
           >
             <li>
               <ManageAccountsIcon className="icon" />
-              <span>Roles</span>
+              <span
+                className={
+                  pathname == `/roles` ? "active" : ""
+                }
+              >
+                {t("sidebar.lists.Roles")}
+              </span>
             </li>
           </Link>
           <Link
@@ -78,7 +103,13 @@ const Sidebar = () => {
           >
             <li>
               <StoreIcon className="icon" />
-              <span>Hotels</span>
+              <span
+                className={
+                  pathname == `/hotels` ? "active" : ""
+                }
+              >
+                {t("sidebar.lists.Hotels")}
+              </span>
             </li>
           </Link>
           <Link
@@ -87,7 +118,13 @@ const Sidebar = () => {
           >
             <li>
               <CreditCardIcon className="icon" />
-              <span>Rooms</span>
+              <span
+                className={
+                  pathname == `/rooms` ? "active" : ""
+                }
+              >
+                {t("sidebar.lists.Rooms")}
+              </span>
             </li>
           </Link>
           <Link
@@ -96,7 +133,13 @@ const Sidebar = () => {
           >
             <li>
               <HotelIcon className="icon" />
-              <span>Bookings</span>
+              <span
+                className={
+                  pathname == `/bookings` ? "active" : ""
+                }
+              >
+                {t("sidebar.lists.Bookings")}
+              </span>
             </li>
           </Link>
           <Link
@@ -105,7 +148,13 @@ const Sidebar = () => {
           >
             <li>
               <RoomServiceIcon className="icon" />
-              <span>Orders</span>
+              <span
+                className={
+                  pathname == `/orders` ? "active" : ""
+                }
+              >
+                {t("sidebar.lists.Orders")}
+              </span>
             </li>
           </Link>
           <Link
@@ -114,7 +163,13 @@ const Sidebar = () => {
           >
             <li>
               <RoomPreferencesIcon className="icon" />
-              <span>Services</span>
+              <span
+                className={
+                  pathname == `/services` ? "active" : ""
+                }
+              >
+                {t("sidebar.lists.Services")}
+              </span>
             </li>
           </Link>
           <Link
@@ -123,17 +178,39 @@ const Sidebar = () => {
           >
             <li>
               <PaidIcon className="icon" />
-              <span>Finalizations</span>
+              <span
+                className={
+                  pathname == `/finalizations`
+                    ? "active"
+                    : ""
+                }
+              >
+                {t("sidebar.lists.Finalizations")}
+              </span>
             </li>
           </Link>
-          <p className="title">USEFUL</p>
+          <p className="title">
+            {t("sidebar.useful.useful")}
+          </p>
           <li>
             <AccountBalanceIcon className="icon" />
-            <span>Auditing</span>
+            <span
+              className={
+                pathname == `/auditing` ? "active" : ""
+              }
+            >
+              {t("sidebar.useful.Auditing")}
+            </span>
           </li>
           <li>
             <InsertChartIcon className="icon" />
-            <span>Stats</span>
+            <span
+              className={
+                pathname == `/stats` ? "active" : ""
+              }
+            >
+              {t("sidebar.useful.Stats")}
+            </span>
           </li>
           <Link
             to="/orders"
@@ -141,22 +218,30 @@ const Sidebar = () => {
           >
             <li>
               <NotificationsNoneIcon className="icon" />
-              <span>Notifications</span>
+              <span>
+                {t("sidebar.useful.Notifications")}
+              </span>
             </li>
           </Link>
-          <p className="title">USER</p>
+          <p className="title">{t("sidebar.user.user")}</p>
           <Link
             to="/single"
             style={{ textDecoration: "none" }}
           >
             <li>
               <AccountCircleOutlinedIcon className="icon" />
-              <span>Profile</span>
+              <span
+                className={
+                  pathname == `/single` ? "active" : ""
+                }
+              >
+                {t("sidebar.user.profile")}
+              </span>
             </li>
           </Link>
           <li disabled={loading} onClick={handleClick}>
             <ExitToAppIcon className="icon" />
-            <span>Logout</span>
+            <span>{t("sidebar.user.logout")}</span>
           </li>
         </ul>
       </div>

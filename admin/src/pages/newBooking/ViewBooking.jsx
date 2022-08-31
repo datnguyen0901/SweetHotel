@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 const ViewBooking = ({ columns }) => {
   const location = useLocation();
@@ -25,6 +26,8 @@ const ViewBooking = ({ columns }) => {
 
     return dates;
   };
+
+  const [t] = useTranslation("common");
 
   const deleteRoomCalendar = async () => {
     const alldates = getDatesInRange(
@@ -49,11 +52,7 @@ const ViewBooking = ({ columns }) => {
 
   const handleDelete = async (id) => {
     try {
-      if (
-        window.confirm(
-          "Are you sure you want to delete this item?"
-        ) === true
-      ) {
+      if (window.confirm(t("dataTable.confirm")) === true) {
         await axios.delete(`/bookings/${id}`);
         deleteRoomCalendar();
         setList(list.filter((item) => item._id !== id));
@@ -66,8 +65,8 @@ const ViewBooking = ({ columns }) => {
   const actionColumn = [
     {
       field: "action",
-      headerName: "Action",
-      width: 300,
+      headerName: t("dataTable.action"),
+      width: 350,
       renderCell: (params) => {
         return (
           <div className="cellAction">
@@ -75,25 +74,31 @@ const ViewBooking = ({ columns }) => {
               to={`/orders/new/${params.row._id}`}
               className="link"
             >
-              <div className="viewButton">Order</div>
+              <div className="viewButton">
+                {t("dataTable.order")}
+              </div>
             </Link>
             <Link
               to={`/finalizations/new/${params.row._id}`}
               className="link"
             >
-              <div className="viewButton">Check-out</div>
+              <div className="viewButton">
+                {t("dataTable.checkOut")}
+              </div>
             </Link>
             <Link
               to={`/bookings/${params.row._id}`}
               className="link"
             >
-              <div className="viewButton">View</div>
+              <div className="viewButton">
+                {t("dataTable.view/edit")}
+              </div>
             </Link>
             <div
               className="deleteButton"
               onClick={() => handleDelete(params.row._id)}
             >
-              Delete
+              {t("dataTable.delete")}
             </div>
           </div>
         );
@@ -103,9 +108,9 @@ const ViewBooking = ({ columns }) => {
   return (
     <div className="datatable">
       <div className="datatableTitle">
-        Manage Booking
+        {t("dataTable.manage")} BOOKINGS
         <Link to={`/bookings/new`} className="link">
-          Add New
+          {t("dataTable.add")}
         </Link>
       </div>
       <DataGrid

@@ -1,0 +1,108 @@
+{
+  "welcome": {
+    "title": "Khách sạn cũng là nhà !"
+  },
+  "language": {
+    "english": "Tiếng Anh",
+    "vietnamese": "Tiếng Việt"
+  },
+  "sidebar": {
+    "main": {
+      "main": "Trang chủ",
+      "dashboard": "Bảng điều khiển"
+    },
+    "lists": {
+      "lists": "Danh sách",
+      "Users": "Người dùng",
+      "Roles": "Vai trò",
+      "Rooms": "Phòng",
+      "Hotels": "Khách sạn",
+      "Bookings": "Đặt Phòng",
+      "Orders": "Đặt dịch vụ",
+      "Services": "Dịch vụ",
+      "Finalizations": "Kết toán"
+    },
+    "useful": {
+      "useful": "Tiện ích",
+      "Auditing": "Số Liệu",
+      "Stats": "Thống kê",
+      "Notifications": "Tin báo"
+    },
+    "user": {
+      "user": "Cá nhân",
+      "profile": "Thông tin",
+      "logout": "Thoát"
+    }
+  },
+  "featured": {
+    "title": "Tổng doanh thu",
+    "description1": "Tổng doanh thu tháng hiện tại.",
+    "description2": "Đang xử lý giao dịch trước đó. Các khoản thanh toán cuối cùng có thể không được tính.",
+    "target": "Mục tiêu",
+    "yourincome": "Thu nhập ngày",
+    "lastmonth": "Tổng thu nhập tháng trước"
+  },
+  "widget": {
+    "title": {
+      "user": "Người dùng",
+      "booking": "Đặt phòng",
+      "order": "Đặt dịch vụ",
+      "earning": "Kết toán"
+    },
+    "view": {
+      "user": "Xem người dùng",
+      "booking": "Xem đặt phòng",
+      "order": "Xem đặt dịch vụ",
+      "earning": "Xem kết toán"
+    }
+  },
+  "home": {
+    "title": "Thu nhập 6 tháng gần nhất",
+    "listTitle": "Đặt dịch vụ hiện tại"
+  },
+  "single": {
+    "edit": "Chỉnh sửa",
+    "info": "Thông tin",
+    "email": "Thư điện tử",
+    "phone": "Điện thoại",
+    "address": "Địa chỉ",
+    "country": "Quốc gia",
+    "chart": "Chi tiêu 6 tháng gần nhất",
+    "title": "Giao dịch gần nhất"
+  },
+  "table": {
+    "trackId": "ID",
+    "bookingId": "ID Đặt phòng",
+    "email": "Thư điện tử",
+    "status": "Trạng thái",
+    "paymentMethod": "Phương thức thanh toán",
+    "totalPrice": "Tổng tiền",
+    "employeeId": "ID nhân viên",
+    "note": "Ghi chú"
+  },
+  "tableIndividual": {
+    "trackId": "ID",
+    "bookingId": "ID Đặt phòng",
+    "paid": "Đã thanh toán",
+    "unpaid": "Chưa thanh toán",
+    "paymentMethod": "Phương thức thanh toán",
+    "totalPrice": "Tổng tiền",
+    "createdAt": "Thời gian tạo"
+  },
+  "login": {
+    "login": "Đăng nhập",
+    "username": "Tài khoản",
+    "password": "Mật khẩu"
+  },
+  "dataTable": {
+    "confirm": "Bạn có chắc chắn muốn xóa?",
+    "roomNumbers": "Số phòng",
+    "view/edit": "Xem/Sửa",
+    "delete": "Xóa",
+    "manage": "Quản lý",
+    "add": "Thêm mới",
+    "order": "Đặt dịch vụ",
+    "checkOut": "Trả Phòng",
+    "action": "Chức Năng"
+  }
+}

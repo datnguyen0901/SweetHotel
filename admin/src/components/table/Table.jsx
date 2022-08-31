@@ -8,10 +8,14 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import CircleIcon from "@mui/icons-material/Circle";
 import useFetch from "../../hooks/useFetch";
+import { useTranslation } from "react-i18next";
 
 const List = () => {
   // get data from order sort newest
   const rows = useFetch(`/orders/sort/newest`);
+
+  const [t] = useTranslation("common");
+
   return (
     <TableContainer component={Paper} className="table">
       <Table
@@ -21,25 +25,25 @@ const List = () => {
         <TableHead>
           <TableRow>
             <TableCell className="tableCell">
-              Tracking ID
+              {t("table.trackId")}
             </TableCell>
             <TableCell className="tableCell">
-              Booking ID
+              {t("table.bookingId")}
             </TableCell>
             <TableCell className="tableCell">
-              Status
+              {t("table.status")}
             </TableCell>
             <TableCell className="tableCell">
-              Payment Method
+              {t("table.paymentMethod")}
             </TableCell>
             <TableCell className="tableCell">
-              Total Price
+              {t("table.totalPrice")}
             </TableCell>
             <TableCell className="tableCell">
-              Employee ID
+              {t("table.employeeId")}
             </TableCell>
             <TableCell className="tableCell">
-              Note
+              {t("table.note")}
             </TableCell>
           </TableRow>
         </TableHead>

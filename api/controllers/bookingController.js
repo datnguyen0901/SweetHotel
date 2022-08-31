@@ -211,3 +211,29 @@ export const getBookingByUserId = async (
     next(error);
   }
 };
+
+// get totalPaid of booking by userId today if paymentMethod is cash
+export const getIncomeBookingByUserId = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const bookings = await Booking.find({
+      employeeId: req.params.id,
+      paymentMethod: "cash",
+      createdAt: {
+        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+        $lte: new Date(
+          new Date().setHours(23, 59, 59, 999)
+        ),
+      },
+    });
+    const total = bookings.reduce((acc, booking) => {
+      return acc + booking.totalPaid;
+    }, 0);
+    res.status(200).json(total);
+  } catch (error) {
+    next(error);
+  }
+};

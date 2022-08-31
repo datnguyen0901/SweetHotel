@@ -6,6 +6,7 @@ import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalance
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
 import useFetch from "../../hooks/useFetch";
+import { useTranslation } from "react-i18next";
 
 const Widget = ({ type }) => {
   let data;
@@ -121,14 +122,16 @@ const Widget = ({ type }) => {
     100
   ).toFixed(2);
 
+  const [t] = useTranslation("common");
+
   switch (type) {
     case "user":
       data = {
-        title: "USERS",
+        title: t("widget.title.user"),
         amount: usersCount,
         diff: usersCreatedPercent,
         isMoney: false,
-        link: "See all users",
+        link: t("widget.view.user"),
         icon: (
           <PersonOutlinedIcon
             className="icon"
@@ -142,11 +145,11 @@ const Widget = ({ type }) => {
       break;
     case "booking":
       data = {
-        title: "BOOKINGS",
+        title: t("widget.title.booking"),
         amount: bookingsCreatedThisMonth,
         diff: bookingsCreatedPercent,
         isMoney: false,
-        link: "View all bookings",
+        link: t("widget.view.booking"),
         icon: (
           <AccountBalanceWalletOutlinedIcon
             className="icon"
@@ -160,11 +163,11 @@ const Widget = ({ type }) => {
       break;
     case "order":
       data = {
-        title: "ORDERS",
+        title: t("widget.title.order"),
         amount: ordersCreatedThisMonth,
         diff: ordersCreatedPercent,
         isMoney: false,
-        link: "View all orders",
+        link: t("widget.view.order"),
         icon: (
           <ShoppingCartOutlinedIcon
             className="icon"
@@ -178,11 +181,11 @@ const Widget = ({ type }) => {
       break;
     case "earning":
       data = {
-        title: "FINALIZATIONS",
+        title: t("widget.title.earning"),
         amount: totalThisMonth,
         diff: bookingsPaidPercent,
         isMoney: true,
-        link: "View net earnings",
+        link: t("widget.view.earning"),
         icon: (
           <MonetizationOnOutlinedIcon
             className="icon"
@@ -210,14 +213,18 @@ const Widget = ({ type }) => {
         </a>
       </div>
       <div className="right">
-        <div className="percentage positive">
-          {data.diff}%{/* if data.diff > 0 */}
-          {data.diff > 0 ? (
+        {/* if data.diff > 0 */}
+        {data.diff > 0 ? (
+          <div className="percentage positive">
+            {data.diff}%
             <TrendingUpIcon className="icon" />
-          ) : (
+          </div>
+        ) : (
+          <div className="percentage negative">
+            {data.diff}%
             <TrendingDownIcon className="icon" />
-          )}
-        </div>
+          </div>
+        )}
         {data.icon}
       </div>
     </div>

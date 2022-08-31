@@ -185,3 +185,30 @@ export const getOrdersLatest = async (req, res, next) => {
     next(error);
   }
 };
+
+// get totalPrice of booking by userId today if paymentMethod is cash
+export const getIncomeOrderByUserId = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const orders = await Order.find({
+      employeeId: req.params.id,
+      paymentMethod: "cash",
+      status: "done",
+      createdAt: {
+        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+        $lte: new Date(
+          new Date().setHours(23, 59, 59, 999)
+        ),
+      },
+    });
+    const total = orders.reduce((acc, order) => {
+      return acc + order.totalPrice;
+    }, 0);
+    res.status(200).json(total);
+  } catch (error) {
+    next(error);
+  }
+};

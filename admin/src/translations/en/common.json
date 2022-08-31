@@ -1,0 +1,108 @@
+{
+  "welcome": {
+    "title": "The best home is our hotel !"
+  },
+  "language": {
+    "english": "English",
+    "vietnamese": "Vietnamese"
+  },
+  "sidebar": {
+    "main": {
+      "main": "MAIN",
+      "dashboard": "Dashboard"
+    },
+    "lists": {
+      "lists": "LISTS",
+      "Users": "Users",
+      "Roles": "Roles",
+      "Rooms": "Rooms",
+      "Hotels": "Hotels",
+      "Bookings": "Bookings",
+      "Orders": "Orders",
+      "Services": "Services",
+      "Finalizations": "Finalizations"
+    },
+    "useful": {
+      "useful": "USEFUL",
+      "Auditing": "Auditing",
+      "Stats": "Stats",
+      "Notifications": "Notifications"
+    },
+    "user": {
+      "user": "USER",
+      "profile": "Profile",
+      "logout": "Logout"
+    }
+  },
+  "featured": {
+    "title": "Total Revenue",
+    "description1": "Total income made this month.",
+    "description2": "Previous transactions processing. Last payments may not be included.",
+    "target": "Target",
+    "yourincome": "Your Income",
+    "lastmonth": "Last Month"
+  },
+  "widget": {
+    "title": {
+      "user": "USERS",
+      "booking": "BOOKINGS",
+      "order": "ORDERS",
+      "earning": "FINALIZATIONS"
+    },
+    "view": {
+      "user": "View all users",
+      "booking": "View all bookings",
+      "order": "View all orders",
+      "earning": "View all finalizations"
+    }
+  },
+  "home": {
+    "title": "Last 6 Months (Revenue)",
+    "listTitle": "Latest Orders"
+  },
+  "single": {
+    "edit": "Edit",
+    "info": "Information",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "country": "Country",
+    "chart": "User Spending ( Last 6 Months)",
+    "title": "Last Transactions"
+  },
+  "table": {
+    "trackId": "Tracking ID",
+    "bookingId": "Booking ID",
+    "email": "Email",
+    "status": "Status",
+    "paymentMethod": "Payment Method",
+    "totalPrice": "Total Price",
+    "employeeId": "Employee ID",
+    "note": "Note"
+  },
+  "tableIndividual": {
+    "trackId": "Tracking ID",
+    "bookingId": "Booking ID",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "paymentMethod": "Payment Method",
+    "totalPrice": "Total Price",
+    "createdAt": "Created At"
+  },
+  "login": {
+    "login": "Login",
+    "username": "Username",
+    "password": "Password"
+  },
+  "dataTable": {
+    "confirm": "Are you sure you want to delete this item?",
+    "roomNumbers": "Room Numbers",
+    "view/edit": "View/Edit",
+    "delete": "Delete",
+    "manage": "Manage",
+    "add": "Add New",
+    "order": "Order",
+    "checkOut": "Check Out",
+    "action": "Action"
+  }
+}
