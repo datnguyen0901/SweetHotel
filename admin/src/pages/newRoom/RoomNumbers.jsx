@@ -12,6 +12,7 @@ import {
 } from "react-router-dom";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { DataGrid } from "@mui/x-data-grid";
+import { useTranslation } from "react-i18next";
 
 const RoomNumbers = ({ columns }) => {
   const [list, setList] = useState([]);
@@ -23,6 +24,8 @@ const RoomNumbers = ({ columns }) => {
     `/rooms/calendar/${id}`
   );
 
+  const [t] = useTranslation("common");
+
   useEffect(() => {
     if (data) {
       setList(data);
@@ -31,11 +34,7 @@ const RoomNumbers = ({ columns }) => {
 
   const handleDelete = async (roomid) => {
     try {
-      if (
-        window.confirm(
-          "Are you sure you want to delete this item?"
-        ) === true
-      ) {
+      if (window.confirm(t("dataTable.confirm")) === true) {
         await axios.delete(
           `/rooms/roomNumbers/${id}/${roomid}`
         );
@@ -49,21 +48,21 @@ const RoomNumbers = ({ columns }) => {
   const actionColumn = [
     {
       field: "action",
-      headerName: "Action",
+      headerName: t("dataTable.action"),
       width: 300,
       renderCell: (params) => {
         return (
           <div className="cellAction">
             <Link to={`/rooms/calendar/${params.row._id}`}>
               <div className="viewButton">
-                View Calendar
+                {t("dataTable.viewCalendar")}
               </div>
             </Link>
             <div
               className="deleteButton"
               onClick={() => handleDelete(params.row._id)}
             >
-              Delete
+              {t("dataTable.delete")}
             </div>
           </div>
         );

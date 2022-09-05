@@ -8,11 +8,14 @@ import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { Autocomplete, TextField } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
-const NewBooking = () => {
+const NewBooking = ({ inputs, title }) => {
   const [info, setInfo] = useState({});
   const [price, setPrice] = useState({});
   const [selectedRooms, setSelectedRooms] = useState([]);
+
+  const [t] = useTranslation("common");
 
   const navigate = useNavigate();
   // get hotelId from login user by roleId
@@ -115,6 +118,24 @@ const NewBooking = () => {
     }));
   };
 
+  const handleCheckAddIn = (e) => {
+    const checked = e.target.checked;
+    // checked ? setInfo totalPaid increase 20%
+    if (checked) {
+      setInfo((prev) => ({
+        ...prev,
+        addIn: true,
+        totalPaid: info.totalPaid * 1.2,
+      }));
+    } else {
+      setInfo((prev) => ({
+        ...prev,
+        addIn: false,
+        totalPaid: numberNight * price,
+      }));
+    }
+  };
+
   const handleClick = async (e) => {
     e.preventDefault();
     try {
@@ -149,15 +170,12 @@ const NewBooking = () => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Add New Booking</h1>
+          <h1>{title}</h1>
         </div>
         <div className="bottom">
-          <div
-            className="right
-          "
-          >
+          <div className="right          ">
             <form>
-              {bookingInputs.map((input) => (
+              {inputs.map((input) => (
                 <div className="formInput" key={input.id}>
                   <label>{input.label}</label>
                   <input
@@ -171,7 +189,7 @@ const NewBooking = () => {
               ))}
 
               <div className="formInput">
-                <label>Hotel Name</label>
+                <label>{t("rooms.hotel")}</label>
                 <input
                   disabled
                   id="hotelId"
@@ -181,7 +199,7 @@ const NewBooking = () => {
               </div>
 
               <div className="formInput">
-                <label>Booking User</label>
+                <label>{t("booking.bookingUser")}</label>
                 {/* search username from userData */}
                 <Autocomplete
                   id="userId"
@@ -214,7 +232,7 @@ const NewBooking = () => {
                                 navigate("/users");
                               }}
                             />{" "}
-                            Create new user
+                            {t("booking.createUser")}
                           </React.Fragment>
                         ),
                       }}
@@ -224,7 +242,7 @@ const NewBooking = () => {
               </div>
 
               <div className="formInput">
-                <label>Select your rooms</label>
+                <label>{t("booking.roomNumbers")}</label>
                 {data.map((item) => (
                   <div className="rSelectRooms">
                     <li>
@@ -259,18 +277,33 @@ const NewBooking = () => {
               </div>
 
               <div className="formInput">
-                <label>Total Paid by USD</label>
+                <label>
+                  <div>{t("booking.addIn")}</div>
+                  <div>
+                    <input
+                      id="addIn"
+                      type="checkbox"
+                      onChange={handleCheckAddIn}
+                    />
+                  </div>
+                </label>
+              </div>
+
+              <div className="formInput">
+                <label>{t("booking.total")}</label>
                 <input
                   disabled
                   id="totalPaid"
                   type="number"
-                  value={numberNight * price}
+                  value={info.totalPaid}
                   onChange={handleChange}
                 />
               </div>
 
               <div className="formInput">
-                <button onClick={handleClick}>Send</button>
+                <button onClick={handleClick}>
+                  {t("send")}
+                </button>
               </div>
             </form>
           </div>

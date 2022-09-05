@@ -6,11 +6,14 @@ import { useState } from "react";
 import { serviceInputs } from "../../formSource";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-const NewService = () => {
+const NewService = ({ inputs, title }) => {
   const [info, setInfo] = useState({});
   const navigate = useNavigate();
   const [file, setFile] = useState("");
+
+  const [t] = useTranslation("common");
 
   const handleChange = (e) => {
     setInfo((prev) => ({
@@ -56,7 +59,7 @@ const NewService = () => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Add New Service</h1>
+          <h1>{title}</h1>
         </div>
         <div className="bottom">
           <div className="left">
@@ -77,7 +80,7 @@ const NewService = () => {
             <form>
               <div className="formInput">
                 <label htmlFor="file">
-                  Image:{" "}
+                  {t("image")}:{" "}
                   <DriveFolderUploadOutlinedIcon className="icon" />
                 </label>
                 <input
@@ -89,7 +92,7 @@ const NewService = () => {
                   style={{ display: "none" }}
                 />
               </div>
-              {serviceInputs.map((input) => (
+              {inputs.map((input) => (
                 <div className="formInput" key={input.id}>
                   <label>{input.label}</label>
                   <input
@@ -102,7 +105,9 @@ const NewService = () => {
               ))}
 
               <div className="formInput">
-                <button onClick={handleClick}>Send</button>
+                <button onClick={handleClick}>
+                  {t("send")}
+                </button>
               </div>
             </form>
           </div>

@@ -67,6 +67,7 @@
     "phone": "Điện thoại",
     "address": "Địa chỉ",
     "country": "Quốc gia",
+    "city": "Thành phố",
     "chart": "Chi tiêu 6 tháng gần nhất",
     "title": "Giao dịch gần nhất"
   },
@@ -103,6 +104,45 @@
     "add": "Thêm mới",
     "order": "Đặt dịch vụ",
     "checkOut": "Trả Phòng",
-    "action": "Chức Năng"
+    "action": "Chức Năng",
+    "viewCalendar": "Xem lịch"
+  },
+  "user": {
+    "user": "Người dùng",
+    "role": "Vai trò",
+    "select": "chọn vai trò người dùng",
+    "send": "Gửi",
+    "edit": "Chỉnh sửa"
+  },
+  "role": {
+    "role": "Vai trò",
+    "name": "Tên",
+    "type": "Loại",
+    "workingHotel": "Khách sạn làm việc",
+    "selectHotel": "Chọn khách sạn",
+    "selectType": "Chọn loại"
+  },
+  "send": "Gửi",
+  "edit": "Chỉnh sửa",
+  "image": "Hình ảnh",
+  "country": "Quốc gia",
+  "city": "Thành phố",
+  "calendar": "Lịch",
+  "hotel": {
+    "featured": "Tiện ích"
+  },
+  "rooms": {
+    "rooms": "Phòng",
+    "hotel": "Khách sạn",
+    "selectHotel": "Chọn khách sạn"
+  },
+  "booking": {
+    "bookingUser": "Người đặt phòng",
+    "createUser": "Tạo người mới",
+    "roomNumbers": "Số phòng",
+    "total": "Tổng tiền (USD):",
+    "checkDate": "Ngày đi phải lớn hơn ngày đến",
+    "clickRoom": "Bấm vào đây để sửa lại số phòng",
+    "addIn": "Phụ thu(thêm người, trẻ em, thêm giường...)"
   }
 }

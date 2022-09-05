@@ -67,6 +67,7 @@
     "phone": "Phone",
     "address": "Address",
     "country": "Country",
+    "city": "City",
     "chart": "User Spending ( Last 6 Months)",
     "title": "Last Transactions"
   },
@@ -103,6 +104,45 @@
     "add": "Add New",
     "order": "Order",
     "checkOut": "Check Out",
-    "action": "Action"
+    "action": "Action",
+    "viewCalendar": "View Calendar"
+  },
+  "user": {
+    "user": "User",
+    "role": "User Role",
+    "select": "select role of the user",
+    "send": "Send",
+    "edit": "Edit"
+  },
+  "role": {
+    "role": "Role",
+    "name": "Name",
+    "type": "Type",
+    "workingHotel": "Working Hotel",
+    "selectHotel": "select hotel of the role",
+    "selectType": "select type of the role"
+  },
+  "send": "Send",
+  "edit": "Edit",
+  "image": "Image",
+  "country": "Country",
+  "city": "City",
+  "calendar": "Calendar",
+  "hotel": {
+    "featured": "Featured"
+  },
+  "rooms": {
+    "rooms": "Rooms",
+    "hotel": "Hotel",
+    "selectHotel": "select hotel"
+  },
+  "booking": {
+    "bookingUser": "Booking User",
+    "createUser": "Create New User",
+    "roomNumbers": "Room Numbers",
+    "total": "Total (USD): ",
+    "checkDate": "Check-in date must be before Check-out date.",
+    "clickRoom": "Click here to edit room!",
+    "addIn": "Add in(More people, more kids, more beds...)"
   }
 }

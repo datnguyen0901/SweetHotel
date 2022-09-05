@@ -7,17 +7,27 @@ import { roleInputs } from "../../formSource";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-const NewRole = () => {
+const NewRole = ({ inputs, title }) => {
   const [info, setInfo] = useState({});
   const [hotelId, setHotelId] = useState(undefined);
   const navigate = useNavigate();
   const { data, loading, error } = useFetch("/hotels");
 
+  const [t] = useTranslation("common");
+
   const handleChange = (e) => {
     setInfo((prev) => ({
       ...prev,
       [e.target.id]: e.target.value,
+    }));
+  };
+
+  const handleSelect = (e) => {
+    setInfo((prev) => ({
+      ...prev,
+      type: e.target.value,
     }));
   };
 
@@ -43,7 +53,7 @@ const NewRole = () => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Add New Role</h1>
+          <h1>{title}</h1>
         </div>
         <div className="bottom">
           <div
@@ -51,7 +61,7 @@ const NewRole = () => {
           "
           >
             <form>
-              {roleInputs.map((input) => (
+              {inputs.map((input) => (
                 <div className="formInput" key={input.id}>
                   <label>{input.label}</label>
                   <input
@@ -63,7 +73,18 @@ const NewRole = () => {
                 </div>
               ))}
               <div className="formInput">
-                <label>Working Hotel</label>
+                <label>{t("role.type")}</label>
+                <select id="type" onChange={handleSelect}>
+                  <option disabled selected>
+                    {t("role.selectType")}
+                  </option>
+                  <option value="Diamond">Diamond</option>
+                  <option value="Gold">Gold</option>
+                  <option value="Silver">Silver</option>
+                </select>
+              </div>
+              <div className="formInput">
+                <label>{t("role.workingHotel")}</label>
                 <select
                   id="hotelID"
                   onChange={(e) =>
@@ -71,7 +92,7 @@ const NewRole = () => {
                   }
                 >
                   <option disabled selected>
-                    choose the hotel of the room
+                    {t("role.selectHotel")}
                   </option>
                   {loading
                     ? "loading"
@@ -87,7 +108,9 @@ const NewRole = () => {
                 </select>
               </div>
               <div className="formInput">
-                <button onClick={handleClick}>Send</button>
+                <button onClick={handleClick}>
+                  {t("user.send")}
+                </button>
               </div>
             </form>
           </div>

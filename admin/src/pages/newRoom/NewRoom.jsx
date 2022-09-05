@@ -7,13 +7,16 @@ import { roomInputs } from "../../formSource";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-const NewRoom = () => {
+const NewRoom = ({ inputs, title }) => {
   const { data, loading, error } = useFetch("/hotels");
   const [info, setInfo] = useState({});
   const [hotelId, setHotelId] = useState(undefined);
   const [rooms, setRooms] = useState([]);
   const navigate = useNavigate();
+
+  const [t] = useTranslation("common");
 
   const handleChange = (e) => {
     setInfo((prev) => ({
@@ -44,12 +47,12 @@ const NewRoom = () => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Add New Room</h1>
+          <h1>{title}</h1>
         </div>
         <div className="bottom">
           <div className="right">
             <form>
-              {roomInputs.map((input) => (
+              {inputs.map((input) => (
                 <div className="formInput" key={input.id}>
                   <label>{input.label}</label>
                   <input
@@ -61,14 +64,14 @@ const NewRoom = () => {
                 </div>
               ))}
               <div className="formInput">
-                <label>Rooms</label>
+                <label>{t("rooms.rooms")}</label>
                 <textarea
                   onChange={(e) => setRooms(e.target.value)}
                   placeholder="give comma between room numbers."
                 />
               </div>
               <div className="formInput">
-                <label>Choose a hotel</label>
+                <label>{t("rooms.hotel")}</label>
                 <select
                   id="hotelId"
                   onChange={(e) =>
@@ -76,7 +79,7 @@ const NewRoom = () => {
                   }
                 >
                   <option disabled selected>
-                    choose the hotel of the room
+                    {t("rooms.selectHotel")}
                   </option>
                   {loading
                     ? "loading"
@@ -92,7 +95,9 @@ const NewRoom = () => {
                 </select>
               </div>
               <div className="formInput">
-                <button onClick={handleClick}>Send</button>
+                <button onClick={handleClick}>
+                  {t("send")}
+                </button>
               </div>
             </form>
           </div>

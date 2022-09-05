@@ -1,238 +1,238 @@
-export const userInputs = [
+export const userInputsVN = [
   {
     id: "username",
-    label: "Username",
+    label: "Tên đăng nhập",
     type: "text",
     placeholder: "john_doe",
   },
   {
     id: "fullName",
-    label: "Full Name",
+    label: "Họ Tên",
     type: "text",
     placeholder: "John Doe",
   },
   {
     id: "gender",
-    label: "Gender",
+    label: "Giới tính",
     type: "select",
     placeholder: "Male/Female",
   },
   {
     id: "address",
-    label: "Address",
+    label: "Địa chỉ",
     type: "text",
     placeholder: "Address",
   },
   {
     id: "cid",
-    label: "CID",
+    label: "CCCD/Hộ Chiếu",
     type: "text",
     placeholder: "CID/Passport",
   },
   {
     id: "email",
-    label: "Email",
+    label: "Thư điện tử",
     type: "email",
     placeholder: "john_doe@gmail.com",
   },
   {
     id: "phone",
-    label: "Phone",
+    label: "Điện Thoại",
     type: "text",
     placeholder: "+84 123 456 789",
   },
   {
     id: "password",
-    label: "Password",
+    label: "Mật Khẩu",
     type: "password",
     placeholder: "Your password",
   },
 ];
 
-export const hotelInputs = [
+export const hotelInputsVN = [
   {
     id: "name",
-    label: "Name",
+    label: "Tên",
     type: "text",
     placeholder: "My Hotel",
   },
   {
     id: "type",
-    label: "Type",
+    label: "Loại",
     type: "text",
     placeholder: "hotel",
   },
   {
     id: "address",
-    label: "Address",
+    label: "Địa chỉ",
     type: "text",
     placeholder: "elton st, 216",
   },
   {
     id: "distance",
-    label: "Distance from City Center",
+    label: "Cách trung tâm",
     type: "text",
     placeholder: "500",
   },
   {
     id: "title",
-    label: "Title",
+    label: "Tiêu đề",
     type: "text",
     placeholder: "The best Hotel",
   },
   {
     id: "desc",
-    label: "Description",
+    label: "Mô tả",
     type: "text",
     placeholder: "description",
   },
   {
     id: "cheapestPrice",
-    label: "Price",
+    label: "Giá",
     type: "text",
     placeholder: "100",
   },
 ];
 
-export const roomInputs = [
+export const roomInputsVN = [
   {
     id: "title",
-    label: "Title",
+    label: "Tiêu đề",
     type: "text",
     placeholder: "2 bed room",
   },
   {
     id: "desc",
-    label: "Description",
+    label: "Mô tả",
     type: "text",
     placeholder: "King size bed, 1 bathroom",
   },
   {
     id: "price",
-    label: "Price",
+    label: "Giá",
     type: "number",
     placeholder: "100",
   },
   {
     id: "maxPeople",
-    label: "Max People",
+    label: "Số người tối đa",
     type: "number",
     placeholder: "2",
   },
 ];
 
-export const roleInputs = [
+export const roleInputsVN = [
   {
     id: "name",
-    label: "Name",
+    label: "Tên",
     type: "text",
     placeholder: "Employee",
   },
 ];
 
-export const bookingInputs = [
+export const bookingInputsVN = [
   {
     id: "checkinDate",
-    label: "Check-in Date",
+    label: "Ngày đến",
     type: "date",
     placeholder: "2020-01-01",
   },
   {
     id: "checkoutDate",
-    label: "Check-out Date",
+    label: "Ngày đi",
     type: "date",
     placeholder: "2020-01-01",
   },
   {
     id: "status",
-    label: "Status",
+    label: "Loại",
     type: "text",
     placeholder: "waiting/open/closed",
   },
   {
     id: "paymentMethod",
-    label: "Payment Method",
+    label: "Phương thức thanh toán",
     type: "text",
     placeholder: "cash/online/unpaid",
   },
   {
     id: "note",
-    label: "Note",
+    label: "Ghi chú",
     type: "text",
     placeholder: "note here!",
   },
 ];
 
-export const serviceInputs = [
+export const serviceInputsVN = [
   {
     id: "name",
-    label: "Name",
+    label: "Tên",
     type: "text",
     placeholder: "Coke",
   },
   {
     id: "desc",
-    label: "Description",
+    label: "Mô tả",
     type: "text",
     placeholder: "1 bottle",
   },
   {
     id: "price",
-    label: "Price",
+    label: "Giá",
     type: "number",
     placeholder: "1$",
   },
   {
     id: "type",
-    label: "Type",
+    label: "Loại",
     type: "text",
     placeholder: "drink/food/service",
   },
   {
     id: "quantity",
-    label: "Quantity",
+    label: "Số lượng",
     type: "number",
     placeholder: "999",
-  },
+  }
 ];
 
-export const orderInputs = [
+export const orderInputsVN = [
   {
     type: "number",
     placeholder: "1",
     id: "quantity",
-    label: "Quantity",
+    label: "Số lượng",
   },
   {
     id: "status",
-    label: "Status",
+    label: "Trạng thái",
     type: "text",
     placeholder: "waiting/done",
   },
   {
     id: "paymentMethod",
-    label: "Payment Method",
+    label: "Phương thức thanh toán",
     type: "text",
     placeholder: "cash/online",
   },
   {
     id: "note",
-    label: "Note",
+    label: "Ghi chú",
     type: "text",
     placeholder: "note here!",
   },
 ];
 
-export const finalizationInputs = [
+export const finalizationInputsVN = [
   {
     id: "paymentMethod",
-    label: "Payment Method",
+    label: "Phương thức thanh toán",
     type: "text",
     placeholder: "cash/online",
   },
   {
     id: "note",
-    label: "Note",
+    label: "Ghi chú",
     type: "text",
     placeholder: "note here!",
   },

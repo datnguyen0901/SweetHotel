@@ -12,8 +12,9 @@ import {
   CountryDropdown,
   RegionDropdown,
 } from "react-country-region-selector";
+import { useTranslation } from "react-i18next";
 
-const EditHotel = () => {
+const EditHotel = ({ inputs, title }) => {
   const hotel = useParams();
   const id = hotel.hotelId;
   const navigate = useNavigate();
@@ -25,6 +26,8 @@ const EditHotel = () => {
 
   const { data, loading, error } = useFetch("/rooms");
   const dataHotel = useFetch(`/hotels/find/${id}`);
+
+  const [t] = useTranslation("common");
 
   const handleChange = (e) => {
     setInfo((prev) => ({
@@ -95,7 +98,7 @@ const EditHotel = () => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Edit Hotel</h1>
+          <h1>{title}</h1>
         </div>
         <div className="bottom">
           <div className="left">
@@ -112,7 +115,7 @@ const EditHotel = () => {
             <form>
               <div className="formInput">
                 <label htmlFor="file">
-                  Image:{" "}
+                  {t("image")}:{" "}
                   <DriveFolderUploadOutlinedIcon className="icon" />
                 </label>
                 <input
@@ -124,7 +127,7 @@ const EditHotel = () => {
                 />
               </div>
 
-              {hotelInputs.map((input) => (
+              {inputs.map((input) => (
                 <div className="formInput" key={input.id}>
                   <label>{input.label}</label>
                   <input
@@ -138,7 +141,9 @@ const EditHotel = () => {
               ))}
 
               <div className="formInput">
-                <label className="label">Country</label>
+                <label className="label">
+                  {t("country")}
+                </label>
                 <CountryDropdown
                   className="select"
                   value={country}
@@ -147,7 +152,7 @@ const EditHotel = () => {
               </div>
 
               <div className="formInput">
-                <label className="label">City</label>
+                <label className="label">{t("city")}</label>
                 <RegionDropdown
                   className="select"
                   country={country}
@@ -156,7 +161,7 @@ const EditHotel = () => {
                 />
               </div>
               <div className="formInput">
-                <label>Featured</label>
+                <label>{t("hotel.featured")}</label>
                 <select
                   id="featured"
                   onChange={handleChange}
@@ -166,28 +171,32 @@ const EditHotel = () => {
                   <option value={true}>Yes</option>
                 </select>
               </div>
-              <div className="selectRooms">
-                <label>Rooms</label>
-                <select
-                  id="rooms"
-                  multiple
-                  onChange={handleSelect}
-                  value={rooms}
-                >
-                  {loading
-                    ? "loading"
-                    : data &&
-                      data.map((room) => (
-                        <option
-                          key={room._id}
-                          value={room._id}
-                        >
-                          {room.title}
-                        </option>
-                      ))}
-                </select>
+              <div className="formInput">
+                <div className="selectRooms">
+                  <label>{t("rooms.rooms")}</label>
+                  <select
+                    id="rooms"
+                    multiple
+                    onChange={handleSelect}
+                    value={rooms}
+                  >
+                    {loading
+                      ? "loading"
+                      : data &&
+                        data.map((room) => (
+                          <option
+                            key={room._id}
+                            value={room._id}
+                          >
+                            {room.title}
+                          </option>
+                        ))}
+                  </select>
+                </div>
               </div>
-              <button onClick={handleClick}>Edit</button>
+              <button onClick={handleClick}>
+                {t("edit")}
+              </button>
             </form>
           </div>
         </div>

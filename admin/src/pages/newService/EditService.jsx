@@ -7,12 +7,15 @@ import { serviceInputs } from "../../formSource";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-const EditService = () => {
+const EditService = ({ inputs, title }) => {
   const product = useParams();
   const id = product.productId;
   const [file, setFile] = useState("");
   const [info, setInfo] = useState({});
+
+  const [t] = useTranslation("common");
 
   const navigate = useNavigate();
   const { data, loading, error } = useFetch("/hotels");
@@ -69,7 +72,7 @@ const EditService = () => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Add New Service</h1>
+          <h1>{title}</h1>
         </div>
         <div className="bottom">
           <div className="left">
@@ -90,7 +93,7 @@ const EditService = () => {
             <form>
               <div className="formInput">
                 <label htmlFor="file">
-                  Image:{" "}
+                  {t("image")}:{" "}
                   <DriveFolderUploadOutlinedIcon className="icon" />
                 </label>
                 <input
@@ -102,7 +105,7 @@ const EditService = () => {
                   style={{ display: "none" }}
                 />
               </div>
-              {serviceInputs.map((input) => (
+              {inputs.map((input) => (
                 <div className="formInput" key={input.id}>
                   <label>{input.label}</label>
                   <input
@@ -119,7 +122,7 @@ const EditService = () => {
 
               <div className="formInput">
                 <button onClick={handleClick}>
-                  Update
+                  {t("edit")}
                 </button>
               </div>
             </form>

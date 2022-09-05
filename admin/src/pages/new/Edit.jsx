@@ -10,6 +10,7 @@ import {
   CountryDropdown,
   RegionDropdown,
 } from "react-country-region-selector";
+import { useTranslation } from "react-i18next";
 
 const Edit = ({ inputs, title }) => {
   const user = useParams();
@@ -21,6 +22,8 @@ const Edit = ({ inputs, title }) => {
   const [region, setRegion] = useState(undefined);
   const { data, loading, error } = useFetch(`/users/${id}`);
   const dataRole = useFetch(`/roles`);
+
+  const [t] = useTranslation("common");
 
   //set roleId to the info of the user
   useEffect(() => {
@@ -95,7 +98,7 @@ const Edit = ({ inputs, title }) => {
             <form>
               <div className="formInput">
                 <label htmlFor="file">
-                  Image:{" "}
+                  {t("image")}:{" "}
                   <DriveFolderUploadOutlinedIcon className="icon" />
                 </label>
                 <input
@@ -122,7 +125,9 @@ const Edit = ({ inputs, title }) => {
               ))}
 
               <div className="formInput">
-                <label className="label">Country</label>
+                <label className="label">
+                  {t("single.country")}
+                </label>
                 <CountryDropdown
                   className="select"
                   value={country}
@@ -131,7 +136,9 @@ const Edit = ({ inputs, title }) => {
               </div>
 
               <div className="formInput">
-                <label className="label">City</label>
+                <label className="label">
+                  {t("single.city")}
+                </label>
                 <RegionDropdown
                   className="select"
                   country={country}
@@ -141,7 +148,7 @@ const Edit = ({ inputs, title }) => {
               </div>
 
               <div className="formInput">
-                <label>User Role</label>
+                <label>{t("user.role")}</label>
                 <select
                   id="roleId"
                   onChange={handleChange}
@@ -161,7 +168,9 @@ const Edit = ({ inputs, title }) => {
                 </select>
               </div>
               <div className="formInput">
-                <button onClick={handleClick}>Edit</button>
+                <button onClick={handleClick}>
+                  {t("user.edit")}
+                </button>
               </div>
             </form>
           </div>

@@ -198,6 +198,11 @@ export const serviceColumns = [
     headerName: "Type",
     width: 130,
   },
+  {
+    field: "quantity",
+    headerName: "Quantity",
+    width: 70,
+  },
 ];
 
 export const orderColumns = [

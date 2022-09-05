@@ -20,6 +20,9 @@ const ServiceSchema = new mongoose.Schema(
     img: {
       type: String,
     },
+    quantity: {
+      type: Number,
+    },
   },
   { timestamps: true }
 );

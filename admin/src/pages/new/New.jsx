@@ -10,6 +10,7 @@ import {
   CountryDropdown,
   RegionDropdown,
 } from "react-country-region-selector";
+import { useTranslation } from "react-i18next";
 
 const New = ({ inputs, title }) => {
   const [file, setFile] = useState("");
@@ -25,6 +26,8 @@ const New = ({ inputs, title }) => {
     }));
   };
 
+  const [t] = useTranslation("common");
+
   const handleClick = async (e) => {
     // check all fields are filled
     if (
@@ -39,22 +42,6 @@ const New = ({ inputs, title }) => {
     ) {
       alert("Please fill all fields");
     }
-    //  else {
-    //   // check if email is valid
-    //   const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    //   if (re.test(info.email)) {
-    //     // check if password is at least 8 characters long
-    //     if (info.password.length >= 8) {
-    //       // check if phone is valid
-    //       const re = /^[0-9]{10}$/;
-    //       if (re.test(info.phone)) {
-    //             // check if file is valid
-    //             if (file !== "") {
-    //               // check if file is an image
-    //               const re = /^image\//;
-    //               if (re.test(file.type)) {
-    //                 // check if file is less than 2MB
-    //                 if (file.size <= 2097152) {
 
     e.preventDefault();
     const image = new FormData();
@@ -115,7 +102,7 @@ const New = ({ inputs, title }) => {
             <form>
               <div className="formInput">
                 <label htmlFor="file">
-                  Image:{" "}
+                  {t("image")}:{" "}
                   <DriveFolderUploadOutlinedIcon className="icon" />
                 </label>
                 <input
@@ -141,7 +128,9 @@ const New = ({ inputs, title }) => {
               ))}
 
               <div className="formInput">
-                <label className="label">Country</label>
+                <label className="label">
+                  {t("single.country")}
+                </label>
                 <CountryDropdown
                   className="select"
                   value={country}
@@ -150,7 +139,9 @@ const New = ({ inputs, title }) => {
               </div>
 
               <div className="formInput">
-                <label className="label">City</label>
+                <label className="label">
+                  {t("single.city")}
+                </label>
                 <RegionDropdown
                   className="select"
                   country={country}
@@ -160,14 +151,14 @@ const New = ({ inputs, title }) => {
               </div>
 
               <div className="formInput">
-                <label>User Role</label>
+                <label>{t("user.role")}</label>
                 <select
                   id="roleId"
                   onChange={handleChange}
                   className="select"
                 >
                   <option disabled selected>
-                    select role of the user
+                    {t("user.select")}
                   </option>
                   {loading
                     ? "loading"
@@ -183,7 +174,9 @@ const New = ({ inputs, title }) => {
                 </select>
               </div>
               <div className="formInput">
-                <button onClick={handleClick}>Send</button>
+                <button onClick={handleClick}>
+                  {t("user.send")}
+                </button>
               </div>
             </form>
           </div>

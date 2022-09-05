@@ -15,13 +15,16 @@ import { Autocomplete, TextField } from "@mui/material";
 import { SearchContext } from "../../context/SearchContext";
 import { format } from "date-fns";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
-const EditBooking = () => {
+const EditBooking = ({ inputs, title }) => {
   const booking = useParams();
   const id = booking.bookingId;
   const [info, setInfo] = useState({});
   const [price, setPrice] = useState({});
   const [selectedRooms, setSelectedRooms] = useState([]);
+
+  const [t] = useTranslation("common");
 
   const navigate = useNavigate();
   // get hotelId from login user by roleId
@@ -72,7 +75,7 @@ const EditBooking = () => {
       });
     }
   }, [bookingData.data]);
-  
+
   const getDatesInRange = (checkinDate, checkoutDate) => {
     const start = new Date(checkinDate);
     const end = new Date(checkoutDate);
@@ -159,15 +162,34 @@ const EditBooking = () => {
       ...prev,
       [e.target.id]: e.target.value,
       roomId: selectedRooms,
-      totalPaid: numberNight * price || info.totalPaid,
+      totalPaid:
+        numberNight * price || bookingData.totalPaid,
     }));
+  };
+
+  const handleCheckAddIn = (e) => {
+    const checked = e.target.checked;
+    // checked ? setInfo totalPaid increase 20%
+    if (checked) {
+      setInfo((prev) => ({
+        ...prev,
+        addIn: true,
+        totalPaid: info.totalPaid * 1.2,
+      }));
+    } else {
+      setInfo((prev) => ({
+        ...prev,
+        addIn: false,
+        totalPaid: bookingData.totalPaid,
+      }));
+    }
   };
 
   const handleClick = async (e) => {
     e.preventDefault();
     try {
       if (info.checkinDate >= info.checkoutDate) {
-        alert("Checking date must be before checkout date");
+        alert(t("checkDate"));
       }
 
       await Promise.all(
@@ -201,7 +223,7 @@ const EditBooking = () => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Add New Booking</h1>
+          <h1>{title}</h1>
         </div>
         <div className="bottom">
           <div
@@ -209,7 +231,7 @@ const EditBooking = () => {
           "
           >
             <form>
-              {bookingInputs.map((input) => (
+              {inputs.map((input) => (
                 <div className="formInput" key={input.id}>
                   <label>{input.label}</label>
                   <input
@@ -224,7 +246,7 @@ const EditBooking = () => {
               ))}
 
               <div className="formInput">
-                <label>Hotel Name</label>
+                <label>{t("rooms.hotel")}</label>
                 <input
                   disabled
                   id="hotelId"
@@ -234,7 +256,7 @@ const EditBooking = () => {
               </div>
 
               <div className="formInput">
-                <label>Booking User</label>
+                <label>{t("booking.bookingUser")}</label>
                 {/* search username from userData */}
                 <Autocomplete
                   id="userId"
@@ -267,7 +289,7 @@ const EditBooking = () => {
                                 navigate("/users");
                               }}
                             />{" "}
-                            Create new user
+                            {t("booking.createuser")}
                           </React.Fragment>
                         ),
                       }}
@@ -278,13 +300,13 @@ const EditBooking = () => {
 
               <div className="formInput">
                 <label>
-                  Select your rooms :
+                  {t("booking.roomNumbers")}
                   <div className="formInput">
                     <div
                       onClick={refreshPage}
                       className="editRoom"
                     >
-                      Click here to edit room!
+                      {t("booking.clickRoom")}
                     </div>
                   </div>
                 </label>
@@ -326,19 +348,34 @@ const EditBooking = () => {
               </div>
 
               <div className="formInput">
-                <label>Total Paid by USD</label>
+                <label>
+                  <div>{t("booking.addIn")}</div>
+                  <div>
+                    <input
+                      id="addIn"
+                      type="checkbox"
+                      onChange={handleCheckAddIn}
+                    />
+                  </div>
+                </label>
+              </div>
+
+              <div className="formInput">
+                <label>{t("booking.total")}</label>
                 <input
                   disabled
                   id="totalPaid"
                   type="number"
-                  value={numberNight * price}
+                  value={info.totalPaid}
                   placeholder={info.totalPaid}
                   onChange={handleChange}
                 />
               </div>
 
               <div className="formInput">
-                <button onClick={handleClick}>Edit</button>
+                <button onClick={handleClick}>
+                  {t("edit")}
+                </button>
               </div>
             </form>
           </div>

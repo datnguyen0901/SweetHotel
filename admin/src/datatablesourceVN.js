@@ -198,6 +198,12 @@ export const serviceColumnsVN = [
     headerName: "Loại",
     width: 130,
   },
+
+  {
+    field: "quantity",
+    headerName: "Số lượng",
+    width: 70,
+  },
 ];
 
 export const orderColumnsVN = [

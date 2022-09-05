@@ -11,6 +11,7 @@ import {
 } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 const CalendarManage = () => {
   const [myEventsList, setMyEventsList] = useState([]);
@@ -21,6 +22,8 @@ const CalendarManage = () => {
   const { data, loading, error } = useFetch(
     `/bookings/room/${id}`
   );
+
+  const [t] = useTranslation("common");
 
   const getDatesInRange = (checkinDate, checkoutDate) => {
     const start = new Date(checkinDate);
@@ -39,9 +42,7 @@ const CalendarManage = () => {
   };
 
   const handleClick = async (event) => {
-    const r = window.confirm(
-      "Would you like to remove this event?"
-    );
+    const r = window.confirm(t("dataTable.confirm"));
     if (r === true) {
       //delete event from start to the past of the end
       const start = event.start;
@@ -101,7 +102,7 @@ const CalendarManage = () => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Calendar</h1>
+          <h1>{t("calendar")}</h1>
         </div>
         <div className="bottom">
           <div className="right">

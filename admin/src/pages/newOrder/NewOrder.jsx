@@ -79,6 +79,15 @@ const NewOrder = () => {
     0
   );
 
+  const handleDelete = (id) => {
+    // confirm delete
+    alert("Are you sure to delete this service?");
+    // delete service in selectedServices
+    setSelectedServices((prev) =>
+      prev.filter((item) => item.id !== id)
+    );
+  };
+
   const handleClick = async (e) => {
     e.preventDefault();
     const serviceOrders = selectedServices.map((item) => ({
@@ -86,15 +95,42 @@ const NewOrder = () => {
       quantity: item.quantity,
     }));
     try {
-      const newOrder = {
-        ...info,
-        employeeId: user._id,
-        serviceOrders,
-        totalPrice: total,
-      };
-
-      await axios.post("/orders", newOrder);
-      navigate("/orders");
+      // Minus the quantity of service in the service storage when ordered
+      serviceOrders.map(async (item) => {
+        const service = await axios.get(
+          `/services/${item.serviceId}`
+        );
+        if (
+          service.data.quantity < item.quantity &&
+          service.data.type !== "service"
+        ) {
+          alert(
+            "The quantity of " +
+              service.data.name +
+              " is not enough!"
+          );
+          return;
+        } else {
+          const newOrder = {
+            ...info,
+            employeeId: user._id,
+            serviceOrders,
+            totalPrice: total,
+          };
+          await axios.post("/orders", newOrder);
+          navigate("/orders");
+        }
+        if (service.data.type !== "service") {
+          const newService = {
+            ...service.data,
+            quantity: service.data.quantity - item.quantity,
+          };
+          await axios.put(
+            `/services/${item.serviceId}`,
+            newService
+          );
+        }
+      });
     } catch (err) {
       console.log(err);
     }
@@ -245,14 +281,9 @@ const NewOrder = () => {
                       {/* delete row */}
                       <td>
                         <button
-                          onClick={() => {
-                            setSelectedServices(
-                              selectedServices.filter(
-                                (item) =>
-                                  item.id !== service.id
-                              )
-                            );
-                          }}
+                          onClick={() =>
+                            handleDelete(service.id)
+                          }
                         >
                           Delete
                         </button>

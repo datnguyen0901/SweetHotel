@@ -117,6 +117,35 @@ const EditOrder = () => {
     0
   );
 
+  const handleDelete = (id) => {
+    // confirm delete
+    alert("Are you sure to delete this service?");
+    // Plus back the quantity of service in the service storage when delete the service in selectedServices
+    orderData.data.serviceOrders.map(async (item) => {
+      const service = await axios.get(
+        `/services/${item.serviceId}`
+      );
+      if (service.data.type !== "service") {
+        selectedServices.find((service) => {
+          if (service.id !== item.serviceId) {
+            const service = serviceData.data.find(
+              (service) => service._id === item.serviceId
+            );
+            const newQuantity =
+              service.quantity + item.quantity;
+            axios.put(`/services/${item.serviceId}`, {
+              quantity: newQuantity,
+            });
+          }
+        });
+      }
+    });
+    // delete service in selectedServices
+    setSelectedServices((prev) =>
+      prev.filter((item) => item.id !== id)
+    );
+  };
+
   const handleClick = async (e) => {
     e.preventDefault();
     const serviceOrders = selectedServices.map((item) => ({
@@ -124,19 +153,59 @@ const EditOrder = () => {
       quantity: item.quantity,
     }));
     try {
-      const newOrder = {
-        ...info,
-        employeeId: user._id,
-        serviceOrders,
-        totalPrice: total,
-      };
+      // Minus the quantity of service in the service storage when ordered
+      serviceOrders.map(async (item) => {
+        const service = await axios.get(
+          `/services/${item.serviceId}`
+        );
 
-      await axios.put(`/orders/${orderId}`, newOrder);
-      navigate("/orders");
+        const oldQuantity =
+          orderData.data.serviceOrders.find(
+            (service) =>
+              service.serviceId === item.serviceId
+          ).quantity;
+
+        if (
+          service.data.quantity <
+            item.quantity - oldQuantity &&
+          service.data.type !== "service"
+        ) {
+          alert(
+            "The quantity of " +
+              service.data.name +
+              " is not enough!"
+          );
+          return;
+        } else {
+          const newOrder = {
+            ...info,
+            employeeId: user._id,
+            serviceOrders,
+            totalPrice: total,
+          };
+          await axios.put(`/orders/${orderId}`, newOrder);
+          navigate("/orders");
+        }
+        if (service.data.type !== "service") {
+          const newService = {
+            ...service.data,
+            quantity:
+              service.data.quantity -
+              item.quantity +
+              oldQuantity,
+          };
+          await axios.put(
+            `/services/${item.serviceId}`,
+            newService
+          );
+        }
+      });
     } catch (err) {
       console.log(err);
     }
   };
+  console.log("Services:", selectedServices);
+
   return (
     <div className="new">
       <Sidebar />
@@ -283,14 +352,9 @@ const EditOrder = () => {
                       {/* delete row */}
                       <td>
                         <button
-                          onClick={() => {
-                            setSelectedServices(
-                              selectedServices.filter(
-                                (item) =>
-                                  item.id !== service.id
-                              )
-                            );
-                          }}
+                          onClick={() =>
+                            handleDelete(service.id)
+                          }
                         >
                           Delete
                         </button>

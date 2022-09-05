@@ -7,8 +7,9 @@ import { roleInputs } from "../../formSource";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-const EditRole = () => {
+const EditRole = ({ inputs, title }) => {
   const product = useParams();
   const id = product.productId;
 
@@ -17,6 +18,8 @@ const EditRole = () => {
   const navigate = useNavigate();
   const { data, loading, error } = useFetch("/hotels");
   const dataRole = useFetch(`/roles/${id}`);
+
+  const [t] = useTranslation("common");
 
   //set hotelID to the info of the hotel
   useEffect(() => {
@@ -29,6 +32,13 @@ const EditRole = () => {
     setInfo((prev) => ({
       ...prev,
       [e.target.id]: e.target.value,
+    }));
+  };
+
+  const handleSelect = (e) => {
+    setInfo((prev) => ({
+      ...prev,
+      type: e.target.value,
     }));
   };
 
@@ -56,7 +66,7 @@ const EditRole = () => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Edit Role</h1>
+          <h1>{title}</h1>
         </div>
         <div className="bottom">
           <div
@@ -64,7 +74,7 @@ const EditRole = () => {
           "
           >
             <form>
-              {roleInputs.map((input) => (
+              {inputs.map((input) => (
                 <div className="formInput" key={input.id}>
                   <label>{input.label}</label>
                   <input
@@ -77,7 +87,18 @@ const EditRole = () => {
                 </div>
               ))}
               <div className="formInput">
-                <label>Working Hotel</label>
+                <label>{t("role.type")}</label>
+                <select id="type" onChange={handleSelect}>
+                  <option disabled selected>
+                    {dataRole.data.type}
+                  </option>
+                  <option value="Diamond">Diamond</option>
+                  <option value="Gold">Gold</option>
+                  <option value="Silver">Silver</option>
+                </select>
+              </div>
+              <div className="formInput">
+                <label>{t("role.workingHotel")}</label>
                 <select
                   id="hotelId"
                   onChange={handleChange}
@@ -98,7 +119,7 @@ const EditRole = () => {
               </div>
               <div className="formInput">
                 <button onClick={handleClick}>
-                  Update
+                  {t("user.edit")}
                 </button>
               </div>
             </form>

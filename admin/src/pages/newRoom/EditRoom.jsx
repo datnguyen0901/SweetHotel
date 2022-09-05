@@ -7,13 +7,16 @@ import { roomInputs } from "../../formSource";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-const EditRoom = () => {
+const EditRoom = ({ inputs, title }) => {
   const [info, setInfo] = useState({});
   const [rooms, setRooms] = useState([]);
   const navigate = useNavigate();
   const product = useParams();
   const id = product.roomId;
+
+  const [t] = useTranslation("common");
 
   const { data, loading, error } = useFetch("/hotels");
   const dataRoom = useFetch(`/rooms/${id}`);
@@ -69,7 +72,7 @@ const EditRoom = () => {
         <div className="bottom">
           <div className="right">
             <form>
-              {roomInputs.map((input) => (
+              {inputs.map((input) => (
                 <div className="formInput" key={input.id}>
                   <label>{input.label}</label>
                   <input
@@ -82,7 +85,7 @@ const EditRoom = () => {
                 </div>
               ))}
               <div className="formInput">
-                <label>Rooms</label>
+                <label>{t("rooms.rooms")}</label>
                 <textarea
                   defaultValue={rooms}
                   onChange={(e) => setRooms(e.target.value)}
@@ -90,7 +93,7 @@ const EditRoom = () => {
                 />
               </div>
               <div className="formInput">
-                <label>Choose a hotel</label>
+                <label>{t("rooms.hotel")}</label>
                 <select
                   id="hotelId"
                   onChange={handleChange}
@@ -111,7 +114,9 @@ const EditRoom = () => {
                 </select>
               </div>
               <div className="formInput">
-                <button onClick={handleClick}>Edit</button>
+                <button onClick={handleClick}>
+                  {t("edit")}
+                </button>
               </div>
             </form>
           </div>
