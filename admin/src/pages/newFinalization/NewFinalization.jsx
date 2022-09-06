@@ -6,8 +6,9 @@ import { finalizationInputs } from "../../formSource";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
+import { useTranslation } from "react-i18next";
 
-const NewFinalization = () => {
+const NewFinalization = ({ inputs, title }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const [info, setInfo] = useState({});
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ const NewFinalization = () => {
   const [totalPaidValue, setTotalPaidValue] = useState(0);
   const [totalUnPaidValue, setTotalUnPaidValue] =
     useState(0);
+
+  const [t] = useTranslation("common");
 
   // get totalPaid if paymentMethod is unpaid
   const booking = useFetch(`/bookings/${bookingId}`);
@@ -92,7 +95,7 @@ const NewFinalization = () => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Add New Finalization</h1>
+          <h1>{title}</h1>
         </div>
         <div className="bottom">
           <div
@@ -101,7 +104,7 @@ const NewFinalization = () => {
           >
             <form>
               <div className="formInput">
-                <label>Booking ID</label>
+                <label>{t("bookingId")}</label>
                 <input
                   id="bookingId"
                   onChange={handleChange}
@@ -111,7 +114,7 @@ const NewFinalization = () => {
                 />
               </div>
               <div className="formInput">
-                <label>Total Paid</label>
+                <label>{t("totalPaid")}</label>
                 <input
                   id="paid"
                   onChange={handleChange}
@@ -121,7 +124,7 @@ const NewFinalization = () => {
                 />
               </div>
               <div className="formInput">
-                <label>Total Unpaid</label>
+                <label>{t("totalUnpaid")}</label>
                 <input
                   id="unpaid"
                   onChange={handleChange}
@@ -129,7 +132,7 @@ const NewFinalization = () => {
                   placeholder={totalUnPaidValue}
                 />
               </div>
-              {finalizationInputs.map((input) => (
+              {inputs.map((input) => (
                 <div className="formInput" key={input.id}>
                   <label>{input.label}</label>
                   <input
@@ -143,7 +146,9 @@ const NewFinalization = () => {
               ))}
 
               <div className="formInput">
-                <button onClick={handleClick}>Send</button>
+                <button onClick={handleClick}>
+                  {t("send")}
+                </button>
               </div>
             </form>
           </div>

@@ -8,12 +8,15 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
-const EditFinalization = () => {
+const EditFinalization = ({ inputs, title }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const [info, setInfo] = useState({});
   const navigate = useNavigate();
   const finalizationId = useParams().productId;
+
+  const [t] = useTranslation("common");
 
   const finalization = useFetch(
     `/finalizations/${finalizationId}`
@@ -40,7 +43,10 @@ const EditFinalization = () => {
         employeeId: user._id,
       };
 
-      await axios.put(`/finalizations/${finalizationId}`, newFinalization);
+      await axios.put(
+        `/finalizations/${finalizationId}`,
+        newFinalization
+      );
       navigate("/finalizations");
     } catch (err) {
       console.log(err);
@@ -52,7 +58,7 @@ const EditFinalization = () => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Add New Finalization</h1>
+          <h1>{title}</h1>
         </div>
         <div className="bottom">
           <div
@@ -61,7 +67,7 @@ const EditFinalization = () => {
           >
             <form>
               <div className="formInput">
-                <label>Booking ID</label>
+                <label>{t("bookingId")}</label>
                 <input
                   id="bookingId"
                   onChange={handleChange}
@@ -72,7 +78,7 @@ const EditFinalization = () => {
                 />
               </div>
               <div className="formInput">
-                <label>Total Paid</label>
+                <label>{t("totalPaid")}</label>
                 <input
                   id="paid"
                   onChange={handleChange}
@@ -83,7 +89,7 @@ const EditFinalization = () => {
                 />
               </div>
               <div className="formInput">
-                <label>Total Unpaid</label>
+                <label>{t("totalUnpaid")}</label>
                 <input
                   id="unpaid"
                   onChange={handleChange}
@@ -92,7 +98,7 @@ const EditFinalization = () => {
                   defaultValue={info.unpaid}
                 />
               </div>
-              {finalizationInputs.map((input) => (
+              {inputs.map((input) => (
                 <div className="formInput" key={input.id}>
                   <label>{input.label}</label>
                   <input
@@ -107,7 +113,9 @@ const EditFinalization = () => {
               ))}
 
               <div className="formInput">
-                <button onClick={handleClick}>Send</button>
+                <button onClick={handleClick}>
+                  {t("send")}
+                </button>
               </div>
             </form>
           </div>

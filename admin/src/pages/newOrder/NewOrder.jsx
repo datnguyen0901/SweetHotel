@@ -8,8 +8,9 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { Autocomplete, TextField } from "@mui/material";
 import useFetch from "../../hooks/useFetch";
+import { useTranslation } from "react-i18next";
 
-const NewOrder = () => {
+const NewOrder = ({ inputs, title }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const [info, setInfo] = useState({});
   const navigate = useNavigate();
@@ -19,6 +20,8 @@ const NewOrder = () => {
   );
   const bookingId = useParams().productId || "";
 
+  const [t] = useTranslation("common");
+
   const handleSearch = (e, value) => {
     if (value) {
       // check if the value._id is in the array
@@ -27,7 +30,7 @@ const NewOrder = () => {
           (item) => item.id === value._id
         )
       ) {
-        alert("Service already selected!");
+        alert(t("order.alertSelected"));
         return;
       } else {
         setSelectedServices([
@@ -81,7 +84,7 @@ const NewOrder = () => {
 
   const handleDelete = (id) => {
     // confirm delete
-    alert("Are you sure to delete this service?");
+    alert(t("order.alertDeleted"));
     // delete service in selectedServices
     setSelectedServices((prev) =>
       prev.filter((item) => item.id !== id)
@@ -105,9 +108,9 @@ const NewOrder = () => {
           service.data.type !== "service"
         ) {
           alert(
-            "The quantity of " +
+            t("order.alertQuantity1") +
               service.data.name +
-              " is not enough!"
+              t("order.alertQuantity2")
           );
           return;
         } else {
@@ -141,7 +144,7 @@ const NewOrder = () => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Add New Order</h1>
+          <h1>{title}</h1>
         </div>
         <div className="bottom">
           <div
@@ -150,7 +153,7 @@ const NewOrder = () => {
           >
             <form>
               <div className="formInput">
-                <label>Booking ID</label>
+                <label>{t("bookingId")}</label>
                 <input
                   id="bookingId"
                   onChange={handleChange}
@@ -160,7 +163,7 @@ const NewOrder = () => {
               </div>
 
               <div className="formInput">
-                <label>Status</label>
+                <label>{t("status")}</label>
                 <input
                   id="status"
                   onChange={handleChange}
@@ -170,7 +173,7 @@ const NewOrder = () => {
               </div>
 
               <div className="formInput">
-                <label>Payment Method</label>
+                <label>{t("paymentMethod")}</label>
                 <input
                   id="paymentMethod"
                   onChange={handleChange}
@@ -180,7 +183,7 @@ const NewOrder = () => {
               </div>
 
               <div className="formInput">
-                <label>Note</label>
+                <label>{t("note")}</label>
                 <input
                   id="note"
                   onChange={handleChange}
@@ -190,7 +193,7 @@ const NewOrder = () => {
               </div>
 
               <div className="formInput">
-                <label>Order Total</label>
+                <label>{t("total")}</label>
                 <input
                   id="total"
                   disabled
@@ -200,7 +203,7 @@ const NewOrder = () => {
               </div>
 
               <div className="formInput">
-                <label>Select Services</label>
+                <label>{t("order.selectServices")}</label>
                 {/* search service from serviceData */}
                 <Autocomplete
                   id="serviceId"
@@ -213,7 +216,7 @@ const NewOrder = () => {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Choose the service"
+                      label={t("order.choseService")}
                       variant="outlined"
                       margin="normal"
                       required
@@ -233,7 +236,7 @@ const NewOrder = () => {
                                 navigate("/services");
                               }}
                             />{" "}
-                            Create new service
+                            {t("order.createServices")}
                           </React.Fragment>
                         ),
                       }}
@@ -245,12 +248,12 @@ const NewOrder = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>No.</th>
-                    <th>Service ID</th>
-                    <th>Service Name</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total Price(USD)</th>
+                    <th>{t("no.")}</th>
+                    <th>{t("serviceId")}</th>
+                    <th>{t("serviceName")}</th>
+                    <th>{t("price")}</th>
+                    <th>{t("quantity")}</th>
+                    <th>{t("totalPrice")}</th>
                   </tr>
                 </thead>
                 {selectedServices.map((service) => (
@@ -285,7 +288,7 @@ const NewOrder = () => {
                             handleDelete(service.id)
                           }
                         >
-                          Delete
+                          {t("delete")}
                         </button>
                       </td>
                     </tr>
@@ -294,7 +297,9 @@ const NewOrder = () => {
               </table>
 
               <div className="formInput">
-                <button onClick={handleClick}>Send</button>
+                <button onClick={handleClick}>
+                  {t("send")}
+                </button>
               </div>
             </form>
           </div>

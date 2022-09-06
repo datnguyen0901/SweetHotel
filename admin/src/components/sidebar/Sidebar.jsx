@@ -11,6 +11,7 @@ import PaidIcon from "@mui/icons-material/Paid";
 import StoreIcon from "@mui/icons-material/Store";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import InsertChartIcon from "@mui/icons-material/InsertChart";
+import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
 import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
@@ -189,19 +190,41 @@ const Sidebar = () => {
               </span>
             </li>
           </Link>
+          <Link
+            to="/roomAttendants"
+            style={{ textDecoration: "none" }}
+          >
+            <li>
+              <CleaningServicesIcon className="icon" />
+              <span
+                className={
+                  pathname == `/roomAttendants`
+                    ? "active"
+                    : ""
+                }
+              >
+                {t("roomAttendants")}
+              </span>
+            </li>
+          </Link>
           <p className="title">
             {t("sidebar.useful.useful")}
           </p>
-          <li>
-            <AccountBalanceIcon className="icon" />
-            <span
-              className={
-                pathname == `/auditing` ? "active" : ""
-              }
-            >
-              {t("sidebar.useful.Auditing")}
-            </span>
-          </li>
+          <Link
+            to="/auditing"
+            style={{ textDecoration: "none" }}
+          >
+            <li>
+              <AccountBalanceIcon className="icon" />
+              <span
+                className={
+                  pathname == `/auditing` ? "active" : ""
+                }
+              >
+                {t("sidebar.useful.Auditing")}
+              </span>
+            </li>
+          </Link>
           <li>
             <InsertChartIcon className="icon" />
             <span

@@ -124,10 +124,27 @@
   },
   "send": "Gửi",
   "edit": "Chỉnh sửa",
+  "delete": "Xóa",
   "image": "Hình ảnh",
   "country": "Quốc gia",
   "city": "Thành phố",
   "calendar": "Lịch",
+  "bookingId": "ID Đặt phòng",
+  "status": "Trạng thái",
+  "paymentMethod": "Phương thức thanh toán",
+  "total": "Tổng tiền",
+  "note": "Ghi chú",
+  "no.": "STT",
+  "serviceId": "ID Dịch vụ",
+  "serviceName": "Tên dịch vụ",
+  "price": "Giá",
+  "quantity": "Số lượng",
+  "totalPrice": "Tổng tiền (USD)",
+  "totalPaid": "Tổng tiền đã thanh toán",
+  "totalUnpaid": "Tổng tiền chưa thanh toán",
+  "roomAttendants": "Buồng phòng",
+  "available": "Trống",
+  "notAvailable": "Đã đặt",
   "hotel": {
     "featured": "Tiện ích"
   },
@@ -144,5 +161,14 @@
     "checkDate": "Ngày đi phải lớn hơn ngày đến",
     "clickRoom": "Bấm vào đây để sửa lại số phòng",
     "addIn": "Phụ thu(thêm người, trẻ em, thêm giường...)"
+  },
+  "order": {
+    "alertSelected": "Dịch vụ đã được chọn bên dưới",
+    "alertDeleted": "Bạn có chắc chắn muốn xoá?",
+    "alertQuantity1": "Số lượng của ",
+    "alertQuantity2": " không đủ!",
+    "selectServices": "Lựa chọn dịch vụ",
+    "createServices": "Tạo mới dịch vụ",
+    "choseService": "Chọn dịch vụ"
   }
 }

@@ -277,3 +277,32 @@ export const finalizationColumns = [
     width: 250,
   },
 ];
+
+export const roomAttendantColumns = [
+  { field: "_id", headerName: "ID", width: 230 },
+  {
+    field: "roomNumber",
+    headerName: "Room Number",
+    width: 120,
+  },
+  {
+    field: "price",
+    headerName: "Price",
+    width: 100,
+  },
+  {
+    field: "maxPeople",
+    headerName: "Max People",
+    width: 100,
+  },
+  {
+    field: "nextAvailableDate",
+    headerName: "Available Date",
+    width: 230,
+  },
+  {
+    field: "title",
+    headerName: "Title",
+    width: 150,
+  },
+];

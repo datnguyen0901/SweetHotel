@@ -64,12 +64,13 @@ const EditBooking = ({ inputs, title }) => {
       setInfo({
         roomId: bookingData.data.roomId,
         userId: bookingData.data.userId,
-        checkinDate: moment(
-          bookingData.data.checkinDate
-        ).format("yyyy-MM-DD"),
-        checkoutDate: moment(
-          bookingData.data.checkoutDate
-        ).format("YYYY-MM-DD"),
+        // checkinDate: plus 1 day more
+        checkinDate: moment(bookingData.data.checkinDate)
+          .add(1, "days")
+          .format("YYYY-MM-DD"),
+        checkoutDate: moment(bookingData.data.checkoutDate)
+          .add(1, "days")
+          .format("YYYY-MM-DD"),
         status: bookingData.data.status,
         totalPaid: bookingData.data.totalPaid,
       });
@@ -139,6 +140,10 @@ const EditBooking = ({ inputs, title }) => {
         : selectedRooms.filter((item) => item !== value)
     );
     setPrice(checked ? price : 0);
+    setInfo((prev) => ({
+      ...prev,
+      totalPaid: numberNight * price,
+    }));
   };
 
   const userData = useFetch(`/users`);
@@ -217,6 +222,7 @@ const EditBooking = ({ inputs, title }) => {
       console.log(err);
     }
   };
+  console.log(bookingData.data);
   return (
     <div className="new">
       <Sidebar />

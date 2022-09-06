@@ -11,6 +11,7 @@ import {
   getRoomNumbers,
   deleteRoomNumbers,
   getRoomNumber,
+  getAvailableRoomsToday,
 } from "../controllers/roomController.js";
 import { verifyAdmin } from "../utils/verifyToken.js";
 
@@ -45,5 +46,10 @@ router.get("/", getRooms);
 router.get("/calendar/:id", getRoomNumbers);
 //GET NUMBER IN ROOMNUMBERS BY ROOMNUMBERSID
 router.get("/number/:id", getRoomNumber);
+//GET ROOM AVAILABILITY TODAY
+router.get(
+  "/today/availability/:hotelid",
+  getAvailableRoomsToday
+);
 
 export default router;

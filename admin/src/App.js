@@ -11,7 +11,9 @@ import {
 } from "react-router-dom";
 import {
   bookingInputs,
+  finalizationInputs,
   hotelInputs,
+  orderInputs,
   productInputs,
   roleInputs,
   roomInputs,
@@ -29,6 +31,7 @@ import {
   hotelColumns,
   orderColumns,
   roleColumns,
+  roomAttendantColumns,
   roomColumns,
   roomNumbersColumns,
   serviceColumns,
@@ -64,6 +67,7 @@ import {
   hotelColumnsVN,
   orderColumnsVN,
   roleColumnsVN,
+  roomAttendantColumnsVN,
   roomColumnsVN,
   roomNumbersColumnsVN,
   serviceColumnsVN,
@@ -71,12 +75,16 @@ import {
 } from "./datatablesourceVN";
 import {
   bookingInputsVN,
+  finalizationInputsVN,
   hotelInputsVN,
+  orderInputsVN,
   roleInputsVN,
   roomInputsVN,
   serviceInputsVN,
   userInputsVN,
 } from "./formSourceVN";
+import ListRoomAttendant from "./pages/newRoomAttendant/ListRoomAttendant";
+import ListAuditing from "./pages/newAuditing/ListRoomAttendant";
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
@@ -245,12 +253,12 @@ function App() {
                     {i18n.language === "en" ? (
                       <NewHotel
                         inputs={hotelInputs}
-                        title="Edit Hotel"
+                        title="Add New Hotel"
                       />
                     ) : (
                       <NewHotel
                         inputs={hotelInputsVN}
-                        title="Chỉnh sửa khách sạn"
+                        title="Thêm mới khách sạn"
                       />
                     )}
                   </ProtectedRoute>
@@ -319,7 +327,7 @@ function App() {
                     {i18n.language === "en" ? (
                       <NewRoom
                         inputs={roomInputs}
-                        title="New Room"
+                        title="Add New Room"
                       />
                     ) : (
                       <NewRoom
@@ -373,7 +381,7 @@ function App() {
                     {i18n.language === "en" ? (
                       <NewBooking
                         inputs={bookingInputs}
-                        title="New Booking"
+                        title="Add New Booking"
                       />
                     ) : (
                       <NewBooking
@@ -423,7 +431,7 @@ function App() {
                     {i18n.language === "en" ? (
                       <NewService
                         inputs={serviceInputs}
-                        title="New Service"
+                        title="Add New Service"
                       />
                     ) : (
                       <NewService
@@ -452,7 +460,17 @@ function App() {
                 path=":productId"
                 element={
                   <ProtectedRoute>
-                    <EditOrder />
+                    {i18n.language === "en" ? (
+                      <EditOrder
+                        inputs={orderInputs}
+                        title="Edit Order"
+                      />
+                    ) : (
+                      <EditOrder
+                        inputs={orderInputsVN}
+                        title="Chỉnh sửa đặt dịch vụ"
+                      />
+                    )}
                   </ProtectedRoute>
                 }
               />
@@ -460,7 +478,17 @@ function App() {
                 path="new"
                 element={
                   <ProtectedRoute>
-                    <NewOrder />
+                    {i18n.language === "en" ? (
+                      <NewOrder
+                        inputs={orderInputs}
+                        title="Add New Order"
+                      />
+                    ) : (
+                      <NewOrder
+                        inputs={orderInputsVN}
+                        title="Thêm mới đặt dịch vụ"
+                      />
+                    )}
                   </ProtectedRoute>
                 }
               />
@@ -468,7 +496,17 @@ function App() {
                 path="new/:productId"
                 element={
                   <ProtectedRoute>
-                    <NewOrder />
+                    {i18n.language === "en" ? (
+                      <NewOrder
+                        inputs={orderInputs}
+                        title="Add New Order"
+                      />
+                    ) : (
+                      <NewOrder
+                        inputs={orderInputsVN}
+                        title="Thêm mới đặt dịch vụ"
+                      />
+                    )}
                   </ProtectedRoute>
                 }
               />
@@ -492,7 +530,17 @@ function App() {
                 path=":productId"
                 element={
                   <ProtectedRoute>
-                    <EditFinalization />
+                    {i18n.language === "en" ? (
+                      <EditFinalization
+                        inputs={finalizationInputs}
+                        title="Edit Finalization"
+                      />
+                    ) : (
+                      <EditFinalization
+                        inputs={finalizationInputsVN}
+                        title="Chỉnh sửa kết toán"
+                      />
+                    )}
                   </ProtectedRoute>
                 }
               />
@@ -500,7 +548,17 @@ function App() {
                 path="new"
                 element={
                   <ProtectedRoute>
-                    <NewFinalization />
+                    {i18n.language === "en" ? (
+                      <NewFinalization
+                        inputs={finalizationInputs}
+                        title="Add New Finalization"
+                      />
+                    ) : (
+                      <NewFinalization
+                        inputs={finalizationInputsVN}
+                        title="Thêm mới kết toán"
+                      />
+                    )}
                   </ProtectedRoute>
                 }
               />
@@ -508,7 +566,53 @@ function App() {
                 path="new/:productId"
                 element={
                   <ProtectedRoute>
-                    <NewFinalization />
+                    {i18n.language === "en" ? (
+                      <NewFinalization
+                        inputs={finalizationInputs}
+                        title="Add New Finalization"
+                      />
+                    ) : (
+                      <NewFinalization
+                        inputs={finalizationInputsVN}
+                        title="Thêm mới kết toán"
+                      />
+                    )}
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+            <Route path="roomAttendants">
+              <Route
+                index
+                element={
+                  <ProtectedRoute>
+                    {i18n.language === "en" ? (
+                      <ListRoomAttendant
+                        columns={roomAttendantColumns}
+                      />
+                    ) : (
+                      <ListRoomAttendant
+                        columns={roomAttendantColumnsVN}
+                      />
+                    )}
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+            <Route path="auditing">
+              <Route
+                index
+                element={
+                  <ProtectedRoute>
+                    {i18n.language === "en" ? (
+                      <ListAuditing
+                        columns={roomAttendantColumns}
+                      />
+                    ) : (
+                      <ListAuditing
+                        columns={roomAttendantColumnsVN}
+                      />
+                    )}
                   </ProtectedRoute>
                 }
               />

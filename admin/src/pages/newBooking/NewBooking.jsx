@@ -91,6 +91,10 @@ const NewBooking = ({ inputs, title }) => {
         : selectedRooms.filter((item) => item !== value)
     );
     setPrice(checked ? price : 0);
+    setInfo((prev) => ({
+      ...prev,
+      totalPaid: numberNight * price,
+    }));
   };
 
   const userData = useFetch(`/users`);

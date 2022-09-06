@@ -124,10 +124,27 @@
   },
   "send": "Send",
   "edit": "Edit",
+  "delete": "Delete",
   "image": "Image",
   "country": "Country",
   "city": "City",
   "calendar": "Calendar",
+  "bookingId": "Booking ID",
+  "status": "Status",
+  "paymentMethod": "Payment Method",
+  "total": "Total",
+  "note": "Note",
+  "no.": "No.",
+  "serviceId": "Service ID",
+  "serviceName": "Service Name",
+  "price": "Price",
+  "quantity": "Quantity",
+  "totalPrice": "Total Price(USD)",
+  "totalPaid": "Total Paid",
+  "totalUnpaid": "Total Unpaid",
+  "roomAttendants": "Room Attendant",
+  "available": "Available",
+  "notAvailable": "Not Available",
   "hotel": {
     "featured": "Featured"
   },
@@ -144,5 +161,14 @@
     "checkDate": "Check-in date must be before Check-out date.",
     "clickRoom": "Click here to edit room!",
     "addIn": "Add in(More people, more kids, more beds...)"
+  },
+  "order": {
+    "alertSelected": "Service already selected!",
+    "alertDeleted": "Are you sure to delete this service?",
+    "alertQuantity1": "The quantity of ",
+    "alertQuantity2": " is not enough!",
+    "selectServices": "Select Services",
+    "createServices": "Create New Service",
+    "choseService": "Chose Service you want"
   }
 }

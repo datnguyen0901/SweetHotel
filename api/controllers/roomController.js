@@ -169,3 +169,47 @@ export const getRooms = async (req, res, next) => {
     next(error);
   }
 };
+
+// check room availability by hotelId today return roomNumber, price, maxPeople, roomtype, available, nextAvailableDate
+export const getAvailableRoomsToday = async (
+  req,
+  res,
+  next
+) => {
+  const hotelId = req.params.hotelid;
+  const today = new Date();
+  try {
+    const rooms = await Room.find({ hotel: hotelId });
+    const availableRooms = rooms.map((room) => {
+      return room.roomNumbers.map((roomNumber) => {
+        const unavailableDates =
+          roomNumber.unavailableDates;
+        const isAvailable = unavailableDates.every(
+          (date) =>
+            date.toISOString().split("T")[0] !==
+            today.toISOString().split("T")[0]
+        );
+        const nextDate = unavailableDates.find(
+          (date) =>
+            date.toISOString().split("T")[0] >
+            today.toISOString().split("T")[0]
+        );
+        return {
+          _id: roomNumber._id,
+          roomNumber: roomNumber.number,
+          price: room.price,
+          maxPeople: room.maxPeople,
+          title: room.title,
+          available: isAvailable,
+          today: today.toISOString().split("T")[0],
+          nextAvailableDate: nextDate ? nextDate : null,
+        };
+      });
+    });
+    // flat the array availableRooms
+    const availableRoomsToday = availableRooms.flat();
+    res.status(200).json(availableRoomsToday);
+  } catch (error) {
+    next(error);
+  }
+};

@@ -278,3 +278,32 @@ export const finalizationColumnsVN = [
     width: 250,
   },
 ];
+
+export const roomAttendantColumnsVN = [
+  { field: "_id", headerName: "ID", width: 230 },
+  {
+    field: "roomNumber",
+    headerName: "Số phòng",
+    width: 120,
+  },
+  {
+    field: "price",
+    headerName: "Giá",
+    width: 100,
+  },
+  {
+    field: "maxPeople",
+    headerName: "Số người tối đa",
+    width: 100,
+  },
+  {
+    field: "nextAvailableDate",
+    headerName: "Ngày trống tiếp theo",
+    width: 230,
+  },
+  {
+    field: "title",
+    headerName: "Tiêu đề",
+    width: 150,
+  },
+];
