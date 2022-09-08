@@ -1,15 +1,11 @@
 import "./navbar.scss";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import LanguageOutlinedIcon from "@mui/icons-material/LanguageOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
-import FullscreenExitOutlinedIcon from "@mui/icons-material/FullscreenExitOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
-import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
 import { DarkModeContext } from "../../context/darkModeContext";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { SearchContext } from "../../context/SearchContext";
 import useFetch from "../../hooks/useFetch";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -84,7 +80,7 @@ const Navbar = () => {
           </div>
           {user ? (
             <>
-              <div className="item">{user.username}</div>
+              <div className="item">{user.fullName}</div>
               <div className="item">
                 <img
                   src={user.img}

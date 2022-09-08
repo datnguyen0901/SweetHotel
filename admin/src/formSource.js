@@ -144,6 +144,18 @@ export const bookingInputs = [
     placeholder: "2020-01-01",
   },
   {
+    id: "checkInTime",
+    label: "Check-in Time",
+    type: "time",
+    placeholder: "12:00",
+  },
+  {
+    id: "checkOutTime",
+    label: "Check-out Time",
+    type: "time",
+    placeholder: "12:00",
+  },
+  {
     id: "status",
     label: "Status",
     type: "text",

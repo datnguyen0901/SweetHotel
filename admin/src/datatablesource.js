@@ -131,6 +131,11 @@ export const bookingColumns = [
     width: 150,
   },
   {
+    field: "type",
+    headerName: "Type",
+    width: 100,
+  },
+  {
     field: "status",
     headerName: "Status",
     width: 180,
@@ -297,7 +302,7 @@ export const roomAttendantColumns = [
   },
   {
     field: "nextAvailableDate",
-    headerName: "Available Date",
+    headerName: "Next Available Date",
     width: 230,
   },
   {

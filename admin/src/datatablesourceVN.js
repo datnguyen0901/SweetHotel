@@ -131,6 +131,11 @@ export const bookingColumnsVN = [
     width: 150,
   },
   {
+    field: "type",
+    headerName: "Loại",
+    width: 100,
+  },
+  {
     field: "status",
     headerName: "Trạng thái",
     width: 180,

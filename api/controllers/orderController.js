@@ -176,9 +176,8 @@ export const getIncomeLastMonth = async (
 // get 5 order sorted by createdAt desc
 export const getOrdersLatest = async (req, res, next) => {
   try {
-    const orders = await Order.find({})
-      .sort({ status: -1 })
-      .sort({ createdAt: -1 })
+    const orders = await Order.find({ status: "waiting" })
+      .sort({ createdAt: 1 })
       .limit(5);
     res.status(200).json(orders);
   } catch (error) {

@@ -69,6 +69,7 @@ const CalendarManage = () => {
             },
           }
         );
+        navigate(`/rooms/calendar/${id}`);
         return res.data;
       } catch (error) {
         console.log(error);

@@ -178,6 +178,10 @@ export const getAvailableRoomsToday = async (
 ) => {
   const hotelId = req.params.hotelid;
   const today = new Date();
+  // convert today to GMT-7(minus 7 hours)
+  const todayGMT7 = new Date(
+    today.getTime() - 7 * 60 * 60 * 1000
+  );
   try {
     const rooms = await Room.find({ hotel: hotelId });
     const availableRooms = rooms.map((room) => {
@@ -187,12 +191,12 @@ export const getAvailableRoomsToday = async (
         const isAvailable = unavailableDates.every(
           (date) =>
             date.toISOString().split("T")[0] !==
-            today.toISOString().split("T")[0]
+            todayGMT7.toISOString().split("T")[0]
         );
         const nextDate = unavailableDates.find(
           (date) =>
             date.toISOString().split("T")[0] >
-            today.toISOString().split("T")[0]
+            todayGMT7.toISOString().split("T")[0]
         );
         return {
           _id: roomNumber._id,
@@ -201,7 +205,7 @@ export const getAvailableRoomsToday = async (
           maxPeople: room.maxPeople,
           title: room.title,
           available: isAvailable,
-          today: today.toISOString().split("T")[0],
+          today: todayGMT7,
           nextAvailableDate: nextDate ? nextDate : null,
         };
       });

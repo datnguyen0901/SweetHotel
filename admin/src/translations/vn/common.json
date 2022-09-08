@@ -160,7 +160,12 @@
     "total": "Tổng tiền (USD):",
     "checkDate": "Ngày đi phải lớn hơn ngày đến",
     "clickRoom": "Bấm vào đây để sửa lại số phòng",
-    "addIn": "Phụ thu(thêm người, trẻ em, thêm giường...)"
+    "addIn": "Phụ thu(thêm người, trẻ em, thêm giường...)",
+    "type": "Loại",
+    "checkInTime": "Giờ đến",
+    "checkOutTime": "Giờ đi",
+    "day": "Ngày",
+    "hour": "Giờ"
   },
   "order": {
     "alertSelected": "Dịch vụ đã được chọn bên dưới",

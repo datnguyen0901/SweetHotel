@@ -7,6 +7,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 import { useTranslation } from "react-i18next";
+import moment from "moment";
 
 const NewFinalization = ({ inputs, title }) => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -16,8 +17,24 @@ const NewFinalization = ({ inputs, title }) => {
   const [totalPaidValue, setTotalPaidValue] = useState(0);
   const [totalUnPaidValue, setTotalUnPaidValue] =
     useState(0);
+  const bookingData = useFetch(`/bookings/${bookingId}`);
 
   const [t] = useTranslation("common");
+
+  const deleteRoomCalendar = async () => {
+    await axios.delete(
+      `/rooms/availability/delete/${bookingData.data.roomId}`,
+      {
+        data: {
+          dates: [
+            moment(bookingData.data.checkinDate)
+              .add(1, "days")
+              .format("YYYY-MM-DD"),
+          ],
+        },
+      }
+    );
+  };
 
   // get totalPaid if paymentMethod is unpaid
   const booking = useFetch(`/bookings/${bookingId}`);
@@ -84,6 +101,9 @@ const NewFinalization = ({ inputs, title }) => {
         `/bookings/${bookingId}`,
         closeBooking
       );
+      if (bookingData.data.type === "hour") {
+        deleteRoomCalendar();
+      }
       navigate("/finalizations");
     } catch (err) {
       console.log(err);

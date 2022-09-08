@@ -160,7 +160,12 @@
     "total": "Total (USD): ",
     "checkDate": "Check-in date must be before Check-out date.",
     "clickRoom": "Click here to edit room!",
-    "addIn": "Add in(More people, more kids, more beds...)"
+    "addIn": "Add in(More people, more kids, more beds...)",
+    "type": "Type",
+    "checkInTime": "Check-in Time",
+    "checkOutTime": "Check-out Time",
+    "day": "Day",
+    "hour": "Hour"
   },
   "order": {
     "alertSelected": "Service already selected!",

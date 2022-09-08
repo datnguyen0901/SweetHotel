@@ -144,8 +144,20 @@ export const bookingInputsVN = [
     placeholder: "2020-01-01",
   },
   {
+    id: "checkInTime",
+    label: "Giờ đến",
+    type: "time",
+    placeholder: "12:00",
+  },
+  {
+    id: "checkOutTime",
+    label: "Giờ đi",
+    type: "time",
+    placeholder: "12:00",
+  },
+  {
     id: "status",
-    label: "Loại",
+    label: "Tình trạng",
     type: "text",
     placeholder: "waiting/open/closed",
   },
@@ -193,7 +205,7 @@ export const serviceInputsVN = [
     label: "Số lượng",
     type: "number",
     placeholder: "999",
-  }
+  },
 ];
 
 export const orderInputsVN = [

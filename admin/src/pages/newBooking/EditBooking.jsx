@@ -2,18 +2,11 @@ import "./newBooking.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import React, {
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { bookingInputs } from "../../formSource";
+import React, { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { Autocomplete, TextField } from "@mui/material";
-import { SearchContext } from "../../context/SearchContext";
-import { format } from "date-fns";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 
@@ -33,9 +26,7 @@ const EditBooking = ({ inputs, title }) => {
   const role = useFetch(`/roles/${user.roleId}`);
   const hotelId = role.data.hotelId;
   const hotelData = useFetch(`/hotels/find/${hotelId}`);
-  const { data, loading, error } = useFetch(
-    `/hotels/room/${hotelId}`
-  );
+  const { data } = useFetch(`/hotels/room/${hotelId}`);
   const bookingData = useFetch(`/bookings/${id}`);
 
   const deleteRoomCalendar = async () => {
@@ -71,8 +62,14 @@ const EditBooking = ({ inputs, title }) => {
         checkoutDate: moment(bookingData.data.checkoutDate)
           .add(1, "days")
           .format("YYYY-MM-DD"),
+
+        checkInTime: bookingData.data.checkInTime,
+        checkOutTime: bookingData.data.checkOutTime,
+        paymentMethod: bookingData.data.paymentMethod,
+        note: bookingData.data.note,
         status: bookingData.data.status,
         totalPaid: bookingData.data.totalPaid,
+        type: bookingData.data.type,
       });
     }
   }, [bookingData.data]);
@@ -111,9 +108,9 @@ const EditBooking = ({ inputs, title }) => {
     return diffDays;
   }
 
-  const getTimeToDay = (a) => {
-    // convert from millisecond to day
-    let b = 1000 * 60 * 60 * 24;
+  const getTimeToHour = (a) => {
+    // convert from millisecond to hour
+    let b = 1000 * 60 * 60;
     return a / b;
   };
 
@@ -163,13 +160,59 @@ const EditBooking = ({ inputs, title }) => {
   };
 
   const handleChange = (e) => {
-    setInfo((prev) => ({
-      ...prev,
-      [e.target.id]: e.target.value,
-      roomId: selectedRooms,
-      totalPaid:
-        numberNight * price || bookingData.totalPaid,
-    }));
+    if (info.type === "hour") {
+      //get price of the room
+      data.map((item) => {
+        item.roomNumbers.map((room) => {
+          if (room._id === bookingData.data.roomId) {
+            setPrice(item.price);
+          }
+        });
+      });
+      // calculate hour by checkInTime and checkOutTime
+      const checkInTime = new Date(
+        `2021-01-01T${info.checkInTime}:00`
+      );
+      const checkOutTime = new Date(
+        `2021-01-01T${info.checkOutTime}:00`
+      );
+      const hour = getTimeToHour(
+        checkOutTime.getTime() - checkInTime.getTime()
+      );
+      const priceFirstHour = 0.25 * price; // Fisrt hour is 25% of price
+      const priceNextHour = 0.1 * price; // Next hour is 10% of price
+      // calculate hour if hour-1 > 0 round up
+      const hourNext = Math.ceil(hour - 1);
+
+      // round the money
+      const totalPaidHour =
+        Math.round(priceFirstHour) +
+        Math.round(priceNextHour * hourNext);
+      setInfo((prev) => ({
+        ...prev,
+        [e.target.id]: e.target.value,
+        roomId: selectedRooms,
+        totalPaid: totalPaidHour,
+      }));
+      console.log(
+        checkInTime,
+        checkOutTime,
+        hour,
+        price,
+        priceFirstHour,
+        priceNextHour,
+        hourNext,
+        totalPaidHour
+      );
+    } else {
+      setInfo((prev) => ({
+        ...prev,
+        [e.target.id]: e.target.value,
+        roomId: selectedRooms,
+        totalPaid:
+          numberNight * price || bookingData.totalPaid,
+      }));
+    }
   };
 
   const handleCheckAddIn = (e) => {
@@ -193,21 +236,32 @@ const EditBooking = ({ inputs, title }) => {
   const handleClick = async (e) => {
     e.preventDefault();
     try {
-      if (info.checkinDate >= info.checkoutDate) {
-        alert(t("checkDate"));
+      if (info.checkinDate > info.checkoutDate) {
+        alert(t("booking.checkDate"));
       }
-
-      await Promise.all(
-        selectedRooms.map((roomId) => {
-          const res = axios.put(
-            `/rooms/availability/${roomId}`,
-            {
-              dates: alldates,
-            }
-          );
-          return res.data;
-        })
-      );
+      if (
+        info.checkinDate !==
+          moment(bookingData.data.checkinDate)
+            .add(1, "days")
+            .format("YYYY-MM-DD") ||
+        info.checkoutDate !==
+          moment(bookingData.data.checkoutDate)
+            .add(1, "days")
+            .format("YYYY-MM-DD")
+      ) {
+        deleteRoomCalendar();
+        await Promise.all(
+          selectedRooms.map((roomId) => {
+            const res = axios.put(
+              `/rooms/availability/${roomId}`,
+              {
+                dates: alldates,
+              }
+            );
+            return res.data;
+          })
+        );
+      }
 
       const EditBooking = {
         ...info,
@@ -222,7 +276,6 @@ const EditBooking = ({ inputs, title }) => {
       console.log(err);
     }
   };
-  console.log(bookingData.data);
   return (
     <div className="new">
       <Sidebar />
@@ -252,13 +305,36 @@ const EditBooking = ({ inputs, title }) => {
               ))}
 
               <div className="formInput">
-                <label>{t("rooms.hotel")}</label>
-                <input
-                  disabled
-                  id="hotelId"
-                  type="text"
-                  defaultValue={hotelData.data.name}
-                />
+                <label>
+                  {t("booking.type")}
+                  <select
+                    id="type"
+                    onChange={handleChange}
+                    defaultValue={info.type}
+                    value={info.type}
+                  >
+                    <option value="day">
+                      {t("booking.day")}
+                    </option>
+                    <option value="hour">
+                      {t("booking.hour")}
+                    </option>
+                  </select>
+                </label>
+                <br></br>
+                <label>
+                  <div>{t("booking.addIn")}</div>
+                  <div>
+                    <input
+                      id="addIn"
+                      type="checkbox"
+                      onChange={handleCheckAddIn}
+                      defaultChecked={
+                        bookingData.data.addIn
+                      }
+                    />
+                  </div>
+                </label>
               </div>
 
               <div className="formInput">
@@ -354,16 +430,13 @@ const EditBooking = ({ inputs, title }) => {
               </div>
 
               <div className="formInput">
-                <label>
-                  <div>{t("booking.addIn")}</div>
-                  <div>
-                    <input
-                      id="addIn"
-                      type="checkbox"
-                      onChange={handleCheckAddIn}
-                    />
-                  </div>
-                </label>
+                <label>{t("rooms.hotel")}</label>
+                <input
+                  disabled
+                  id="hotelId"
+                  type="text"
+                  defaultValue={hotelData.data.name}
+                />
               </div>
 
               <div className="formInput">

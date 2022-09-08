@@ -87,6 +87,14 @@ const ViewAuditing = ({ columns }) => {
         <div>{t("Auditings")}</div>
         <div>
           <button onClick={() => handleChange(day)}>
+            Booking
+          </button>
+          <button onClick={() => handleChange(day)}>
+            Order
+          </button>
+        </div>
+        <div>
+          <button onClick={() => handleChange(day)}>
             Today
           </button>
           <button onClick={() => handleChange(week)}>

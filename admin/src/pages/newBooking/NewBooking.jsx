@@ -2,13 +2,13 @@ import "./newBooking.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import React, { useState } from "react";
-import { bookingInputs } from "../../formSource";
+import React, { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Autocomplete, TextField } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import moment from "moment";
 
 const NewBooking = ({ inputs, title }) => {
   const [info, setInfo] = useState({});
@@ -24,9 +24,21 @@ const NewBooking = ({ inputs, title }) => {
   const role = useFetch(`/roles/${user.roleId}`);
   const hotelId = role.data.hotelId;
   const hotelData = useFetch(`/hotels/find/${hotelId}`);
-  const { data, loading, error } = useFetch(
-    `/hotels/room/${hotelId}`
-  );
+  const { data } = useFetch(`/hotels/room/${hotelId}`);
+
+  useEffect(() => {
+    if (data) {
+      setInfo({
+        checkinDate: moment().format("YYYY-MM-DD"),
+        checkoutDate: moment().format("YYYY-MM-DD"),
+        checkInTime: "14:00",
+        checkOutTime: "12:00",
+        type: "day",
+      });
+    }
+  }, [data]);
+
+  console.log("info", info);
 
   const getDatesInRange = (checkinDate, checkoutDate) => {
     const start = new Date(checkinDate);
@@ -57,9 +69,9 @@ const NewBooking = ({ inputs, title }) => {
     return diffDays;
   }
 
-  const getTimeToDay = (a) => {
-    // convert from millisecond to day
-    let b = 1000 * 60 * 60 * 24;
+  const getTimeToHour = (a) => {
+    // convert from millisecond to hour
+    let b = 1000 * 60 * 60;
     return a / b;
   };
 
@@ -95,6 +107,33 @@ const NewBooking = ({ inputs, title }) => {
       ...prev,
       totalPaid: numberNight * price,
     }));
+    if (info.type === "hour") {
+      // calculate hour by checkInTime and checkOutTime
+      const checkInTime = new Date(
+        `2021-01-01T${info.checkInTime}:00`
+      );
+      const checkOutTime = new Date(
+        `2021-01-01T${info.checkOutTime}:00`
+      );
+      const hour = getTimeToHour(
+        checkOutTime.getTime() - checkInTime.getTime()
+      );
+      const priceFirstHour = 0.25 * price; // Fisrt hour is 25% of price
+      const priceNextHour = 0.1 * price; // Next hour is 10% of price
+      // calculate hour if hour-1 > 0 round up
+      const hourNext = Math.ceil(hour - 1);
+
+      // round the money
+      const totalPaidHour =
+        Math.round(priceFirstHour) +
+        Math.round(priceNextHour * hourNext);
+      setInfo((prev) => ({
+        ...prev,
+        [e.target.id]: e.target.value,
+        roomId: selectedRooms,
+        totalPaid: totalPaidHour,
+      }));
+    }
   };
 
   const userData = useFetch(`/users`);
@@ -152,17 +191,32 @@ const NewBooking = ({ inputs, title }) => {
 
       await axios.post("/bookings", newBooking);
 
-      await Promise.all(
-        selectedRooms.map((roomId) => {
-          const res = axios.put(
-            `/rooms/availability/${roomId}`,
-            {
-              dates: alldates,
-            }
-          );
-          return res.data;
-        })
-      );
+      if (info.type === "day") {
+        await Promise.all(
+          selectedRooms.map((roomId) => {
+            const res = axios.put(
+              `/rooms/availability/${roomId}`,
+              {
+                dates: alldates,
+              }
+            );
+            return res.data;
+          })
+        );
+      } else {
+        await Promise.all(
+          selectedRooms.map((roomId) => {
+            const res = axios.put(
+              `/rooms/availability/${roomId}`,
+              {
+                dates: info.checkinDate,
+              }
+            );
+            return res.data;
+          })
+        );
+      }
+
       navigate("/bookings");
     } catch (err) {
       console.log(err);
@@ -187,19 +241,39 @@ const NewBooking = ({ inputs, title }) => {
                     key={input.id}
                     onChange={handleChange}
                     type={input.type}
-                    placeholder={input.placeholder}
+                    placeholder={info[input.id]}
+                    defaultValue={info[input.id]}
                   />
                 </div>
               ))}
 
               <div className="formInput">
-                <label>{t("rooms.hotel")}</label>
-                <input
-                  disabled
-                  id="hotelId"
-                  type="text"
-                  defaultValue={hotelData.data.name}
-                />
+                <label>
+                  {t("booking.type")}
+                  <select
+                    id="type"
+                    onChange={handleChange}
+                    defaultValue={info.type}
+                  >
+                    <option value="day">
+                      {t("booking.day")}
+                    </option>
+                    <option value="hour">
+                      {t("booking.hour")}
+                    </option>
+                  </select>
+                </label>
+                <br></br>
+                <label>
+                  <div>{t("booking.addIn")}</div>
+                  <div>
+                    <input
+                      id="addIn"
+                      type="checkbox"
+                      onChange={handleCheckAddIn}
+                    />
+                  </div>
+                </label>
               </div>
 
               <div className="formInput">
@@ -281,16 +355,13 @@ const NewBooking = ({ inputs, title }) => {
               </div>
 
               <div className="formInput">
-                <label>
-                  <div>{t("booking.addIn")}</div>
-                  <div>
-                    <input
-                      id="addIn"
-                      type="checkbox"
-                      onChange={handleCheckAddIn}
-                    />
-                  </div>
-                </label>
+                <label>{t("rooms.hotel")}</label>
+                <input
+                  disabled
+                  id="hotelId"
+                  type="text"
+                  defaultValue={hotelData.data.name}
+                />
               </div>
 
               <div className="formInput">

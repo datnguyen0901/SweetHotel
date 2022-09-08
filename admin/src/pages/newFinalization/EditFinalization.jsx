@@ -9,6 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import moment from "moment";
 
 const EditFinalization = ({ inputs, title }) => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -21,6 +22,23 @@ const EditFinalization = ({ inputs, title }) => {
   const finalization = useFetch(
     `/finalizations/${finalizationId}`
   );
+  const bookingData = useFetch(
+    `/bookings/${finalization.data.bookingId}`
+  );
+  const deleteRoomCalendar = async () => {
+    await axios.delete(
+      `/rooms/availability/delete/${bookingData.data.roomId}`,
+      {
+        data: {
+          dates: [
+            moment(bookingData.data.checkinDate)
+              .add(1, "days")
+              .format("YYYY-MM-DD"),
+          ],
+        },
+      }
+    );
+  };
 
   useEffect(() => {
     if (finalization.data) {
@@ -42,6 +60,10 @@ const EditFinalization = ({ inputs, title }) => {
         ...info,
         employeeId: user._id,
       };
+
+      if (bookingData.data.type === "hour") {
+        deleteRoomCalendar();
+      }
 
       await axios.put(
         `/finalizations/${finalizationId}`,
@@ -114,7 +136,7 @@ const EditFinalization = ({ inputs, title }) => {
 
               <div className="formInput">
                 <button onClick={handleClick}>
-                  {t("send")}
+                  {t("edit")}
                 </button>
               </div>
             </form>
