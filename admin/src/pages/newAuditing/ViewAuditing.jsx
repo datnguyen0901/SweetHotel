@@ -10,6 +10,13 @@ import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import CircleIcon from "@mui/icons-material/Circle";
+import Chart from "../../components/chart/Chart";
+import ChartIndividualUser from "../../components/chart/ChartIndividualUser";
+import ChartBookingYear from "../../components/chart/ChartBookingYear";
+import ChartBookingLastYear from "../../components/chart/ChartBookingLastYear";
+import ChartBookingMonth from "../../components/chart/ChartBookingMonth";
+import ChartBookingWeek from "../../components/chart/ChartBookingWeek";
+import ChartBookingYesterday from "../../components/chart/ChartBookingYesterday";
 
 const ViewAuditing = ({ columns }) => {
   const [list, setList] = useState([]);
@@ -26,98 +33,126 @@ const ViewAuditing = ({ columns }) => {
     `/rooms/today/availability/${hotelId}`
   );
 
+  const [chart, setChart] = useState("bookings");
+  const [timeFrame, setTimeFrame] = useState("today");
+  const refreshChart = () => {
+    navigate("/auditing");
+  };
+  const handleChangeChart = (e) => {
+    setChart(e.value);
+    refreshChart();
+  };
+  const handleChangeTimeFrame = (e) => {
+    setTimeFrame(e.value);
+    refreshChart();
+  };
+
   useEffect(() => {
     if (data) {
       setList(data);
     }
   }, [data]);
 
-  console.log(data);
-  const actionColumn = [
-    {
-      field: "action",
-      headerName: t("available"),
-      width: 350,
-      renderCell: (params) => {
-        return (
-          // if data.available === true display "Available" and green dot else display "Not Available"
-          <>
-            {params.row.available === true ? (
-              <div
-                className="available"
-                style={{
-                  color: "Lime",
-                  fontSize: "big",
-                }}
-              >
-                <CircleIcon className="statusIcon" />{" "}
-                <span className="text">
-                  {t("available")}
-                </span>
-              </div>
-            ) : (
-              <div
-                className="not-available"
-                style={{
-                  color: "Red",
-                  fontSize: "big",
-                }}
-              >
-                <CircleIcon className="statusIcon" />{" "}
-                <span className="text">
-                  {t("notAvailable")}
-                </span>
-              </div>
-            )}
-          </>
-        );
-      },
-    },
-  ];
+  function displayChart() {
+    if (chart === "bookings" && timeFrame === "year") {
+      return (
+        <ChartBookingYear
+          aspect={2 / 1}
+          title={t("single.chart")}
+        />
+      );
+    }
+    if (chart === "bookings" && timeFrame === "lastYear") {
+      return (
+        <ChartBookingLastYear
+          aspect={2 / 1}
+          title={t("single.chart")}
+        />
+      );
+    }
+    if (chart === "bookings" && timeFrame === "month") {
+      return (
+        <ChartBookingMonth
+          aspect={2 / 1}
+          title={t("single.chart")}
+        />
+      );
+    }
+    if (chart === "bookings" && timeFrame === "week") {
+      return (
+        <ChartBookingWeek
+          aspect={2 / 1}
+          title={t("single.chart")}
+        />
+      );
+    }
+    if (chart === "bookings" && timeFrame === "today") {
+      return (
+        <ChartBookingYesterday
+          aspect={2 / 1}
+          title={t("single.chart")}
+        />
+      );
+    }
+    if (chart === "orders" && timeFrame === "today") {
+      return (
+        <Chart title={t("home.title")} aspect={2 / 1} />
+      );
+    }
+  }
 
-  const day = new Date().getDate();
-  const week = new Date().getDay();
-  const month = new Date().getMonth() + 1;
-  const year = new Date().getFullYear();
-  console.log(day, week, month, year);
-  const handleChange = (e) => {};
   return (
     <div className="datatable">
       <div className="datatableTitle">
         <div>{t("Auditings")}</div>
         <div>
-          <button onClick={() => handleChange(day)}>
+          <button
+            value={"bookings"}
+            onClick={(e) => handleChangeChart(e.target)}
+          >
             Booking
           </button>
-          <button onClick={() => handleChange(day)}>
+          <button
+            value={"orders"}
+            onClick={(e) => handleChangeChart(e.target)}
+          >
             Order
           </button>
         </div>
         <div>
-          <button onClick={() => handleChange(day)}>
-            Today
+          <button
+            value={"today"}
+            onClick={(e) => handleChangeTimeFrame(e.target)}
+          >
+            Yesterday
           </button>
-          <button onClick={() => handleChange(week)}>
-            Week
+          <button
+            value={"week"}
+            onClick={(e) => handleChangeTimeFrame(e.target)}
+          >
+            Last Week
           </button>
-          <button onClick={() => handleChange(month)}>
-            Month
+          <button
+            value={"month"}
+            onClick={(e) => handleChangeTimeFrame(e.target)}
+          >
+            Last Month
           </button>
-          <button onClick={() => handleChange(year)}>
-            Year
+          <button
+            value={"lastYear"}
+            onClick={(e) => handleChangeTimeFrame(e.target)}
+          >
+            Last Year
+          </button>
+          <button
+            value={"year"}
+            onClick={(e) => handleChangeTimeFrame(e.target)}
+          >
+            This Yeah
           </button>
         </div>
       </div>
-      <DataGrid
-        className="datagrid"
-        rows={list}
-        sortModel={[]}
-        columns={columns.concat(actionColumn)}
-        pageSize={8}
-        rowsPerPageOptions={[8]}
-        checkboxSelection
-        getRowId={(row) => row._id}
-      />
+      {displayChart()}
     </div>
   );
 };

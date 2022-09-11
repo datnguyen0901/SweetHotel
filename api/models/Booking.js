@@ -18,24 +18,16 @@ const BookingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    type : {
-      type : String,
+    type: {
+      type: String,
       required: true,
     },
     checkinDate: {
       type: Date,
       required: true,
     },
-    checkInTime: {
-      type: String,
-      required: true,
-    },
     checkoutDate: {
       type: Date,
-      required: true,
-    },
-    checkOutTime: {
-      type: String,
       required: true,
     },
     // open or closed or waiting

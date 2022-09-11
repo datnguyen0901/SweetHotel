@@ -1,4 +1,8 @@
+import Booking from "../models/Booking.js";
 import Order from "../models/Order.js";
+import Role from "../models/Role.js";
+import User from "../models/User.js";
+import Service from "../models/Service.js";
 
 export const createOrder = async (req, res, next) => {
   const newOrder = new Order(req.body);
@@ -207,6 +211,52 @@ export const getIncomeOrderByUserId = async (
       return acc + order.totalPrice;
     }, 0);
     res.status(200).json(total);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get totalPrice and quantity of each type of service in order in this year
+export const getIncomeByService = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId: hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+    // get all booking by users.map(user => user._id)
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      checkinDate: {
+        $gte: new Date(new Date().getFullYear(), 0, 1),
+        $lte: new Date(new Date().getFullYear(), 11, 31),
+      },
+    });
+    // get all order by bookings.map(booking => booking._id)
+    const orders = await Order.find({
+      status: "done",
+      bookingId: {
+        $in: bookings.map((booking) => booking._id),
+      },
+    });
+    const services = await Service.find();
+    // get sum of totalPrice and quantity of each service
+    res.status(200).json(services);
   } catch (error) {
     next(error);
   }

@@ -12,6 +12,12 @@ import {
   getIncomeLastMonth,
   getBookingByUserId,
   getIncomeBookingByUserId,
+  getIncomeBookingByEmployeeId,
+  getIncomeBookingByEmployeeIdThisMonth,
+  getIncomeBookingByEmployeeIdLast,
+  getIncomeBookingByEmployeeIdThisWeek,
+  getIncomeBookingByEmployeeIdYesterday,
+  getBookingByEmployeeIdYesterday,
 } from "../controllers/BookingController.js";
 import { getRoomNumbers } from "../controllers/roomController.js";
 import {
@@ -52,6 +58,45 @@ router.get("/income/last", verifyUser, getIncomeLastMonth);
 //GETBOOKINGBYUSERID
 router.get("/user/:id", verifyUser, getBookingByUserId);
 //GETTOTALPAIDTODAYBYUSERID
-router.get("/user/income/today/:id", verifyUser, getIncomeBookingByUserId);
-
+router.get(
+  "/user/income/today/:id",
+  verifyUser,
+  getIncomeBookingByUserId
+);
+//GETTOTALPAIDLASTYEARBYUSERHOTELBYDAYANDHOUR
+router.get(
+  "/hotel/income/lastyear/:id",
+  verifyUser,
+  getIncomeBookingByEmployeeIdLast
+);
+//GETTOTALPAIDTHISYEARBYUSERHOTELBYDAYANDHOUR
+router.get(
+  "/hotel/income/year/:id",
+  verifyUser,
+  getIncomeBookingByEmployeeId
+);
+//GETTOTALPAIDLASTMONTHBYUSERHOTELBYDAYANDHOUR
+router.get(
+  "/hotel/income/month/:id",
+  verifyUser,
+  getIncomeBookingByEmployeeIdThisMonth
+);
+//GETTOTALPAIDLASTWEEKBYUSERHOTELBYDAYANDHOUR
+router.get(
+  "/hotel/income/week/:id",
+  verifyUser,
+  getIncomeBookingByEmployeeIdThisWeek
+);
+//GETTOTALPAIDYESTERDAYBYUSERHOTELBYDAYANDHOUR
+router.get(
+  "/hotel/income/yesterday/:id",
+  verifyUser,
+  getIncomeBookingByEmployeeIdYesterday
+);
+//GETTOTALPAIDYESTERDAY
+router.get(
+  "/hotel/income/yesterdaycheck/:id",
+  verifyUser,
+  getBookingByEmployeeIdYesterday
+);
 export default router;

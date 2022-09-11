@@ -144,18 +144,6 @@ export const bookingInputsVN = [
     placeholder: "2020-01-01",
   },
   {
-    id: "checkInTime",
-    label: "Giờ đến",
-    type: "time",
-    placeholder: "12:00",
-  },
-  {
-    id: "checkOutTime",
-    label: "Giờ đi",
-    type: "time",
-    placeholder: "12:00",
-  },
-  {
     id: "status",
     label: "Tình trạng",
     type: "text",

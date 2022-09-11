@@ -29,7 +29,7 @@
     "yarn": "^1.22.18"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts TZ=Asia/Ho_Chi_Minh start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

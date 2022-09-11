@@ -59,7 +59,9 @@ const Chart = ({ aspect, title }) => {
             strokeDasharray="3 3"
             className="chartGrid"
           />
-          <Tooltip />
+          <Tooltip
+            cursor={{ fill: "rgba(0, 0, 0, 0.1)" }}
+          />
           <Area
             type="monotone"
             dataKey="Total"

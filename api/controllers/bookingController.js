@@ -1,10 +1,11 @@
 import Booking from "../models/Booking.js";
 import Room from "../models/Room.js";
 import User from "../models/User.js";
+import Role from "../models/Role.js";
+import moment from "moment";
 
 export const createBooking = async (req, res, next) => {
   const newBooking = new Booking(req.body);
-
   try {
     const savedBooking = await newBooking.save();
     res.status(200).json(savedBooking);
@@ -233,6 +234,503 @@ export const getIncomeBookingByUserId = async (
       return acc + booking.totalPaid;
     }, 0);
     res.status(200).json(total);
+  } catch (error) {
+    next(error);
+  }
+};
+
+//get sum totalPaid of booking for each month in this year by booking.type = day or hour or both
+export const getIncomeBookingByType = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get finalizations of 6 months until now
+    const finalizations = await Finalization.find({
+      createdAt: {
+        $gte: new Date(
+          new Date().setMonth(new Date().getMonth() - 6)
+        ),
+        $lte: new Date(
+          new Date().setMonth(new Date().getMonth())
+        ),
+      },
+    });
+    //for each month sum finalizations paid and unpaid
+    const finalizationsPaidThisYear = finalizations.reduce(
+      (acc, finalization) => {
+        const month = finalization.createdAt.getMonth();
+        // convert month to English
+        const monthName = new Intl.DateTimeFormat("en-US", {
+          month: "long",
+        }).format(new Date(finalization.createdAt));
+
+        if (!acc[month]) {
+          acc[month] = {
+            name: monthName,
+            paid: 0,
+            unpaid: 0,
+            Total: 0,
+          };
+        }
+        acc[month].paid += finalization.paid;
+        acc[month].unpaid += finalization.unpaid;
+        acc[month].Total =
+          acc[month].paid + acc[month].unpaid;
+        return acc;
+      },
+      {}
+    );
+    res.status(200).json(finalizationsPaidThisYear);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getFinalizationByUserId = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get all bookingId by userId, then use bookingId to get finalization
+    const bookings = await Booking.find({
+      userId: req.params.id,
+    });
+    const finalizations = await Finalization.find({
+      bookingId: {
+        $in: bookings.map((booking) => booking._id),
+      },
+    });
+    res.status(200).json(finalizations);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get sum of totalPaid of booking by employeeId for each month in last year if type is day or hour or both
+export const getIncomeBookingByEmployeeIdLast = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      // checkinDate in last year
+      checkinDate: {
+        $gte: new Date(new Date().getFullYear() - 1, 0, 1),
+        $lte: new Date(new Date().getFullYear(), 0, 1),
+      },
+    });
+    const income = bookings.reduce((acc, booking) => {
+      const month = booking.checkinDate.getMonth();
+      // format booking.checkinDate to "yyyy-mm"
+      const monthName = moment(booking.checkinDate).format(
+        "yyyy-MM"
+      );
+
+      if (!acc[month]) {
+        acc[month] = {
+          date: monthName,
+          hour: 0,
+          day: 0,
+          total: 0,
+        };
+      }
+      // if booking.type === hour
+      if (booking.type === "hour") {
+        acc[month].hour += booking.totalPaid;
+      }
+      // if booking.type === day
+      if (booking.type === "day") {
+        acc[month].day += booking.totalPaid;
+      }
+      acc[month].total = acc[month].hour + acc[month].day;
+      return acc;
+    }, {});
+    res.status(200).json(income);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get sum of totalPaid of booking by employeeId for each month in this year if type is day or hour or both
+export const getIncomeBookingByEmployeeId = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      // checkinDate in this year
+      checkinDate: {
+        $gte: new Date(new Date().getFullYear(), 0, 1),
+        $lte: new Date(new Date().getFullYear(), 11, 31),
+      },
+    });
+    const income = bookings.reduce((acc, booking) => {
+      const month = booking.checkinDate.getMonth();
+      // convert month to English
+      const monthName = new Intl.DateTimeFormat("en-US", {
+        month: "long",
+      }).format(new Date(booking.checkinDate));
+
+      if (!acc[month]) {
+        acc[month] = {
+          name: monthName,
+          hour: 0,
+          day: 0,
+          total: 0,
+        };
+      }
+      // if booking.type === hour
+      if (booking.type === "hour") {
+        acc[month].hour += booking.totalPaid;
+      }
+      // if booking.type === day
+      if (booking.type === "day") {
+        acc[month].day += booking.totalPaid;
+      }
+      acc[month].total = acc[month].hour + acc[month].day;
+      return acc;
+    }, {});
+    res.status(200).json(income);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get sum of totalPaid of booking by employeeId in this month split into 4 weeks if type is day or hour or both
+export const getIncomeBookingByEmployeeIdThisMonth = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      // checkinDate in last month
+      checkinDate: {
+        $gte: new Date(
+          new Date().setMonth(new Date().getMonth() - 1)
+        ),
+        $lte: new Date(
+          new Date().setMonth(new Date().getMonth())
+        ),
+      },
+    });
+    const income = bookings.reduce((acc, booking) => {
+      // split into 4 weeks
+      const week = Math.ceil(
+        booking.checkinDate.getDate() / 7
+      );
+      // set weekName = First Week, Second Week, Third Week, Fourth Week
+      const weekName = `Week ${week}`;
+
+      if (!acc[week]) {
+        acc[week] = {
+          name: weekName,
+          hour: 0,
+          day: 0,
+          total: 0,
+        };
+      }
+      // if booking.type === hour
+      if (booking.type === "hour") {
+        acc[week].hour += booking.totalPaid;
+      }
+      // if booking.type === day
+      if (booking.type === "day") {
+        acc[week].day += booking.totalPaid;
+      }
+      acc[week].total = acc[week].hour + acc[week].day;
+      return acc;
+    }, {});
+    res.status(200).json(income);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get sum of totalPaid of booking by employeeId in each day of last week if type is day or hour or both
+export const getIncomeBookingByEmployeeIdThisWeek = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      // checkinDate in last week
+      checkinDate: {
+        $gte: new Date(
+          new Date().setDate(new Date().getDate() - 7)
+        ),
+        $lte: new Date(
+          new Date().setDate(new Date().getDate())
+        ),
+      },
+    });
+    const income = bookings.reduce((acc, booking) => {
+      const day = booking.checkinDate.getDate();
+      // convert day to English
+      const dayName = new Intl.DateTimeFormat("en-US", {
+        weekday: "long",
+      }).format(new Date(booking.checkinDate));
+
+      if (!acc[day]) {
+        acc[day] = {
+          name: dayName,
+          hour: 0,
+          day: 0,
+          total: 0,
+        };
+      }
+      // if booking.type === hour
+      if (booking.type === "hour") {
+        acc[day].hour += booking.totalPaid;
+      }
+      // if booking.type === day
+      if (booking.type === "day") {
+        acc[day].day += booking.totalPaid;
+      }
+      acc[day].total = acc[day].hour + acc[day].day;
+      return acc;
+    }, {});
+    res.status(200).json(income);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get sum of totalPaid of booking by employeeId in each hour of yesterday if type is day or hour or both
+export const getIncomeBookingByEmployeeIdYesterday = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+    // get date yesterday
+    const yesterday = new Date(
+      new Date().setDate(new Date().getDate() - 1)
+    );
+    // set yesterdayUTC to 00:00:00
+    const yesterdayUTCStart = new Date(
+      Date.UTC(
+        yesterday.getFullYear(),
+        yesterday.getMonth(),
+        yesterday.getDate(),
+        0,
+        0,
+        0
+      )
+    );
+    // set yesterdayUTC to 23:59:59
+    const yesterdayUTCEnd = new Date(
+      Date.UTC(
+        yesterday.getFullYear(),
+        yesterday.getMonth(),
+        yesterday.getDate(),
+        23,
+        59,
+        59
+      )
+    );
+
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      // checkinDate in yesterday
+      checkinDate: {
+        $gte: yesterdayUTCStart,
+        $lte: yesterdayUTCEnd,
+      },
+    });
+    const income = bookings.reduce((acc, booking) => {
+      // convert booking.checkinDate to UTC
+      const hour = booking.checkinDate.getUTCHours();
+      // convert hour to English +7 hours
+      const hourName = new Intl.DateTimeFormat("en-US", {
+        hour: "numeric",
+        hour12: true,
+      }).format(
+        new Date(
+          booking.checkinDate.setHours(
+            booking.checkinDate.getHours() - 7
+          )
+        )
+      );
+
+      if (!acc[hour]) {
+        acc[hour] = {
+          name: hourName,
+          hour: 0,
+          day: 0,
+          total: 0,
+        };
+      }
+      // if booking.type === hour
+      if (booking.type === "hour") {
+        acc[hour].hour += booking.totalPaid;
+      }
+      // if booking.type === day
+      if (booking.type === "day") {
+        acc[hour].day += booking.totalPaid;
+      }
+      acc[hour].total = acc[hour].hour + acc[hour].day;
+      return acc;
+    }, {});
+    res.status(200).json(income);
+  } catch (error) {
+    next(error);
+  }
+};
+
+//get all booking by employeeId yesterday
+export const getBookingByEmployeeIdYesterday = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId: hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+    // get date yesterday
+    const yesterday = new Date(
+      new Date().setDate(new Date().getDate() - 1)
+    );
+    // set yesterdayUTC to 00:00:00
+    const yesterdayUTCStart = new Date(
+      Date.UTC(
+        yesterday.getFullYear(),
+        yesterday.getMonth(),
+        yesterday.getDate(),
+        0,
+        0,
+        0
+      )
+    );
+    // set yesterdayUTC to 23:59:59
+    const yesterdayUTCEnd = new Date(
+      Date.UTC(
+        yesterday.getFullYear(),
+        yesterday.getMonth(),
+        yesterday.getDate(),
+        23,
+        59,
+        59
+      )
+    );
+
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      //checkinDate in yesterday from 00:00:00 to 23:59:59
+      checkinDate: {
+        $gte: yesterdayUTCStart,
+        $lte: yesterdayUTCEnd,
+      },
+    });
+    res.status(200).json(bookings);
   } catch (error) {
     next(error);
   }

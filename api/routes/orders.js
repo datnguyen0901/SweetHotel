@@ -12,6 +12,7 @@ import {
   getIncomeLastMonth,
   getOrdersLatest,
   getIncomeOrderByUserId,
+  getIncomeByService,
 } from "../controllers/OrderController.js";
 import { verifyAdmin, verifyUser } from "../utils/verifyToken.js";
 
@@ -45,5 +46,7 @@ router.get("/income/last", verifyAdmin, getIncomeLastMonth);
 router.get("/sort/newest", verifyAdmin, getOrdersLatest);
 //GETTOTALPAIDTODAYBYUSERID
 router.get("/user/income/today/:id", verifyUser, getIncomeOrderByUserId);
+//GETINFOORDERTHISYEAR
+router.get("/hotel/income/year/:id", verifyAdmin, getIncomeByService);
 
 export default router;

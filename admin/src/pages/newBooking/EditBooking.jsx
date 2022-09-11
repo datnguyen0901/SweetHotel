@@ -57,14 +57,11 @@ const EditBooking = ({ inputs, title }) => {
         userId: bookingData.data.userId,
         // checkinDate: plus 1 day more
         checkinDate: moment(bookingData.data.checkinDate)
-          .add(1, "days")
-          .format("YYYY-MM-DD"),
+          .add(7, "hours")
+          .format("YYYY-MM-DDTHH:mm"),
         checkoutDate: moment(bookingData.data.checkoutDate)
-          .add(1, "days")
-          .format("YYYY-MM-DD"),
-
-        checkInTime: bookingData.data.checkInTime,
-        checkOutTime: bookingData.data.checkOutTime,
+          .add(7, "hours")
+          .format("YYYY-MM-DDTHH:mm"),
         paymentMethod: bookingData.data.paymentMethod,
         note: bookingData.data.note,
         status: bookingData.data.status,
@@ -170,12 +167,8 @@ const EditBooking = ({ inputs, title }) => {
         });
       });
       // calculate hour by checkInTime and checkOutTime
-      const checkInTime = new Date(
-        `2021-01-01T${info.checkInTime}:00`
-      );
-      const checkOutTime = new Date(
-        `2021-01-01T${info.checkOutTime}:00`
-      );
+      const checkInTime = new Date(info.checkinDate);
+      const checkOutTime = new Date(info.checkoutDate);
       const hour = getTimeToHour(
         checkOutTime.getTime() - checkInTime.getTime()
       );
@@ -194,16 +187,6 @@ const EditBooking = ({ inputs, title }) => {
         roomId: selectedRooms,
         totalPaid: totalPaidHour,
       }));
-      console.log(
-        checkInTime,
-        checkOutTime,
-        hour,
-        price,
-        priceFirstHour,
-        priceNextHour,
-        hourNext,
-        totalPaidHour
-      );
     } else {
       setInfo((prev) => ({
         ...prev,
@@ -214,6 +197,7 @@ const EditBooking = ({ inputs, title }) => {
       }));
     }
   };
+  console.log(info);
 
   const handleCheckAddIn = (e) => {
     const checked = e.target.checked;
@@ -265,9 +249,15 @@ const EditBooking = ({ inputs, title }) => {
 
       const EditBooking = {
         ...info,
+        checkinDate: moment(info.checkinDate)
+          .add(-7, "hours")
+          .format("YYYY-MM-DDTHH:mm"),
+        checkoutDate: moment(info.checkoutDate)
+          .add(-7, "hours")
+          .format("YYYY-MM-DDTHH:mm"),
         employeeId: user._id,
         roomId: selectedRooms,
-        totalPaid: numberNight * price || info.totalPaid,
+        totalPaid: info.totalPaid,
       };
 
       await axios.put(`/bookings/${id}`, EditBooking);

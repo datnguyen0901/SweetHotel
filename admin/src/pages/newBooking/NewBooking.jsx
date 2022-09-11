@@ -29,10 +29,8 @@ const NewBooking = ({ inputs, title }) => {
   useEffect(() => {
     if (data) {
       setInfo({
-        checkinDate: moment().format("YYYY-MM-DD"),
-        checkoutDate: moment().format("YYYY-MM-DD"),
-        checkInTime: "14:00",
-        checkOutTime: "12:00",
+        checkinDate: moment().format("YYYY-MM-DDTHH:mm"),
+        checkoutDate: moment().format("YYYY-MM-DDTHH:mm"),
         type: "day",
       });
     }
@@ -109,12 +107,8 @@ const NewBooking = ({ inputs, title }) => {
     }));
     if (info.type === "hour") {
       // calculate hour by checkInTime and checkOutTime
-      const checkInTime = new Date(
-        `2021-01-01T${info.checkInTime}:00`
-      );
-      const checkOutTime = new Date(
-        `2021-01-01T${info.checkOutTime}:00`
-      );
+      const checkInTime = new Date(info.checkinDate);
+      const checkOutTime = new Date(info.checkoutDate);
       const hour = getTimeToHour(
         checkOutTime.getTime() - checkInTime.getTime()
       );
@@ -184,6 +178,12 @@ const NewBooking = ({ inputs, title }) => {
     try {
       const newBooking = {
         ...info,
+        checkinDate: moment(info.checkinDate)
+          .add(-7, "hours")
+          .format("YYYY-MM-DDTHH:mm"),
+        checkoutDate: moment(info.checkoutDate)
+          .add(-7, "hours")
+          .format("YYYY-MM-DDTHH:mm"),
         employeeId: user._id,
         roomId: selectedRooms,
         totalPaid: numberNight * price,
