@@ -225,16 +225,21 @@ const Sidebar = () => {
               </span>
             </li>
           </Link>
-          <li>
-            <InsertChartIcon className="icon" />
-            <span
-              className={
-                pathname == `/stats` ? "active" : ""
-              }
-            >
-              {t("sidebar.useful.Stats")}
-            </span>
-          </li>
+          <Link
+            to="/stats"
+            style={{ textDecoration: "none" }}
+          >
+            <li>
+              <InsertChartIcon className="icon" />
+              <span
+                className={
+                  pathname == `/stats` ? "active" : ""
+                }
+              >
+                {t("sidebar.useful.Stats")}
+              </span>
+            </li>
+          </Link>
           <Link
             to="/orders"
             style={{ textDecoration: "none" }}

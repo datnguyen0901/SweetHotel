@@ -76,12 +76,6 @@ const Datatable = ({ columns }) => {
       <DataGrid
         className="datagrid"
         rows={list}
-        sortModel={[
-          {
-            field: "createdAt",
-            sort: "desc",
-          },
-        ]}
         columns={columns.concat(actionColumn)}
         pageSize={8}
         rowsPerPageOptions={[8]}

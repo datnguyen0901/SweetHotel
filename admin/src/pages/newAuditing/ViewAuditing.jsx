@@ -19,121 +19,22 @@ const ViewAuditing = ({ columns }) => {
 
   const navigate = useNavigate();
 
-  const [chart, setChart] = useState("bookings");
   const [timeFrame, setTimeFrame] = useState("today");
   const refreshChart = () => {
     navigate("/auditing");
   };
-  const handleChangeChart = (e) => {
-    setChart(e.value);
-    refreshChart();
-  };
+
   const handleChangeTimeFrame = (e) => {
     setTimeFrame(e.value);
     refreshChart();
   };
 
-  function displayChart() {
-    if (chart === "bookings" && timeFrame === "year") {
-      return (
-        <ChartBookingYear
-          aspect={2 / 1}
-          title={t("single.chart")}
-        />
-      );
-    }
-    if (chart === "bookings" && timeFrame === "lastYear") {
-      return (
-        <ChartBookingLastYear
-          aspect={2 / 1}
-          title={t("single.chart")}
-        />
-      );
-    }
-    if (chart === "bookings" && timeFrame === "month") {
-      return (
-        <ChartBookingMonth
-          aspect={2 / 1}
-          title={t("single.chart")}
-        />
-      );
-    }
-    if (chart === "bookings" && timeFrame === "week") {
-      return (
-        <ChartBookingWeek
-          aspect={2 / 1}
-          title={t("single.chart")}
-        />
-      );
-    }
-    if (chart === "bookings" && timeFrame === "today") {
-      return (
-        <ChartBookingYesterday
-          aspect={2 / 1}
-          title={t("single.chart")}
-        />
-      );
-    }
-    if (chart === "orders" && timeFrame === "year") {
-      return (
-        <ChartOrderYear
-          aspect={2 / 1}
-          title={t("single.chart")}
-        />
-      );
-    }
-    if (chart === "orders" && timeFrame === "lastYear") {
-      return (
-        <ChartOrderLastYear
-          aspect={2 / 1}
-          title={t("single.chart")}
-        />
-      );
-    }
-    if (chart === "orders" && timeFrame === "month") {
-      return (
-        <ChartOrderLastMonth
-          aspect={2 / 1}
-          title={t("single.chart")}
-        />
-      );
-    }
-    if (chart === "orders" && timeFrame === "week") {
-      return (
-        <ChartOrderLastWeek
-          aspect={2 / 1}
-          title={t("single.chart")}
-        />
-      );
-    }
-    if (chart === "orders" && timeFrame === "today") {
-      return (
-        <ChartOrderYesterday
-          title={t("home.title")}
-          aspect={2 / 1}
-        />
-      );
-    }
-  }
+  function displayChart() {}
 
   return (
     <div className="datatable">
       <div className="datatableTitle">
         <div>{t("Auditings")}</div>
-        <div>
-          <button
-            value={"bookings"}
-            onClick={(e) => handleChangeChart(e.target)}
-          >
-            Booking
-          </button>
-          <button
-            value={"orders"}
-            onClick={(e) => handleChangeChart(e.target)}
-          >
-            Order
-          </button>
-        </div>
         <div>
           <button
             value={"today"}

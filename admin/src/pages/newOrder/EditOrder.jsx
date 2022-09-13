@@ -49,6 +49,7 @@ const EditOrder = ({ inputs, title }) => {
                   name: nameService,
                   price: priceService,
                   quantity: item.quantity,
+                  maxQuantity: 99,
                 };
               } catch (error) {
                 return {};
@@ -100,17 +101,33 @@ const EditOrder = ({ inputs, title }) => {
   const handleChangeService = (e) => {
     const value = e.target.value;
     const id = e.target.name;
+    const service = serviceData.data.find(
+      (service) => service._id === id
+    );
+    if (
+      value > service.quantity &&
+      service.type !== "service"
+    ) {
+      alert("We only have " + service.quantity);
+      return;
+    }
     // update quantity of service in selectedServices
-
     setSelectedServices((prev) =>
       prev.map((item) => {
-        if (item.id === id) {
+        if (
+          value > service.quantity &&
+          service.type !== "service"
+        ) {
+          return {
+            ...item,
+            quantity: 1,
+          };
+        } else {
           return {
             ...item,
             quantity: parseInt(value, 10),
           };
         }
-        return item;
       })
     );
   };
@@ -161,13 +178,11 @@ const EditOrder = ({ inputs, title }) => {
         const service = await axios.get(
           `/services/${item.serviceId}`
         );
-
         const oldQuantity =
           orderData.data.serviceOrders.find(
             (service) =>
               service.serviceId === item.serviceId
           ).quantity;
-
         if (
           service.data.quantity <
             item.quantity - oldQuantity &&
@@ -179,17 +194,15 @@ const EditOrder = ({ inputs, title }) => {
               t("order.alertQuantity2")
           );
           return;
-        } else {
-          const newOrder = {
-            ...info,
-            employeeId: user._id,
-            serviceOrders,
-            totalPrice: total,
-          };
-          await axios.put(`/orders/${orderId}`, newOrder);
-          navigate("/orders");
         }
-        if (service.data.type !== "service") {
+        // check if the service is in the order
+        if (
+          orderData.data.serviceOrders.find(
+            (service) =>
+              service.serviceId === item.serviceId
+          ) &&
+          service.data.type !== "service"
+        ) {
           const newService = {
             ...service.data,
             quantity:
@@ -201,13 +214,29 @@ const EditOrder = ({ inputs, title }) => {
             `/services/${item.serviceId}`,
             newService
           );
+        } else {
+          const newService = {
+            ...service.data,
+            quantity: service.data.quantity - item.quantity,
+          };
+
+          console.log(newService);
+          await axios.put(
+            `/services/${item.serviceId}`,
+            newService
+          );
         }
       });
+      // update order
+      await axios.put(`/orders/${orderData.data._id}`, {
+        ...info,
+        serviceOrders,
+      });
+      navigate(`/orders`);
     } catch (err) {
       console.log(err);
     }
   };
-  console.log("Services:", selectedServices);
 
   return (
     <div className="new">
@@ -342,6 +371,7 @@ const EditOrder = ({ inputs, title }) => {
                           id="quantity"
                           name={service.id}
                           onChange={handleChangeService}
+                          max={service.maxQuantity}
                           defaultValue={service.quantity}
                           type="number"
                           min="1"

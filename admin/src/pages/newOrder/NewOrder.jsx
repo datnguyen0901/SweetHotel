@@ -63,7 +63,6 @@ const NewOrder = ({ inputs, title }) => {
     const value = e.target.value;
     const id = e.target.name;
     // update quantity of service in selectedServices
-
     setSelectedServices((prev) =>
       prev.map((item) => {
         if (item.id === id) {

@@ -39,13 +39,11 @@ export const login = async (req, res, next) => {
 
     const token = jwt.sign(
       { id: user._id, isAdmin: user.isAdmin },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "2d", // expires in 2 days
-      }
+      process.env.JWT_SECRET
     );
 
     const {
+      username,
       password,
       isAdmin,
       address,
@@ -53,11 +51,11 @@ export const login = async (req, res, next) => {
       country,
       gender,
       phone,
-      username,
       ...otherDetails
     } = user._doc;
     res
       .cookie("access_token", token, {
+        maxAge: 90000000,
         httpOnly: true,
       })
       .status(200)

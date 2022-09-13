@@ -2,6 +2,7 @@ import Booking from "../models/Booking.js";
 import Room from "../models/Room.js";
 import User from "../models/User.js";
 import Role from "../models/Role.js";
+import Order from "../models/Order.js";
 import moment from "moment";
 
 export const createBooking = async (req, res, next) => {
@@ -47,10 +48,13 @@ export const getBooking = async (req, res, next) => {
 
 export const getBookings = async (req, res, next) => {
   try {
-    const bookings = await Booking.find().populate({
-      path: "userId",
-      select: "username",
-    });
+    // get booking sort status "open" first
+    const bookings = await Booking.find()
+      .populate({
+        path: "userId",
+        select: "username",
+      })
+      .sort({ status: -1 });
     const rooms = await Room.find();
     const roomNumbers = rooms.map((room) => {
       return room.roomNumbers.map((roomNumber) => {
@@ -735,3 +739,192 @@ export const getBookingByEmployeeIdYesterday = async (
     next(error);
   }
 };
+
+// get booking and order, count the number and sum of totalPaid of booking and order by employeeId of each month in this year
+export const getIncomeBookingAndOrderByEmployeeIdThisYear =
+  async (req, res, next) => {
+    try {
+      // get roldId by userId
+      const user = await User.findById(req.params.id);
+      const roleId = user.roleId;
+      // get hotelId by roleId
+      const role = await Role.findById(roleId);
+      const hotelId = role.hotelId;
+      // get all role if hotelId === hotelId
+      const roles = await Role.find({ hotelId: hotelId });
+      // get all employeeId by roles.map(role => role._id)
+      const users = await User.find({
+        roleId: {
+          $in: roles.map((role) => role._id),
+        },
+      });
+      // get date this year
+      const thisYear = new Date();
+      // set thisYearUTC to 00:00:00
+      const thisYearUTCStart = new Date(
+        Date.UTC(thisYear.getFullYear(), 0, 1, 0, 0, 0)
+      );
+      // set thisYearUTC to 23:59:59
+      const thisYearUTCEnd = new Date(
+        Date.UTC(thisYear.getFullYear(), 11, 31, 23, 59, 59)
+      );
+
+      const bookings = await Booking.find({
+        employeeId: {
+          $in: users.map((user) => user._id),
+        },
+        // checkinDate in this year
+        checkinDate: {
+          $gte: thisYearUTCStart,
+          $lte: thisYearUTCEnd,
+        },
+      });
+      const orders = await Order.find({
+        bookingId: {
+          $in: bookings.map((booking) => booking._id),
+        },
+      });
+      const income = bookings.reduce((acc, booking) => {
+        // convert booking.checkinDate to UTC
+        const month = booking.checkinDate.getUTCMonth();
+        // convert month to English
+        const monthName = new Intl.DateTimeFormat("en-US", {
+          month: "short",
+        }).format(new Date(booking.checkinDate));
+
+        if (!acc[month]) {
+          acc[month] = {
+            name: monthName,
+            booking: 0,
+            totalIncomeBooking: 0,
+            order: 0,
+            totalIncomeOrder: 0,
+            total: 0,
+          };
+        }
+        // get count booking and order, sum totalPaid of booking and order
+        acc[month].booking += 1;
+        acc[month].totalIncomeBooking += booking.totalPaid;
+        acc[month].order += orders.filter(
+          (order) =>
+            order.bookingId.toString() ===
+            booking._id.toString()
+        ).length;
+        acc[month].totalIncomeOrder += orders
+          .filter(
+            (order) =>
+              order.bookingId.toString() ===
+              booking._id.toString()
+          )
+          .reduce(
+            (acc, order) => acc + order.totalPrice,
+            0
+          );
+        acc[month].total =
+          acc[month].totalIncomeBooking +
+          acc[month].totalIncomeOrder;
+        return acc;
+      }, {});
+      res.status(200).json(income);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+// get booking and order, count the number and sum of totalPaid of booking and order by employeeId of each month in last year
+export const getIncomeBookingAndOrderByEmployeeIdLastYear =
+  async (req, res, next) => {
+    try {
+      // get roldId by userId
+      const user = await User.findById(req.params.id);
+      const roleId = user.roleId;
+      // get hotelId by roleId
+      const role = await Role.findById(roleId);
+      const hotelId = role.hotelId;
+      // get all role if hotelId === hotelId
+      const roles = await Role.find({ hotelId: hotelId });
+      // get all employeeId by roles.map(role => role._id)
+      const users = await User.find({
+        roleId: {
+          $in: roles.map((role) => role._id),
+        },
+      });
+      // get date this year
+      const thisYear = new Date();
+      // set thisYearUTC to 00:00:00
+      const thisYearUTCStart = new Date(
+        Date.UTC(thisYear.getFullYear() - 1, 0, 1, 0, 0, 0)
+      );
+      // set thisYearUTC to 23:59:59
+      const thisYearUTCEnd = new Date(
+        Date.UTC(
+          thisYear.getFullYear() - 1,
+          11,
+          31,
+          23,
+          59,
+          59
+        )
+      );
+
+      const bookings = await Booking.find({
+        employeeId: {
+          $in: users.map((user) => user._id),
+        },
+        // checkinDate in this year
+        checkinDate: {
+          $gte: thisYearUTCStart,
+          $lte: thisYearUTCEnd,
+        },
+      });
+      const orders = await Order.find({
+        bookingId: {
+          $in: bookings.map((booking) => booking._id),
+        },
+      });
+      const income = bookings.reduce((acc, booking) => {
+        // convert booking.checkinDate to UTC
+        const month = booking.checkinDate.getUTCMonth();
+        // convert month to English
+        const monthName = new Intl.DateTimeFormat("en-US", {
+          month: "short",
+        }).format(new Date(booking.checkinDate));
+
+        if (!acc[month]) {
+          acc[month] = {
+            name: monthName,
+            booking: 0,
+            totalIncomeBooking: 0,
+            order: 0,
+            totalIncomeOrder: 0,
+            total: 0,
+          };
+        }
+        // get count booking and order, sum totalPaid of booking and order
+        acc[month].booking += 1;
+        acc[month].totalIncomeBooking += booking.totalPaid;
+        acc[month].order += orders.filter(
+          (order) =>
+            order.bookingId.toString() ===
+            booking._id.toString()
+        ).length;
+        acc[month].totalIncomeOrder += orders
+          .filter(
+            (order) =>
+              order.bookingId.toString() ===
+              booking._id.toString()
+          )
+          .reduce(
+            (acc, order) => acc + order.totalPrice,
+            0
+          );
+        acc[month].total =
+          acc[month].totalIncomeBooking +
+          acc[month].totalIncomeOrder;
+        return acc;
+      }, {});
+      res.status(200).json(income);
+    } catch (error) {
+      next(error);
+    }
+  };

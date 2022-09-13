@@ -85,6 +85,7 @@ import {
 } from "./formSourceVN";
 import ListRoomAttendant from "./pages/newRoomAttendant/ListRoomAttendant";
 import ListAuditing from "./pages/newAuditing/ListRoomAttendant";
+import ListStats from "./pages/newStats/ListStats";
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
@@ -610,6 +611,24 @@ function App() {
                       />
                     ) : (
                       <ListAuditing
+                        columns={roomAttendantColumnsVN}
+                      />
+                    )}
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+            <Route path="stats">
+              <Route
+                index
+                element={
+                  <ProtectedRoute>
+                    {i18n.language === "en" ? (
+                      <ListStats
+                        columns={roomAttendantColumns}
+                      />
+                    ) : (
+                      <ListStats
                         columns={roomAttendantColumnsVN}
                       />
                     )}
