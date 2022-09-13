@@ -1,37 +1,23 @@
 import "../../components/datatable/datatable.scss";
-import { DataGrid } from "@mui/x-data-grid";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
-import { useEffect, useState } from "react";
-import useFetch from "../../hooks/useFetch";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import CircleIcon from "@mui/icons-material/Circle";
 import Chart from "../../components/chart/Chart";
-import ChartIndividualUser from "../../components/chart/ChartIndividualUser";
 import ChartBookingYear from "../../components/chart/ChartBookingYear";
 import ChartBookingLastYear from "../../components/chart/ChartBookingLastYear";
 import ChartBookingMonth from "../../components/chart/ChartBookingMonth";
 import ChartBookingWeek from "../../components/chart/ChartBookingWeek";
 import ChartBookingYesterday from "../../components/chart/ChartBookingYesterday";
+import ChartOrderYear from "../../components/chart/ChartOrderYear";
+import ChartOrderLastYear from "../../components/chart/ChartOrderLastYear";
+import ChartOrderLastMonth from "../../components/chart/ChartOrderLastMonth";
+import ChartOrderLastWeek from "../../components/chart/ChartOrderLastWeek";
+import ChartOrderYesterday from "../../components/chart/ChartOrderYesterday";
 
 const ViewAuditing = ({ columns }) => {
-  const [list, setList] = useState([]);
   const [t] = useTranslation("common");
 
   const navigate = useNavigate();
-  // get hotelId from login user by roleId
-  const user = JSON.parse(localStorage.getItem("user"));
-  // get hotelId from role by roleId
-  const role = useFetch(`/roles/${user.roleId}`);
-  const hotelId = role.data.hotelId;
-  const hotelData = useFetch(`/hotels/find/${hotelId}`);
-  const { data, loading, error } = useFetch(
-    `/rooms/today/availability/${hotelId}`
-  );
 
   const [chart, setChart] = useState("bookings");
   const [timeFrame, setTimeFrame] = useState("today");
@@ -46,12 +32,6 @@ const ViewAuditing = ({ columns }) => {
     setTimeFrame(e.value);
     refreshChart();
   };
-
-  useEffect(() => {
-    if (data) {
-      setList(data);
-    }
-  }, [data]);
 
   function displayChart() {
     if (chart === "bookings" && timeFrame === "year") {
@@ -94,9 +74,44 @@ const ViewAuditing = ({ columns }) => {
         />
       );
     }
+    if (chart === "orders" && timeFrame === "year") {
+      return (
+        <ChartOrderYear
+          aspect={2 / 1}
+          title={t("single.chart")}
+        />
+      );
+    }
+    if (chart === "orders" && timeFrame === "lastYear") {
+      return (
+        <ChartOrderLastYear
+          aspect={2 / 1}
+          title={t("single.chart")}
+        />
+      );
+    }
+    if (chart === "orders" && timeFrame === "month") {
+      return (
+        <ChartOrderLastMonth
+          aspect={2 / 1}
+          title={t("single.chart")}
+        />
+      );
+    }
+    if (chart === "orders" && timeFrame === "week") {
+      return (
+        <ChartOrderLastWeek
+          aspect={2 / 1}
+          title={t("single.chart")}
+        />
+      );
+    }
     if (chart === "orders" && timeFrame === "today") {
       return (
-        <Chart title={t("home.title")} aspect={2 / 1} />
+        <ChartOrderYesterday
+          title={t("home.title")}
+          aspect={2 / 1}
+        />
       );
     }
   }

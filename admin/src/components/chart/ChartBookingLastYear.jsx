@@ -33,16 +33,15 @@ const ChartBookingLastYear = ({ aspect, title }) => {
     const { value, offset } = payload;
     const date = new Date(value);
     const month = date.getMonth();
-    console.log(month);
     const quarterNo = Math.floor(month / 3) + 1;
     const isMidMonth = month % 3 === 1;
 
-    if (isMidMonth) {
+    if (month % 3 === 1) {
       return (
         <text
-          x={x}
+          x={x + 35}
           y={y - 4}
-          textAnchor="middle-right"
+          textAnchor="middle"
         >{`Q${quarterNo}`}</text>
       );
     }
@@ -50,8 +49,9 @@ const ChartBookingLastYear = ({ aspect, title }) => {
     const isLast = month === 11;
 
     if (month % 3 === 0 || isLast) {
-      const pathX =
-        Math.floor(isLast ? x + offset : x - offset) + 0.5;
+      const pathX = Math.floor(
+        isLast ? x + 61 * offset : x - offset
+      );
 
       return (
         <path

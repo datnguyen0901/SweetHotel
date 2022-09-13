@@ -23,7 +23,7 @@ const Login = () => {
     password: undefined,
   });
 
-  const { user, loading, error, dispatch } =
+  const { loading, error, dispatch } =
     useContext(AuthContext);
 
   const handleChange = (e) => {

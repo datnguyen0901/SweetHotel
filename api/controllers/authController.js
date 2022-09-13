@@ -39,7 +39,10 @@ export const login = async (req, res, next) => {
 
     const token = jwt.sign(
       { id: user._id, isAdmin: user.isAdmin },
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "2d", // expires in 2 days
+      }
     );
 
     const {
@@ -58,7 +61,10 @@ export const login = async (req, res, next) => {
         httpOnly: true,
       })
       .status(200)
-      .json({ details: { ...otherDetails }, isAdmin });
+      .json({
+        details: { ...otherDetails },
+        isAdmin,
+      });
   } catch (error) {
     next(error);
   }

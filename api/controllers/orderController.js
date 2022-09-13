@@ -216,8 +216,8 @@ export const getIncomeOrderByUserId = async (
   }
 };
 
-// get totalPrice and quantity of each type of service in order in this year
-export const getIncomeByService = async (
+// get totalPrice and quantity of type = service in order in this year by bookingId
+export const getIncomeByServiceThisYear = async (
   req,
   res,
   next
@@ -255,8 +255,796 @@ export const getIncomeByService = async (
       },
     });
     const services = await Service.find();
-    // get sum of totalPrice and quantity of each service
-    res.status(200).json(services);
+    //get sum of quantity the serviceOrders make it flat data by name and type of service
+    const serviceOrders = orders
+      .map((order) => {
+        return order.serviceOrders.map((serviceOrder) => {
+          return {
+            serviceId: serviceOrder.serviceId,
+            quantity: serviceOrder.quantity,
+          };
+        });
+      })
+      .flat();
+
+    const getServiceOrders = services
+      .filter((service) => service.type === "service")
+      .map((service) => {
+        return {
+          name: service.name,
+          type: service.type,
+          quantity: serviceOrders
+            .filter(
+              (serviceOrder) =>
+                serviceOrder.serviceId.toString() ===
+                service._id.toString()
+            )
+            .reduce((acc, serviceOrder) => {
+              return acc + serviceOrder.quantity;
+            }, 0),
+          price: service.price,
+          // total = quantity * price
+          total: serviceOrders
+            .filter(
+              (serviceOrder) =>
+                serviceOrder.serviceId.toString() ===
+                service._id.toString()
+            )
+            .reduce((acc, serviceOrder) => {
+              return (
+                acc + serviceOrder.quantity * service.price
+              );
+            }, 0),
+        };
+      });
+    res.status(200).json(getServiceOrders);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get totalPrice and quantity of type = food in order in this year by bookingId
+export const getIncomeByFoodThisYear = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId: hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+    // get all booking by users.map(user => user._id)
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      checkinDate: {
+        $gte: new Date(new Date().getFullYear(), 0, 1),
+        $lte: new Date(new Date().getFullYear(), 11, 31),
+      },
+    });
+    // get all order by bookings.map(booking => booking._id)
+    const orders = await Order.find({
+      status: "done",
+      bookingId: {
+        $in: bookings.map((booking) => booking._id),
+      },
+    });
+    const services = await Service.find();
+    //get sum of quantity the serviceOrders make it flat data by name and type of service
+    const serviceOrders = orders
+      .map((order) => {
+        return order.serviceOrders.map((serviceOrder) => {
+          return {
+            serviceId: serviceOrder.serviceId,
+            quantity: serviceOrder.quantity,
+          };
+        });
+      })
+      .flat();
+
+    const getServiceOrders = services
+      .filter((service) => service.type === "food")
+      .map((service) => {
+        return {
+          name: service.name,
+          type: service.type,
+          quantity: serviceOrders
+            .filter(
+              (serviceOrder) =>
+                serviceOrder.serviceId.toString() ===
+                service._id.toString()
+            )
+            .reduce((acc, serviceOrder) => {
+              return acc + serviceOrder.quantity;
+            }, 0),
+          price: service.price,
+          // total = quantity * price
+          total: serviceOrders
+            .filter(
+              (serviceOrder) =>
+                serviceOrder.serviceId.toString() ===
+                service._id.toString()
+            )
+            .reduce((acc, serviceOrder) => {
+              return (
+                acc + serviceOrder.quantity * service.price
+              );
+            }, 0),
+        };
+      });
+    res.status(200).json(getServiceOrders);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get totalPrice and quantity of type = drink in order in this year by bookingId
+export const getIncomeByDrinkThisYear = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId: hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+    // get all booking by users.map(user => user._id)
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      checkinDate: {
+        $gte: new Date(new Date().getFullYear(), 0, 1),
+        $lte: new Date(new Date().getFullYear(), 11, 31),
+      },
+    });
+    // get all order by bookings.map(booking => booking._id)
+    const orders = await Order.find({
+      status: "done",
+      bookingId: {
+        $in: bookings.map((booking) => booking._id),
+      },
+    });
+    const services = await Service.find();
+    //get sum of quantity the serviceOrders make it flat data by name and type of service
+    const serviceOrders = orders
+      .map((order) => {
+        return order.serviceOrders.map((serviceOrder) => {
+          return {
+            serviceId: serviceOrder.serviceId,
+            quantity: serviceOrder.quantity,
+          };
+        });
+      })
+      .flat();
+
+    const getServiceOrders = services
+      .filter((service) => service.type === "drink")
+      .map((service) => {
+        return {
+          name: service.name,
+          type: service.type,
+          quantity: serviceOrders
+            .filter(
+              (serviceOrder) =>
+                serviceOrder.serviceId.toString() ===
+                service._id.toString()
+            )
+            .reduce((acc, serviceOrder) => {
+              return acc + serviceOrder.quantity;
+            }, 0),
+          price: service.price,
+          // total = quantity * price
+          total: serviceOrders
+            .filter(
+              (serviceOrder) =>
+                serviceOrder.serviceId.toString() ===
+                service._id.toString()
+            )
+            .reduce((acc, serviceOrder) => {
+              return (
+                acc + serviceOrder.quantity * service.price
+              );
+            }, 0),
+        };
+      });
+    res.status(200).json(getServiceOrders);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get totalPrice and quantity of type = service in order in last year by bookingId
+export const getIncomeByServiceLastYear = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId: hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+    // get all booking by users.map(user => user._id)
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      checkinDate: {
+        $gte: new Date(new Date().getFullYear() - 1, 0, 1),
+        $lte: new Date(
+          new Date().getFullYear() - 1,
+          11,
+          31
+        ),
+      },
+    });
+    // get all order by bookings.map(booking => booking._id)
+    const orders = await Order.find({
+      status: "done",
+      bookingId: {
+        $in: bookings.map((booking) => booking._id),
+      },
+    });
+    const services = await Service.find();
+    //get sum of quantity the serviceOrders make it flat data by name and type of service
+    const serviceOrders = orders
+      .map((order) => {
+        return order.serviceOrders.map((serviceOrder) => {
+          return {
+            serviceId: serviceOrder.serviceId,
+            quantity: serviceOrder.quantity,
+          };
+        });
+      })
+      .flat();
+
+    const getServiceOrders = services
+      .filter((service) => service.type === "service")
+      .map((service) => {
+        return {
+          name: service.name,
+          type: service.type,
+          quantity: serviceOrders
+            .filter(
+              (serviceOrder) =>
+                serviceOrder.serviceId.toString() ===
+                service._id.toString()
+            )
+            .reduce((acc, serviceOrder) => {
+              return acc + serviceOrder.quantity;
+            }, 0),
+          price: service.price,
+          // total = quantity * price
+          total: serviceOrders
+            .filter(
+              (serviceOrder) =>
+                serviceOrder.serviceId.toString() ===
+                service._id.toString()
+            )
+            .reduce((acc, serviceOrder) => {
+              return (
+                acc + serviceOrder.quantity * service.price
+              );
+            }, 0),
+        };
+      });
+    res.status(200).json(getServiceOrders);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get totalPrice and quantity of type = food in order in last year by bookingId
+export const getIncomeByFoodLastYear = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId: hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+    // get all booking by users.map(user => user._id)
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      checkinDate: {
+        $gte: new Date(new Date().getFullYear() - 1, 0, 1),
+        $lte: new Date(
+          new Date().getFullYear() - 1,
+          11,
+          31
+        ),
+      },
+    });
+    // get all order by bookings.map(booking => booking._id)
+    const orders = await Order.find({
+      status: "done",
+      bookingId: {
+        $in: bookings.map((booking) => booking._id),
+      },
+    });
+    const services = await Service.find();
+    //get sum of quantity the serviceOrders make it flat data by name and type of service
+    const serviceOrders = orders
+      .map((order) => {
+        return order.serviceOrders.map((serviceOrder) => {
+          return {
+            serviceId: serviceOrder.serviceId,
+            quantity: serviceOrder.quantity,
+          };
+        });
+      })
+      .flat();
+
+    const getServiceOrders = services
+      .filter((service) => service.type === "food")
+      .map((service) => {
+        return {
+          name: service.name,
+          type: service.type,
+          quantity: serviceOrders
+            .filter(
+              (serviceOrder) =>
+                serviceOrder.serviceId.toString() ===
+                service._id.toString()
+            )
+            .reduce((acc, serviceOrder) => {
+              return acc + serviceOrder.quantity;
+            }, 0),
+          price: service.price,
+          // total = quantity * price
+          total: serviceOrders
+            .filter(
+              (serviceOrder) =>
+                serviceOrder.serviceId.toString() ===
+                service._id.toString()
+            )
+            .reduce((acc, serviceOrder) => {
+              return (
+                acc + serviceOrder.quantity * service.price
+              );
+            }, 0),
+        };
+      });
+    res.status(200).json(getServiceOrders);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get totalPrice and quantity of type = drink in order in last year by bookingId
+export const getIncomeByDrinkLastYear = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId: hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+    // get all booking by users.map(user => user._id)
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      checkinDate: {
+        $gte: new Date(new Date().getFullYear() - 1, 0, 1),
+        $lte: new Date(
+          new Date().getFullYear() - 1,
+          11,
+          31
+        ),
+      },
+    });
+    // get all order by bookings.map(booking => booking._id)
+    const orders = await Order.find({
+      status: "done",
+      bookingId: {
+        $in: bookings.map((booking) => booking._id),
+      },
+    });
+    const services = await Service.find();
+    //get sum of quantity the serviceOrders make it flat data by name and type of service
+    const serviceOrders = orders
+      .map((order) => {
+        return order.serviceOrders.map((serviceOrder) => {
+          return {
+            serviceId: serviceOrder.serviceId,
+            quantity: serviceOrder.quantity,
+          };
+        });
+      })
+      .flat();
+
+    const getServiceOrders = services
+      .filter((service) => service.type === "drink")
+      .map((service) => {
+        return {
+          name: service.name,
+          type: service.type,
+          quantity: serviceOrders
+            .filter(
+              (serviceOrder) =>
+                serviceOrder.serviceId.toString() ===
+                service._id.toString()
+            )
+            .reduce((acc, serviceOrder) => {
+              return acc + serviceOrder.quantity;
+            }, 0),
+          price: service.price,
+          // total = quantity * price
+          total: serviceOrders
+            .filter(
+              (serviceOrder) =>
+                serviceOrder.serviceId.toString() ===
+                service._id.toString()
+            )
+            .reduce((acc, serviceOrder) => {
+              return (
+                acc + serviceOrder.quantity * service.price
+              );
+            }, 0),
+        };
+      });
+    res.status(200).json(getServiceOrders);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get totalPrice and quantity by name in service in order in last month by bookingId
+export const getIncomeByServiceLastMonth = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId: hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+    // get all booking by users.map(user => user._id)
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      checkinDate: {
+        $gte: new Date(
+          new Date().getFullYear(),
+          new Date().getMonth() - 1,
+          1
+        ),
+        $lte: new Date(
+          new Date().getFullYear(),
+          new Date().getMonth(),
+          0
+        ),
+      },
+    });
+    // get all order by bookings.map(booking => booking._id)
+    const orders = await Order.find({
+      status: "done",
+      bookingId: {
+        $in: bookings.map((booking) => booking._id),
+      },
+    });
+    const services = await Service.find();
+    //get sum of quantity the serviceOrders make it flat data by name and type of service
+    const serviceOrders = orders
+      .map((order) => {
+        return order.serviceOrders.map((serviceOrder) => {
+          return {
+            serviceId: serviceOrder.serviceId,
+            quantity: serviceOrder.quantity,
+          };
+        });
+      })
+      .flat();
+
+    const getServiceOrders = services.map((service) => {
+      return {
+        name: service.name,
+        type: service.type,
+        image: service.img,
+        quantity: serviceOrders
+          .filter(
+            (serviceOrder) =>
+              serviceOrder.serviceId.toString() ===
+              service._id.toString()
+          )
+          .reduce((acc, serviceOrder) => {
+            return acc + serviceOrder.quantity;
+          }, 0),
+        price: service.price,
+        // total = quantity * price
+        total: serviceOrders
+          .filter(
+            (serviceOrder) =>
+              serviceOrder.serviceId.toString() ===
+              service._id.toString()
+          )
+          .reduce((acc, serviceOrder) => {
+            return (
+              acc + serviceOrder.quantity * service.price
+            );
+          }, 0),
+      };
+    });
+    res.status(200).json(getServiceOrders);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get totalPrice and quantity by name in service in order in last week by bookingId
+export const getIncomeByServiceLastWeek = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId: hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+    // get all booking by users.map(user => user._id)
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      checkinDate: {
+        $gte: new Date(
+          new Date().getFullYear(),
+          new Date().getMonth(),
+          new Date().getDate() - 7
+        ),
+        $lte: new Date(
+          new Date().getFullYear(),
+          new Date().getMonth(),
+          new Date().getDate()
+        ),
+      },
+    });
+    // get all order by bookings.map(booking => booking._id)
+    const orders = await Order.find({
+      status: "done",
+      bookingId: {
+        $in: bookings.map((booking) => booking._id),
+      },
+    });
+    const services = await Service.find();
+    //get sum of quantity the serviceOrders make it flat data by name and type of service
+    const serviceOrders = orders
+      .map((order) => {
+        return order.serviceOrders.map((serviceOrder) => {
+          return {
+            serviceId: serviceOrder.serviceId,
+            quantity: serviceOrder.quantity,
+          };
+        });
+      })
+      .flat();
+
+    const getServiceOrders = services.map((service) => {
+      return {
+        name: service.name,
+        type: service.type,
+        image: service.img,
+        quantity: serviceOrders
+          .filter(
+            (serviceOrder) =>
+              serviceOrder.serviceId.toString() ===
+              service._id.toString()
+          )
+          .reduce((acc, serviceOrder) => {
+            return acc + serviceOrder.quantity;
+          }, 0),
+        price: service.price,
+        // total = quantity * price
+        total: serviceOrders
+          .filter(
+            (serviceOrder) =>
+              serviceOrder.serviceId.toString() ===
+              service._id.toString()
+          )
+          .reduce((acc, serviceOrder) => {
+            return (
+              acc + serviceOrder.quantity * service.price
+            );
+          }, 0),
+      };
+    });
+    res.status(200).json(getServiceOrders);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get totalPrice and quantity by name in service in order in yesterday by bookingId
+export const getIncomeByServiceYesterday = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const hotelId = role.hotelId;
+    // get all role if hotelId === hotelId
+    const roles = await Role.find({ hotelId: hotelId });
+    // get all employeeId by roles.map(role => role._id)
+    const users = await User.find({
+      roleId: {
+        $in: roles.map((role) => role._id),
+      },
+    });
+    // get date yesterday
+    const yesterday = new Date(
+      new Date().setDate(new Date().getDate() - 1)
+    );
+    // set yesterdayUTC to 00:00:00
+    const yesterdayUTCStart = new Date(
+      Date.UTC(
+        yesterday.getFullYear(),
+        yesterday.getMonth(),
+        yesterday.getDate(),
+        0,
+        0,
+        0
+      )
+    );
+    // set yesterdayUTC to 23:59:59
+    const yesterdayUTCEnd = new Date(
+      Date.UTC(
+        yesterday.getFullYear(),
+        yesterday.getMonth(),
+        yesterday.getDate(),
+        23,
+        59,
+        59
+      )
+    );
+    // get all booking by users.map(user => user._id)
+    const bookings = await Booking.find({
+      employeeId: {
+        $in: users.map((user) => user._id),
+      },
+      checkinDate: {
+        $gte: yesterdayUTCStart,
+        $lte: yesterdayUTCEnd,
+      },
+    });
+    // get all order by bookings.map(booking => booking._id)
+    const orders = await Order.find({
+      status: "done",
+      bookingId: {
+        $in: bookings.map((booking) => booking._id),
+      },
+    });
+    const services = await Service.find();
+    //get sum of quantity the serviceOrders make it flat data by name and type of service
+    const serviceOrders = orders
+      .map((order) => {
+        return order.serviceOrders.map((serviceOrder) => {
+          return {
+            serviceId: serviceOrder.serviceId,
+            quantity: serviceOrder.quantity,
+          };
+        });
+      })
+      .flat();
+
+    const getServiceOrders = services.map((service) => {
+      return {
+        name: service.name,
+        type: service.type,
+        image: service.img,
+        quantity: serviceOrders
+          .filter(
+            (serviceOrder) =>
+              serviceOrder.serviceId.toString() ===
+              service._id.toString()
+          )
+          .reduce((acc, serviceOrder) => {
+            return acc + serviceOrder.quantity;
+          }, 0),
+        price: service.price,
+        // total = quantity * price
+        total: serviceOrders
+          .filter(
+            (serviceOrder) =>
+              serviceOrder.serviceId.toString() ===
+              service._id.toString()
+          )
+          .reduce((acc, serviceOrder) => {
+            return (
+              acc + serviceOrder.quantity * service.price
+            );
+          }, 0),
+      };
+    });
+    res.status(200).json(getServiceOrders);
   } catch (error) {
     next(error);
   }

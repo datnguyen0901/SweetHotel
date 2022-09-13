@@ -39,7 +39,7 @@ const EditService = ({ inputs, title }) => {
     e.preventDefault();
     const image = new FormData();
     image.append("file", file);
-    image.append("  ", "upload");
+    image.append("upload_preset", "upload");
     try {
       if (file) {
         const uploadRes = await axios.post(
