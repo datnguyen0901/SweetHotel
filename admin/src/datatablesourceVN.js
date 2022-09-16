@@ -302,8 +302,8 @@ export const roomAttendantColumnsVN = [
     width: 100,
   },
   {
-    field: "nextAvailableDate",
-    headerName: "Ngày trống tiếp theo",
+    field: "nextUnavailableDate",
+    headerName: "Ngày đã đặt tiếp theo",
     width: 230,
   },
   {

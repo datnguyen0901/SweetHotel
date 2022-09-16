@@ -12,6 +12,7 @@ import {
   YAxis,
   ZAxis,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 const user = JSON.parse(localStorage.getItem("user"));
 
@@ -19,6 +20,8 @@ const ChartOrderYear = ({ aspect, title }) => {
   const orderData = useFetch(
     `/orders/hotel/income/service/year/${user._id}`
   ).data;
+
+  const [t] = useTranslation("common");
 
   // convert object to array
   const data = Object.keys(orderData).map(
@@ -46,7 +49,9 @@ const ChartOrderYear = ({ aspect, title }) => {
   return (
     // draw chart by data
     <div className="chart">
-      <div className="title">Data of order this year</div>
+      <div className="title">
+        {t("dataOf")} {t("orderChart")} {t("thisYear")}
+      </div>
       <ResponsiveContainer width="100%" aspect={aspect}>
         <ScatterChart
           width={730}

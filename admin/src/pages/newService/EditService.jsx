@@ -3,7 +3,6 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useEffect, useState } from "react";
-import { serviceInputs } from "../../formSource";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -18,7 +17,6 @@ const EditService = ({ inputs, title }) => {
   const [t] = useTranslation("common");
 
   const navigate = useNavigate();
-  const { data, loading, error } = useFetch("/hotels");
   const dataService = useFetch(`/services/${id}`);
 
   //set hotelID to the info of the hotel

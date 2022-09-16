@@ -2,7 +2,6 @@ import "../../components/datatable/datatable.scss";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import Chart from "../../components/chart/Chart";
 import ChartBookingYear from "../../components/chart/ChartBookingYear";
 import ChartBookingLastYear from "../../components/chart/ChartBookingLastYear";
 import ChartBookingMonth from "../../components/chart/ChartBookingMonth";
@@ -119,19 +118,19 @@ const ViewStats = ({ columns }) => {
   return (
     <div className="datatable">
       <div className="datatableTitle">
-        <div>{t("Auditings")}</div>
+        <div>{t("stats")}</div>
         <div>
           <button
             value={"bookings"}
             onClick={(e) => handleChangeChart(e.target)}
           >
-            Booking
+            {t("bookingChart")}
           </button>
           <button
             value={"orders"}
             onClick={(e) => handleChangeChart(e.target)}
           >
-            Order
+            {t("orderChart")}
           </button>
         </div>
         <div>
@@ -139,31 +138,31 @@ const ViewStats = ({ columns }) => {
             value={"yesterday"}
             onClick={(e) => handleChangeTimeFrame(e.target)}
           >
-            Yesterday
+            {t("yesterday")}
           </button>
           <button
             value={"week"}
             onClick={(e) => handleChangeTimeFrame(e.target)}
           >
-            Last Week
+            {t("lastWeek")}
           </button>
           <button
             value={"month"}
             onClick={(e) => handleChangeTimeFrame(e.target)}
           >
-            Last Month
+            {t("lastMonth")}
           </button>
           <button
             value={"lastYear"}
             onClick={(e) => handleChangeTimeFrame(e.target)}
           >
-            Last Year
+            {t("lastYear")}
           </button>
           <button
             value={"year"}
             onClick={(e) => handleChangeTimeFrame(e.target)}
           >
-            This Yeah
+            {t("thisYear")}
           </button>
         </div>
       </div>

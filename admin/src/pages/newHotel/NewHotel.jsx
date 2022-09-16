@@ -3,7 +3,6 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useState } from "react";
-import { hotelInputs } from "../../formSource";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +20,7 @@ const NewHotel = ({ inputs, title }) => {
   const [country, setCountry] = useState(undefined);
   const [region, setRegion] = useState(undefined);
 
-  const { data, loading, error } = useFetch("/rooms");
+  const { data, loading } = useFetch("/rooms");
 
   const [t] = useTranslation("common");
 
@@ -176,7 +175,9 @@ const NewHotel = ({ inputs, title }) => {
                 </div>
               </div>
               <div className="formInput">
-                <button onClick={handleClick}>{t("send")}</button>
+                <button onClick={handleClick}>
+                  {t("send")}
+                </button>
               </div>
             </form>
           </div>

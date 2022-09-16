@@ -6,16 +6,30 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import CircleIcon from "@mui/icons-material/Circle";
 import useFetch from "../../hooks/useFetch";
 import { useTranslation } from "react-i18next";
+import { CSVLink } from "react-csv";
 
-const List = () => {
-  // get data from order sort newest
-  const rows = useFetch(`/orders/sort/newest`);
+const ListIncomeYesterday = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const bookingData = useFetch(
+    `/bookings/hotel/info/yesterday/${user._id}`
+  ).data;
+  const rows = Object.keys(bookingData).map(
+    // convert key to int the + 1 set to _id
+    (key) => ({ ...bookingData[key], _id: +key })
+  );
 
+  const csvData = rows.map((row) => ({
+    _id: row._id,
+    Month: row.name,
+    BookingQty: row.booking,
+    TotalIncomeBooking: row.totalIncomeBooking,
+    OrderQty: row.order,
+    totalIncomeOrder: row.totalIncomeOrder,
+    TotalIncome: row.total,
+  }));
   const [t] = useTranslation("common");
-
   return (
     <TableContainer component={Paper} className="table">
       <Table
@@ -25,79 +39,70 @@ const List = () => {
         <TableHead>
           <TableRow>
             <TableCell className="tableCell">
-              {t("table.trackId")}
+              {t("no")}
             </TableCell>
             <TableCell className="tableCell">
-              {t("table.bookingId")}
+              {t("hour")}
             </TableCell>
             <TableCell className="tableCell">
-              {t("table.status")}
+              {t("bookingQuantity")}
             </TableCell>
             <TableCell className="tableCell">
-              {t("table.paymentMethod")}
+              {t("totalIncomeBooking")}
             </TableCell>
             <TableCell className="tableCell">
-              {t("table.totalPrice")}
+              {t("orderQuantity")}
             </TableCell>
             <TableCell className="tableCell">
-              {t("table.employeeId")}
+              {t("totalIncomeOrder")}
             </TableCell>
             <TableCell className="tableCell">
-              {t("table.note")}
+              {t("totalIncome")}
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.data.map((row) => (
+          {rows.map((row) => (
             <TableRow key={row._id}>
               <TableCell className="tableCell">
                 {row._id}
               </TableCell>
               <TableCell className="tableCell">
                 <div className="cellWrapper">
-                  {row.bookingId}
+                  {row.name}
                 </div>
               </TableCell>
               <TableCell className="tableCell">
-                {row.status}{" "}
-                {row.status === "done" ? (
-                  <CircleIcon
-                    className="statusIcon"
-                    style={{
-                      color: "Green",
-                      fontSize: "small",
-                    }}
-                  />
-                ) : (
-                  <CircleIcon
-                    className="statusIcon"
-                    style={{
-                      color: "Red",
-                      fontSize: "small",
-                    }}
-                  />
-                )}
+                {row.booking}
               </TableCell>
               <TableCell className="tableCell">
-                {row.paymentMethod}
-              </TableCell>
-              <TableCell className="tableCell">
-                {row.totalPaid}
-              </TableCell>
-              <TableCell className="tableCell">
-                {row.employeeId}
-              </TableCell>
-              <TableCell className="tableCell">
-                <span className={`status ${row.status}`}>
-                  {row.note}
+                <span className="tableCell">
+                  {row.totalIncomeBooking}
                 </span>
+              </TableCell>
+              <TableCell className="tableCell">
+                {row.order}
+              </TableCell>
+              <TableCell className="tableCell">
+                {row.totalIncomeOrder}
+              </TableCell>
+              <TableCell className="tableCell">
+                {row.total}
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      <button className="btn btn-primary">
+        <CSVLink
+          filename="IncomeThisYesterday"
+          data={csvData}
+        >
+          {t("download")}
+        </CSVLink>
+      </button>
     </TableContainer>
   );
 };
 
-export default List;
+export default ListIncomeYesterday;

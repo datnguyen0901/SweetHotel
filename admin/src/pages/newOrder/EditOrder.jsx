@@ -3,12 +3,10 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import React, { useState } from "react";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import { orderInputs, OrderInputs } from "../../formSource";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { Autocomplete, TextField } from "@mui/material";
 import useFetch from "../../hooks/useFetch";
-import LoadingScreen from "react-loading-screen";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -146,7 +144,7 @@ const EditOrder = ({ inputs, title }) => {
         `/services/${item.serviceId}`
       );
       if (service.data.type !== "service") {
-        selectedServices.find((service) => {
+        selectedServices.forEach((service) => {
           if (service.id !== item.serviceId) {
             const service = serviceData.data.find(
               (service) => service._id === item.serviceId
@@ -178,11 +176,17 @@ const EditOrder = ({ inputs, title }) => {
         const service = await axios.get(
           `/services/${item.serviceId}`
         );
+        // get old quantity in orderData if not set quantity = 0
         const oldQuantity =
           orderData.data.serviceOrders.find(
             (service) =>
               service.serviceId === item.serviceId
-          ).quantity;
+          )
+            ? orderData.data.serviceOrders.find(
+                (service) =>
+                  service.serviceId === item.serviceId
+              ).quantity
+            : 0;
         if (
           service.data.quantity <
             item.quantity - oldQuantity &&
@@ -194,45 +198,29 @@ const EditOrder = ({ inputs, title }) => {
               t("order.alertQuantity2")
           );
           return;
+        } else {
+          const newOrder = {
+            ...info,
+            employeeId: user._id,
+            serviceOrders,
+            totalPaid: total,
+          };
+          await axios.put(`/orders/${orderId}`, newOrder);
+          navigate("/orders");
         }
-        // check if the service is in the order
-        if (
-          orderData.data.serviceOrders.find(
-            (service) =>
-              service.serviceId === item.serviceId
-          ) &&
-          service.data.type !== "service"
-        ) {
+        if (service.data.type !== "service") {
           const newService = {
             ...service.data,
             quantity:
               service.data.quantity -
-              item.quantity +
-              oldQuantity,
+              (item.quantity - oldQuantity),
           };
-          await axios.put(
-            `/services/${item.serviceId}`,
-            newService
-          );
-        } else {
-          const newService = {
-            ...service.data,
-            quantity: service.data.quantity - item.quantity,
-          };
-
-          console.log(newService);
           await axios.put(
             `/services/${item.serviceId}`,
             newService
           );
         }
       });
-      // update order
-      await axios.put(`/orders/${orderData.data._id}`, {
-        ...info,
-        serviceOrders,
-      });
-      navigate(`/orders`);
     } catch (err) {
       console.log(err);
     }

@@ -20,6 +20,10 @@ import {
   getBookingByEmployeeIdYesterday,
   getIncomeBookingAndOrderByEmployeeIdThisYear,
   getIncomeBookingAndOrderByEmployeeIdLastYear,
+  getIncomeBookingAndOrderByEmployeeIdLastMonth,
+  getIncomeBookingAndOrderByEmployeeIdLastWeek,
+  getIncomeBookingAndOrderByEmployeeIdYesterday,
+  getIncomeBookingAndOrderByEmployeeIdToday,
 } from "../controllers/BookingController.js";
 import { getRoomNumbers } from "../controllers/roomController.js";
 import {
@@ -112,5 +116,29 @@ router.get(
   "/hotel/info/lastyear/:id",
   verifyUser,
   getIncomeBookingAndOrderByEmployeeIdLastYear
+);
+//GETINFOLASTMONTHBYUSERHOTELINBOOKINGANDORDER
+router.get(
+  "/hotel/info/lastmonth/:id",
+  verifyUser,
+  getIncomeBookingAndOrderByEmployeeIdLastMonth
+);
+//GETINFOLASTWEEKBYUSERHOTELINBOOKINGANDORDER
+router.get(
+  "/hotel/info/lastweek/:id",
+  verifyUser,
+  getIncomeBookingAndOrderByEmployeeIdLastWeek
+);
+//GETINFOYESTERDAYBYUSERHOTELINBOOKINGANDORDER
+router.get(
+  "/hotel/info/yesterday/:id",
+  verifyUser,
+  getIncomeBookingAndOrderByEmployeeIdYesterday
+);
+//GETINFOTODAYBYUSERHOTELINBOOKINGANDORDER
+router.get(
+  "/hotel/info/today/:id",
+  verifyUser,
+  getIncomeBookingAndOrderByEmployeeIdToday
 );
 export default router;

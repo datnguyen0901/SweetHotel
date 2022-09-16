@@ -1,9 +1,7 @@
 import "./newRoom.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
-import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useEffect, useState } from "react";
-import { roomInputs } from "../../formSource";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -18,7 +16,7 @@ const EditRoom = ({ inputs, title }) => {
 
   const [t] = useTranslation("common");
 
-  const { data, loading, error } = useFetch("/hotels");
+  const { data, loading } = useFetch("/hotels");
   const dataRoom = useFetch(`/rooms/${id}`);
 
   //set hotelID to the info of the hotel
@@ -67,7 +65,7 @@ const EditRoom = ({ inputs, title }) => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Edit Room</h1>
+          <h1>{title}</h1>
         </div>
         <div className="bottom">
           <div className="right">

@@ -1,28 +1,20 @@
 import "../../components/datatable/datatable.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
-import { userColumns } from "../../datatablesource";
 import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 
 const RoomNumbers = ({ columns }) => {
   const [list, setList] = useState([]);
-  const navigate = useNavigate();
   const product = useParams();
   const id = product.roomId;
 
-  const { data, loading, error } = useFetch(
-    `/rooms/calendar/${id}`
-  );
+  const { data } = useFetch(`/rooms/calendar/${id}`);
 
   const [t] = useTranslation("common");
 
@@ -77,11 +69,11 @@ const RoomNumbers = ({ columns }) => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Calendar</h1>
+          <h1>{t("calendar")}</h1>
         </div>
         <div className="datatable">
           <div className="datatableTitle">
-            Manage Room Numbers
+            {t("manageCalendar")}
           </div>
           <DataGrid
             className="datagrid"

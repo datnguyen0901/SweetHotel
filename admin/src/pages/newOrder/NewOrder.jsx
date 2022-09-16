@@ -3,7 +3,6 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import React, { useState } from "react";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import { orderInputs, OrderInputs } from "../../formSource";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { Autocomplete, TextField } from "@mui/material";
@@ -117,7 +116,7 @@ const NewOrder = ({ inputs, title }) => {
             ...info,
             employeeId: user._id,
             serviceOrders,
-            totalPrice: total,
+            totalPaid: total,
           };
           await axios.post("/orders", newOrder);
           navigate("/orders");

@@ -9,6 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 const user = JSON.parse(localStorage.getItem("user"));
 
@@ -16,6 +17,8 @@ const ChartBookingLastYear = ({ aspect, title }) => {
   const bookingData = useFetch(
     `/bookings/hotel/income/lastyear/${user._id}`
   ).data;
+
+  const [t] = useTranslation("common");
 
   // convert object to array
   const data = Object.keys(bookingData).map(
@@ -34,7 +37,6 @@ const ChartBookingLastYear = ({ aspect, title }) => {
     const date = new Date(value);
     const month = date.getMonth();
     const quarterNo = Math.floor(month / 3) + 1;
-    const isMidMonth = month % 3 === 1;
 
     if (month % 3 === 1) {
       return (
@@ -66,7 +68,9 @@ const ChartBookingLastYear = ({ aspect, title }) => {
   return (
     // draw chart by data
     <div className="chart">
-      <div className="title">Data of Booking this year</div>
+      <div className="title">
+        {t("dataOf")} {t("bookingChart")} {t("lastYear")}
+      </div>
       <ResponsiveContainer width="100%" aspect={aspect}>
         <BarChart
           width={500}

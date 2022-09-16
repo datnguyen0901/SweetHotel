@@ -2,17 +2,13 @@ import "../../components/datatable/datatable.scss";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import Chart from "../../components/chart/Chart";
-import ChartBookingYear from "../../components/chart/ChartBookingYear";
-import ChartBookingLastYear from "../../components/chart/ChartBookingLastYear";
-import ChartBookingMonth from "../../components/chart/ChartBookingMonth";
-import ChartBookingWeek from "../../components/chart/ChartBookingWeek";
-import ChartBookingYesterday from "../../components/chart/ChartBookingYesterday";
-import ChartOrderYear from "../../components/chart/ChartOrderYear";
-import ChartOrderLastYear from "../../components/chart/ChartOrderLastYear";
-import ChartOrderLastMonth from "../../components/chart/ChartOrderLastMonth";
-import ChartOrderLastWeek from "../../components/chart/ChartOrderLastWeek";
-import ChartOrderYesterday from "../../components/chart/ChartOrderYesterday";
+import TableIncomeYear from "../../components/table/TableIncomeYear";
+import TableIncomeLastYear from "../../components/table/TableIncomeLastYear";
+import TableIncomeLastMonth from "../../components/table/TableIncomeLastMonth";
+import TableIncomeLastWeek from "../../components/table/TableIncomeLastWeek";
+import TableIncomeYesterday from "../../components/table/TableIncomeYesterday";
+import TableIncomeToday from "../../components/table/TableIncomeToday";
+import useFetch from "../../hooks/useFetch";
 
 const ViewAuditing = ({ columns }) => {
   const [t] = useTranslation("common");
@@ -29,46 +25,105 @@ const ViewAuditing = ({ columns }) => {
     refreshChart();
   };
 
-  function displayChart() {}
+  const userLogin = JSON.parse(
+    localStorage.getItem("user")
+  );
+  const user = useFetch(
+    `/users/employee/${userLogin._id}`
+  ).data;
+  //get ._id the first item in the user array
+  const userIdArray = user.map((user) => user._id);
+  // get 1st one
+  const userId = userIdArray[0];
+
+  const [employee, setEmployee] = useState();
+  const handleChangeEmployee = (e) => {
+    setEmployee(e.value);
+    refreshChart();
+  };
+
+  function displayTable() {
+    if (timeFrame === "year") {
+      return <TableIncomeYear />;
+    }
+    if (timeFrame === "lastYear") {
+      return <TableIncomeLastYear />;
+    }
+    if (timeFrame === "month") {
+      return <TableIncomeLastMonth />;
+    }
+    if (timeFrame === "week") {
+      return <TableIncomeLastWeek />;
+    }
+    if (timeFrame === "yesterday") {
+      return <TableIncomeYesterday />;
+    }
+    if (timeFrame === "today") {
+      if (employee) {
+        return <TableIncomeToday userId={employee} />;
+      } else {
+        return <TableIncomeToday userId={userId} />;
+      }
+    }
+  }
 
   return (
     <div className="datatable">
       <div className="datatableTitle">
-        <div>{t("Auditings")}</div>
+        {t("auditing")}
+
         <div>
           <button
             value={"today"}
             onClick={(e) => handleChangeTimeFrame(e.target)}
           >
-            Yesterday
+            {t("today")}
+          </button>
+          <button
+            value={"yesterday"}
+            onClick={(e) => handleChangeTimeFrame(e.target)}
+          >
+            {t("yesterday")}
           </button>
           <button
             value={"week"}
             onClick={(e) => handleChangeTimeFrame(e.target)}
           >
-            Last Week
+            {t("lastWeek")}
           </button>
           <button
             value={"month"}
             onClick={(e) => handleChangeTimeFrame(e.target)}
           >
-            Last Month
+            {t("lastMonth")}
           </button>
           <button
             value={"lastYear"}
             onClick={(e) => handleChangeTimeFrame(e.target)}
           >
-            Last Year
+            {t("lastYear")}
           </button>
           <button
             value={"year"}
             onClick={(e) => handleChangeTimeFrame(e.target)}
           >
-            This Yeah
+            {t("thisYear")}
           </button>
         </div>
       </div>
-      {displayChart()}
+      {user && timeFrame === "today"
+        ? user.map((user) => (
+            <button
+              value={user._id}
+              onClick={(e) =>
+                handleChangeEmployee(e.target)
+              }
+            >
+              {user.fullName}
+            </button>
+          ))
+        : null}
+      {displayTable()}
     </div>
   );
 };

@@ -290,7 +290,7 @@ const NewBooking = ({ inputs, title }) => {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Booking User"
+                      label={t("booking.selectBookingUser")}
                       variant="outlined"
                       margin="normal"
                       required

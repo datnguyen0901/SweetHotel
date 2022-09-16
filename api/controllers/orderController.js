@@ -208,7 +208,7 @@ export const getIncomeOrderByUserId = async (
       },
     });
     const total = orders.reduce((acc, order) => {
-      return acc + order.totalPrice;
+      return acc + order.totalPaid;
     }, 0);
     res.status(200).json(total);
   } catch (error) {

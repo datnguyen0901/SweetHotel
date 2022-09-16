@@ -17,12 +17,19 @@ const New = ({ inputs, title }) => {
   const [info, setInfo] = useState({});
   const [country, setCountry] = useState(undefined);
   const [region, setRegion] = useState(undefined);
-  const { data, loading, error } = useFetch(`/roles`);
+  const { data, loading } = useFetch(`/roles`);
   const navigate = useNavigate();
   const handleChange = (e) => {
     setInfo((prev) => ({
       ...prev,
       [e.target.id]: e.target.value,
+    }));
+  };
+
+  const handleCheckIsAdmin = (e) => {
+    setInfo((prev) => ({
+      ...prev,
+      isAdmin: e.target.checked,
     }));
   };
 
@@ -126,6 +133,20 @@ const New = ({ inputs, title }) => {
                   />
                 </div>
               ))}
+
+              <div className="formInput">
+                <label className="label">
+                  <div>{t("user.permission")}</div>
+                  <div>
+                    <input
+                      id="isAdmin"
+                      type="checkbox"
+                      defaultChecked={info.isAdmin}
+                      onChange={handleCheckIsAdmin}
+                    />
+                  </div>
+                </label>
+              </div>
 
               <div className="formInput">
                 <label className="label">

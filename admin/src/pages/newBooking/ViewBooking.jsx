@@ -147,7 +147,8 @@ const ViewBooking = ({ columns }) => {
   return (
     <div className="datatable">
       <div className="datatableTitle">
-        {t("dataTable.manage")} BOOKINGS
+        {t("dataTable.manage")}{" "}
+        {t("sidebar.lists.Bookings")}
         <Link to={`/bookings/new`} className="link">
           {t("dataTable.add")}
         </Link>

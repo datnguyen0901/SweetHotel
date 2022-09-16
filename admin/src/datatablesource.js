@@ -301,8 +301,8 @@ export const roomAttendantColumns = [
     width: 100,
   },
   {
-    field: "nextAvailableDate",
-    headerName: "Next Available Date",
+    field: "nextUnavailableDate",
+    headerName: "Next Unavailable Date",
     width: 230,
   },
   {

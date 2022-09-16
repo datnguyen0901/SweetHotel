@@ -57,7 +57,7 @@ export const updateRoomAvailability = async (
   }
 };
 
-// get roomNumbers from a rooom
+// get roomNumbers from a room
 export const getRoomNumbers = async (req, res, next) => {
   try {
     const room = await Room.findById(req.params.id);
@@ -206,7 +206,7 @@ export const getAvailableRoomsToday = async (
           title: room.title,
           available: isAvailable,
           today: todayGMT7,
-          nextAvailableDate: nextDate ? nextDate : null,
+          nextUnavailableDate: nextDate ? nextDate : null,
         };
       });
     });

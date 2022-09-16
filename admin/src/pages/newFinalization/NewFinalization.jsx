@@ -2,7 +2,6 @@ import "./newFinalization.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import React, { useEffect, useState } from "react";
-import { finalizationInputs } from "../../formSource";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
@@ -52,27 +51,27 @@ const NewFinalization = ({ inputs, title }) => {
         setTotalUnPaidValue(0);
       }
     }
-  }, [booking.data]);
+  }, [booking.data, navigate]);
 
   //get all order by bookingId
   const order = useFetch(`/orders/booking/${bookingId}`);
   useEffect(() => {
     if (order.data) {
-      order.data.map((item) => {
+      order.data.forEach((item) => {
         if (item.paymentMethod === "unpaid") {
           // sum all unpaid value
           let totalUnPaid = totalUnPaidValue;
-          totalUnPaid += item.totalPrice;
+          totalUnPaid += item.totalPaid;
           setTotalUnPaidValue(totalUnPaid);
         } else {
           // sum all paid value
           let totalPaid = totalPaidValue;
-          totalPaid += item.totalPrice;
+          totalPaid += item.totalPaid;
           setTotalPaidValue(totalPaid);
         }
       });
     }
-  }, [order.data]);
+  }, [order.data, totalPaidValue, totalUnPaidValue]);
 
   const handleChange = (e) => {
     setInfo((prev) => ({

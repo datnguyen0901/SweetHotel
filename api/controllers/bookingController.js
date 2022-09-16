@@ -3,6 +3,7 @@ import Room from "../models/Room.js";
 import User from "../models/User.js";
 import Role from "../models/Role.js";
 import Order from "../models/Order.js";
+import Finalization from "../models/Finalization.js";
 import moment from "moment";
 
 export const createBooking = async (req, res, next) => {
@@ -816,10 +817,7 @@ export const getIncomeBookingAndOrderByEmployeeIdThisYear =
               order.bookingId.toString() ===
               booking._id.toString()
           )
-          .reduce(
-            (acc, order) => acc + order.totalPrice,
-            0
-          );
+          .reduce((acc, order) => acc + order.totalPaid, 0);
         acc[month].total =
           acc[month].totalIncomeBooking +
           acc[month].totalIncomeOrder;
@@ -914,15 +912,404 @@ export const getIncomeBookingAndOrderByEmployeeIdLastYear =
               order.bookingId.toString() ===
               booking._id.toString()
           )
-          .reduce(
-            (acc, order) => acc + order.totalPrice,
-            0
-          );
+          .reduce((acc, order) => acc + order.totalPaid, 0);
         acc[month].total =
           acc[month].totalIncomeBooking +
           acc[month].totalIncomeOrder;
         return acc;
       }, {});
+      res.status(200).json(income);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+// get booking and order, count the number and sum of totalPaid of booking and order by employeeId of 4 weeks in last month
+export const getIncomeBookingAndOrderByEmployeeIdLastMonth =
+  async (req, res, next) => {
+    try {
+      // get roldId by userId
+      const user = await User.findById(req.params.id);
+      const roleId = user.roleId;
+      // get hotelId by roleId
+      const role = await Role.findById(roleId);
+      const hotelId = role.hotelId;
+      // get all role if hotelId === hotelId
+      const roles = await Role.find({ hotelId: hotelId });
+      // get all employeeId by roles.map(role => role._id)
+      const users = await User.find({
+        roleId: {
+          $in: roles.map((role) => role._id),
+        },
+      });
+      // get date this year
+      const thisYear = new Date();
+      // set lastMonthUTCStart to 00:00:00
+      const lastMonthUTCStart = new Date(
+        Date.UTC(
+          thisYear.getFullYear(),
+          thisYear.getMonth() - 1,
+          1,
+          0,
+          0,
+          0
+        )
+      );
+      // set lastMonthUTCEnd to 23:59:59
+      const lastMonthUTCEnd = new Date(
+        Date.UTC(
+          thisYear.getFullYear(),
+          thisYear.getMonth() - 1,
+          31,
+          23,
+          59,
+          59
+        )
+      );
+
+      const bookings = await Booking.find({
+        employeeId: {
+          $in: users.map((user) => user._id),
+        },
+        // checkinDate in this year
+        checkinDate: {
+          $gte: lastMonthUTCStart,
+          $lte: lastMonthUTCEnd,
+        },
+      });
+      const orders = await Order.find({
+        bookingId: {
+          $in: bookings.map((booking) => booking._id),
+        },
+      });
+      const income = bookings.reduce((acc, booking) => {
+        // split into 4 weeks
+        const week = Math.ceil(
+          booking.checkinDate.getDate() / 7
+        );
+        // set weekName = First Week, Second Week, Third Week, Fourth Week
+        const weekName = `Week ${week}`;
+
+        if (!acc[week]) {
+          acc[week] = {
+            name: weekName,
+            booking: 0,
+            totalIncomeBooking: 0,
+            order: 0,
+            totalIncomeOrder: 0,
+            total: 0,
+          };
+        }
+        // get count booking and order, sum totalPaid of booking and order
+        acc[week].booking += 1;
+        acc[week].totalIncomeBooking += booking.totalPaid;
+        acc[week].order += orders.filter(
+          (order) =>
+            order.bookingId.toString() ===
+            booking._id.toString()
+        ).length;
+        acc[week].totalIncomeOrder += orders
+          .filter(
+            (order) =>
+              order.bookingId.toString() ===
+              booking._id.toString()
+          )
+          .reduce((acc, order) => acc + order.totalPaid, 0);
+        acc[week].total =
+          acc[week].totalIncomeBooking +
+          acc[week].totalIncomeOrder;
+        return acc;
+      }, {});
+      res.status(200).json(income);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+// get booking and order, count the number and sum of totalPaid of booking and order by employeeId of each day in last week
+export const getIncomeBookingAndOrderByEmployeeIdLastWeek =
+  async (req, res, next) => {
+    try {
+      // get roldId by userId
+      const user = await User.findById(req.params.id);
+      const roleId = user.roleId;
+      // get hotelId by roleId
+      const role = await Role.findById(roleId);
+      const hotelId = role.hotelId;
+      // get all role if hotelId === hotelId
+      const roles = await Role.find({ hotelId: hotelId });
+      // get all employeeId by roles.map(role => role._id)
+      const users = await User.find({
+        roleId: {
+          $in: roles.map((role) => role._id),
+        },
+      });
+      // get date this year
+      const thisYear = new Date();
+      // set lastWeekUTCStart to 00:00:00
+      const lastWeekUTCStart = new Date(
+        Date.UTC(
+          thisYear.getFullYear(),
+          thisYear.getMonth(),
+          thisYear.getDate() - 7,
+          0,
+          0,
+          0
+        )
+      );
+      // set lastWeekUTCEnd to 23:59:59
+      const lastWeekUTCEnd = new Date(
+        Date.UTC(
+          thisYear.getFullYear(),
+          thisYear.getMonth(),
+          thisYear.getDate() - 1,
+          23,
+          59,
+          59
+        )
+      );
+
+      const bookings = await Booking.find({
+        employeeId: {
+          $in: users.map((user) => user._id),
+        },
+        // checkinDate in this year
+        checkinDate: {
+          $gte: lastWeekUTCStart,
+          $lte: lastWeekUTCEnd,
+        },
+      });
+      const orders = await Order.find({
+        bookingId: {
+          $in: bookings.map((booking) => booking._id),
+        },
+      });
+      const income = bookings.reduce((acc, booking) => {
+        const day = booking.checkinDate.getDate();
+        // convert day to English
+        const dayName = new Intl.DateTimeFormat("en-US", {
+          weekday: "long",
+        }).format(new Date(booking.checkinDate));
+
+        if (!acc[day]) {
+          acc[day] = {
+            name: dayName,
+            booking: 0,
+            totalIncomeBooking: 0,
+            order: 0,
+            totalIncomeOrder: 0,
+            total: 0,
+          };
+        }
+        // get count booking and order, sum totalPaid of booking and order
+        acc[day].booking += 1;
+        acc[day].totalIncomeBooking += booking.totalPaid;
+        acc[day].order += orders.filter(
+          (order) =>
+            order.bookingId.toString() ===
+            booking._id.toString()
+        ).length;
+        acc[day].totalIncomeOrder += orders
+          .filter(
+            (order) =>
+              order.bookingId.toString() ===
+              booking._id.toString()
+          )
+          .reduce((acc, order) => acc + order.totalPaid, 0);
+        acc[day].total =
+          acc[day].totalIncomeBooking +
+          acc[day].totalIncomeOrder;
+        return acc;
+      }, {});
+      res.status(200).json(income);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+// get booking and order, count the number and sum of totalPaid of booking and order by employeeId of each hour in yesterday
+export const getIncomeBookingAndOrderByEmployeeIdYesterday =
+  async (req, res, next) => {
+    try {
+      // get roldId by userId
+      const user = await User.findById(req.params.id);
+      const roleId = user.roleId;
+      // get hotelId by roleId
+      const role = await Role.findById(roleId);
+      const hotelId = role.hotelId;
+      // get all role if hotelId === hotelId
+      const roles = await Role.find({ hotelId: hotelId });
+      // get all employeeId by roles.map(role => role._id)
+      const users = await User.find({
+        roleId: {
+          $in: roles.map((role) => role._id),
+        },
+      });
+      // get date this year
+      const thisYear = new Date();
+      // set yesterdayUTCStart to 00:00:00
+      const yesterdayUTCStart = new Date(
+        Date.UTC(
+          thisYear.getFullYear(),
+          thisYear.getMonth(),
+          thisYear.getDate() - 1,
+          0,
+          0,
+          0
+        )
+      );
+      // set yesterdayUTCEnd to 23:59:59
+      const yesterdayUTCEnd = new Date(
+        Date.UTC(
+          thisYear.getFullYear(),
+          thisYear.getMonth(),
+          thisYear.getDate() - 1,
+          23,
+          59,
+          59
+        )
+      );
+
+      const bookings = await Booking.find({
+        employeeId: {
+          $in: users.map((user) => user._id),
+        },
+        // checkinDate in this year
+        checkinDate: {
+          $gte: yesterdayUTCStart,
+          $lte: yesterdayUTCEnd,
+        },
+      });
+      const orders = await Order.find({
+        bookingId: {
+          $in: bookings.map((booking) => booking._id),
+        },
+      });
+      const income = bookings.reduce((acc, booking) => {
+        // convert booking.checkinDate to UTC
+        const hour = booking.checkinDate.getUTCHours();
+        // convert hour to English +7 hours
+        const hourName = new Intl.DateTimeFormat("en-US", {
+          hour: "numeric",
+          hour12: true,
+        }).format(
+          new Date(
+            booking.checkinDate.setHours(
+              booking.checkinDate.getHours() - 7
+            )
+          )
+        );
+
+        if (!acc[hour]) {
+          acc[hour] = {
+            name: hourName,
+            booking: 0,
+            totalIncomeBooking: 0,
+            order: 0,
+            totalIncomeOrder: 0,
+            total: 0,
+          };
+        }
+        // get count booking and order, sum totalPaid of booking and order
+        acc[hour].booking += 1;
+        acc[hour].totalIncomeBooking += booking.totalPaid;
+        acc[hour].order += orders.filter(
+          (order) =>
+            order.bookingId.toString() ===
+            booking._id.toString()
+        ).length;
+        acc[hour].totalIncomeOrder += orders
+          .filter(
+            (order) =>
+              order.bookingId.toString() ===
+              booking._id.toString()
+          )
+          .reduce((acc, order) => acc + order.totalPaid, 0);
+        acc[hour].total =
+          acc[hour].totalIncomeBooking +
+          acc[hour].totalIncomeOrder;
+        return acc;
+      }, {});
+      res.status(200).json(income);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+// get booking and order by employeeId today
+export const getIncomeBookingAndOrderByEmployeeIdToday =
+  async (req, res, next) => {
+    try {
+      const todayUTCStart = new Date(
+        Date.UTC(
+          new Date().getFullYear(),
+          new Date().getMonth(),
+          new Date().getDate(),
+          0,
+          0,
+          0
+        )
+      );
+      const todayUTCEnd = new Date(
+        Date.UTC(
+          new Date().getFullYear(),
+          new Date().getMonth(),
+          new Date().getDate(),
+          23,
+          59,
+          59
+        )
+      );
+
+      // get all booking and order by employeeId today by createdAt
+      const bookings = await Booking.find({
+        employeeId: req.params.id,
+        createdAt: {
+          $gte: todayUTCStart,
+          $lte: todayUTCEnd,
+        },
+      });
+      // add checkingType = "booking" to booking
+      const bookingsWithCheckingType = bookings.map(
+        (booking) => ({
+          ...booking._doc,
+          checkingType: "booking",
+        })
+      );
+      const orders = await Order.find({
+        employeeId: req.params.id,
+        createdAt: {
+          $gte: todayUTCStart,
+          $lte: todayUTCEnd,
+        },
+      });
+      // add checkingType = "order" to order
+      const ordersWithCheckingType = orders.map(
+        (order) => ({
+          ...order._doc,
+          checkingType: "order",
+        })
+      );
+      const finalizations = await Finalization.find({
+        employeeId: req.params.id,
+        paymentMethod: "cash",
+        createdAt: {
+          $gte: todayUTCStart,
+          $lte: todayUTCEnd,
+        },
+      });
+      // add checkingType = "finalization" to finalization
+      const finalizationsWithCheckingType =
+        finalizations.map((finalization) => ({
+          ...finalization._doc,
+          checkingType: "finalization",
+        }));
+      //merge bookingsWithCheckingType and ordersWithCheckingType and finalizationsWithCheckingType
+      const income = [
+        ...bookingsWithCheckingType,
+        ...ordersWithCheckingType,
+        ...finalizationsWithCheckingType,
+      ];
       res.status(200).json(income);
     } catch (error) {
       next(error);

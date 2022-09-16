@@ -10,6 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 const user = JSON.parse(localStorage.getItem("user"));
 
@@ -17,6 +18,8 @@ const ChartBookingYear = ({ aspect, title }) => {
   const bookingData = useFetch(
     `/bookings/hotel/income/year/${user._id}`
   ).data;
+
+  const [t] = useTranslation("common");
 
   // convert object to array
   const data = Object.keys(bookingData).map(
@@ -26,7 +29,7 @@ const ChartBookingYear = ({ aspect, title }) => {
   return (
     // draw chart by data
     <div className="chart">
-      <div className="title">Data of Booking this year</div>
+      <div className="title">{t("dataOf")} {t("bookingChart")} {t("thisYear")}</div>
       <ResponsiveContainer width="100%" aspect={aspect}>
         <BarChart width={1500} height={600} data={data}>
           <XAxis dataKey="name" stroke="#8884d8" />

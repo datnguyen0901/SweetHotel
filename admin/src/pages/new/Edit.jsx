@@ -20,7 +20,7 @@ const Edit = ({ inputs, title }) => {
   const [info, setInfo] = useState({});
   const [country, setCountry] = useState(undefined);
   const [region, setRegion] = useState(undefined);
-  const { data, loading, error } = useFetch(`/users/${id}`);
+  const { data, loading } = useFetch(`/users/${id}`);
   const dataRole = useFetch(`/roles`);
 
   const [t] = useTranslation("common");
@@ -38,6 +38,13 @@ const Edit = ({ inputs, title }) => {
     setInfo((prev) => ({
       ...prev,
       [e.target.id]: e.target.value,
+    }));
+  };
+
+  const handleCheckIsAdmin = (e) => {
+    setInfo((prev) => ({
+      ...prev,
+      isAdmin: e.target.checked,
     }));
   };
 
@@ -123,6 +130,20 @@ const Edit = ({ inputs, title }) => {
                   />
                 </div>
               ))}
+
+              <div className="formInput">
+                <label className="label">
+                  <div>{t("user.permission")}</div>
+                  <div>
+                    <input
+                      id="isAdmin"
+                      type="checkbox"
+                      defaultChecked={info.isAdmin}
+                      onChange={handleCheckIsAdmin}
+                    />
+                  </div>
+                </label>
+              </div>
 
               <div className="formInput">
                 <label className="label">

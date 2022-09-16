@@ -1,28 +1,19 @@
 import "../../components/datatable/datatable.scss";
 import { DataGrid } from "@mui/x-data-grid";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
 import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
-import axios from "axios";
 import { useTranslation } from "react-i18next";
 import CircleIcon from "@mui/icons-material/Circle";
 
 const ViewRoomAttendant = ({ columns }) => {
   const [list, setList] = useState([]);
   const [t] = useTranslation("common");
-
-  const navigate = useNavigate();
   // get hotelId from login user by roleId
   const user = JSON.parse(localStorage.getItem("user"));
   // get hotelId from role by roleId
   const role = useFetch(`/roles/${user.roleId}`);
   const hotelId = role.data.hotelId;
-  const hotelData = useFetch(`/hotels/find/${hotelId}`);
-  const { data, loading, error } = useFetch(
+  const { data } = useFetch(
     `/rooms/today/availability/${hotelId}`
   );
 
@@ -31,8 +22,6 @@ const ViewRoomAttendant = ({ columns }) => {
       setList(data);
     }
   }, [data]);
-
-  console.log(data);
   const actionColumn = [
     {
       field: "action",

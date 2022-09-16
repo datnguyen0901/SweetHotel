@@ -10,6 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 const user = JSON.parse(localStorage.getItem("user"));
 
@@ -17,6 +18,8 @@ const ChartBookingWeek = ({ aspect, title }) => {
   const bookingData = useFetch(
     `/bookings/hotel/income/week/${user._id}`
   ).data;
+
+  const [t] = useTranslation("common");
 
   // convert object to array
   const data = Object.keys(bookingData).map(
@@ -26,7 +29,9 @@ const ChartBookingWeek = ({ aspect, title }) => {
   return (
     // draw chart by data
     <div className="chart">
-      <div className="title">Data of Booking this year</div>
+      <div className="title">
+        {t("dataOf")} {t("bookingChart")} {t("lastWeek")}
+      </div>
       <ResponsiveContainer width="100%" aspect={aspect}>
         <LineChart width={500} height={300} data={data}>
           <CartesianGrid strokeDasharray="3 3" />

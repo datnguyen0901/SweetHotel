@@ -159,8 +159,8 @@ const EditBooking = ({ inputs, title }) => {
   const handleChange = (e) => {
     if (info.type === "hour") {
       //get price of the room
-      data.map((item) => {
-        item.roomNumbers.map((room) => {
+      data.forEach((item) => {
+        item.roomNumbers.forEach((room) => {
           if (room._id === bookingData.data.roomId) {
             setPrice(item.price);
           }
@@ -340,7 +340,7 @@ const EditBooking = ({ inputs, title }) => {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Do not change if not necessary"
+                      label={t("booking.alert")}
                       variant="outlined"
                       margin="normal"
                       required
@@ -361,7 +361,7 @@ const EditBooking = ({ inputs, title }) => {
                                 navigate("/users");
                               }}
                             />{" "}
-                            {t("booking.createuser")}
+                            {t("booking.createUser")}
                           </React.Fragment>
                         ),
                       }}
