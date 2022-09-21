@@ -46,13 +46,9 @@ const EditRoom = ({ inputs, title }) => {
 
   const handleClick = async (e) => {
     e.preventDefault();
-    const roomNumbers = rooms
-      .split(",")
-      .map((room) => ({ number: room }));
     try {
       await axios.put(`/rooms/${id}`, {
         ...info,
-        roomNumbers,
       });
       navigate("/rooms");
     } catch (err) {
@@ -85,6 +81,7 @@ const EditRoom = ({ inputs, title }) => {
               <div className="formInput">
                 <label>{t("rooms.rooms")}</label>
                 <textarea
+                  disabled
                   defaultValue={rooms}
                   onChange={(e) => setRooms(e.target.value)}
                   placeholder="give comma between room numbers."

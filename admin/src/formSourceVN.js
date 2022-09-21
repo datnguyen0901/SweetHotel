@@ -134,13 +134,13 @@ export const bookingInputsVN = [
   {
     id: "checkinDate",
     label: "Ngày đến",
-    type: "date",
+    type: "datetime-local",
     placeholder: "2020-01-01",
   },
   {
     id: "checkoutDate",
     label: "Ngày đi",
-    type: "date",
+    type: "datetime-local",
     placeholder: "2020-01-01",
   },
   {

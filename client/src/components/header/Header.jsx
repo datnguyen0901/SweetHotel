@@ -3,21 +3,31 @@ import {
   faCalendarDays,
   faPerson,
   faBell,
+  faCalendarMinus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./header.css";
 import { DateRange } from "react-date-range";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { format } from "date-fns";
-import { useNavigate } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { SearchContext } from "../../context/SearchContext";
 import { AuthContext } from "../../context/AuthContext";
+import useFetch from "../../hooks/useFetch";
+import { Autocomplete, TextField } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const Header = ({ type }) => {
   const [destination, setDestination] = useState("");
   const [openDate, setOpenDate] = useState(false);
+  const [t] = useTranslation("common");
+  const hotelData = useFetch("hotels/getname/city");
   const [dates, setDates] = useState([
     {
       startDate: new Date(),
@@ -25,6 +35,10 @@ const Header = ({ type }) => {
       key: "selection",
     },
   ]);
+  //get path from the link
+  const location = useLocation();
+  const path = location.pathname.split("/")[1];
+
   const [openOptions, setOpenOptions] = useState(false);
   const [options, setOptions] = useState({
     adult: 1,
@@ -49,6 +63,11 @@ const Header = ({ type }) => {
 
   const { dispatch } = useContext(SearchContext);
 
+  const handleSearchDestination = (e, value) => {
+    const city = value.city;
+    setDestination(city);
+  };
+
   const handleSearch = () => {
     dispatch({
       type: "NEW_SEARCH",
@@ -69,12 +88,37 @@ const Header = ({ type }) => {
         }
       >
         <div className="headerList">
-          <div className="headerListItem active">
+          <div
+            className={
+              path === ""
+                ? "headerListItem active"
+                : "headerListItem"
+            }
+            onClick={() => navigate("/")}
+          >
             <FontAwesomeIcon icon={faBed} />
             <span>Stays</span>
           </div>
-          <div className="headerListItem">
-            <FontAwesomeIcon icon={faBell} />{" "}
+          <div
+            className={
+              path === "booking"
+                ? "headerListItem active"
+                : "headerListItem"
+            }
+            onClick={() => navigate("/booking")}
+          >
+            <FontAwesomeIcon icon={faCalendarMinus} />
+            <span>Booking</span>
+          </div>
+          <div
+            className={
+              path === "order"
+                ? "headerListItem active"
+                : "headerListItem"
+            }
+            onClick={() => navigate("/order")}
+          >
+            <FontAwesomeIcon icon={faBell} />
             <span>Orders</span>
           </div>
         </div>
@@ -102,13 +146,26 @@ const Header = ({ type }) => {
                   icon={faBed}
                   className="headerIcon"
                 />
-                <input
-                  type="text"
-                  placeholder="Where are you going?"
-                  className="headerSearchInput"
-                  onChange={(e) =>
-                    setDestination(e.target.value)
-                  }
+                <Autocomplete
+                  id="city"
+                  options={hotelData.data}
+                  key={hotelData.data}
+                  getOptionLabel={(option) => option.city}
+                  style={{ width: 250 }}
+                  onChange={handleSearchDestination}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      className="headerSearchText"
+                      label="Where are you going?"
+                      variant="standard"
+                      required
+                      id="city"
+                      InputProps={{
+                        ...params.InputProps,
+                      }}
+                    />
+                  )}
                 />
               </div>
               <div className="headerSearchItem">

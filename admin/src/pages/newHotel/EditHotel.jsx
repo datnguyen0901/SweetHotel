@@ -78,6 +78,8 @@ const EditHotel = ({ inputs, title }) => {
 
       const EditHotel = {
         ...info,
+        country: country,
+        city: region,
         rooms,
         photos: list,
       };
@@ -104,8 +106,8 @@ const EditHotel = ({ inputs, title }) => {
             <img
               src={
                 files
-                  ? URL.createObjectURL(files)
-                  : dataHotel.data.img
+                  ? URL.createObjectURL(files[0])
+                  : dataHotel.data.photos
               }
               alt=""
             />
@@ -193,9 +195,11 @@ const EditHotel = ({ inputs, title }) => {
                   </select>
                 </div>
               </div>
-              <button onClick={handleClick}>
-                {t("edit")}
-              </button>
+              <div className="formInput">
+                <button onClick={handleClick}>
+                  {t("edit")}
+                </button>
+              </div>
             </form>
           </div>
         </div>

@@ -47,7 +47,7 @@ const Navbar = () => {
                   className="avatar"
                 />
                 <label className="username">
-                  {user.username}
+                  {user.fullName}
                   {" |"}
                   <select
                     className="accountSelect"

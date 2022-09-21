@@ -2,9 +2,11 @@ import mongoose from "mongoose";
 
 const BookingSchema = new mongoose.Schema(
   {
+    // roomId is the id of roomNumber in roomNumber collection in room
     roomId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Room",
+      path: "roomNumbers",
       required: true,
     },
     userId: {

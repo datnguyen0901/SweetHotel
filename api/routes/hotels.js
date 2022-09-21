@@ -9,6 +9,8 @@ import {
   countByCity,
   countByType,
   getHotelRooms,
+  getHotelCities,
+  getHotelIdByRoomId,
 } from "../controllers/hotelController.js";
 import { createError } from "../utils/error.js";
 import {
@@ -32,5 +34,11 @@ router.get("/", getHotels);
 router.get("/countByCity", countByCity);
 router.get("/countByType", countByType);
 router.get("/room/:id", getHotelRooms);
+
+//GETALLHOTELCITY
+router.get("/getname/city", getHotelCities);
+
+//GETHOTELIDBYROOMID
+router.get("/gethotelid/:id", getHotelIdByRoomId);
 
 export default router;

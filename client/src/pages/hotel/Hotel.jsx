@@ -10,11 +10,10 @@ import {
   faCircleXmark,
   faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
-import { useState, useContext } from "react";
+import { useContext, useState } from "react";
+import useFetch from "../../hooks/useFetch";
 import { useLocation, useNavigate } from "react-router-dom";
-import useFetch from "../../hooks/useFetch.js";
 import { SearchContext } from "../../context/SearchContext";
-import { endOfDecadeWithOptions } from "date-fns/fp";
 import { AuthContext } from "../../context/AuthContext";
 import Reserve from "../../components/reserve/Reserve";
 
@@ -31,10 +30,21 @@ const Hotel = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const { dates, options } = useContext(SearchContext);
+  const getDate = JSON.parse(
+    localStorage.getItem("search")
+  );
+
+  const dates = getDate.dates;
+
+  const options = getDate.options;
+
+  console.log(dates);
 
   const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
-  function dayDifference(date1, date2) {
+  function dayDifference(startDate, endDate) {
+    //convert startDay and endDay to getTime() format
+    const date1 = new Date(startDate);
+    const date2 = new Date(endDate);
     const timeDiff = Math.abs(
       date2.getTime() - date1.getTime()
     );
@@ -75,7 +85,6 @@ const Hotel = () => {
       navigate("/login");
     }
   };
-
   return (
     <div>
       <Navbar />
@@ -112,8 +121,8 @@ const Hotel = () => {
           )}
           <div className="hotelWrapper">
             <button
-              onClick={handleClick}
               className="bookNow"
+              onClick={handleClick}
             >
               Reserve or Book Now!
             </button>
@@ -123,7 +132,7 @@ const Hotel = () => {
               <span>{data.address}</span>
             </div>
             <span className="hotelDistance">
-              Excellent location – {data.distance} from
+              Excellent location – {data.distance}m from
               center
             </span>
             <span className="hotelPriceHighlight">

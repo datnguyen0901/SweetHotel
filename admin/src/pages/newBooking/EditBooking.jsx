@@ -29,11 +29,39 @@ const EditBooking = ({ inputs, title }) => {
   const { data } = useFetch(`/hotels/room/${hotelId}`);
   const bookingData = useFetch(`/bookings/${id}`);
 
+  const getDatesInRange = (checkinDate, checkoutDate) => {
+    const start = new Date(checkinDate);
+    const end = new Date(checkoutDate);
+
+    const date = new Date(start.getTime());
+
+    const dates = [];
+
+    while (date < end) {
+      if (date) dates.push(new Date(date).getTime());
+      date.setDate(date.getDate() + 1);
+    }
+
+    return dates;
+  };
+
+  const alldates = getDatesInRange(
+    moment(bookingData.data.checkinDate)
+      .add(7, "hours")
+      .format("YYYY-MM-DDTHH:mm"),
+    moment(bookingData.data.checkoutDate)
+      .add(7, "hours")
+      .format("YYYY-MM-DDTHH:mm")
+  );
+
+  const allDatesInfo = getDatesInRange(
+    info.checkinDate,
+    info.checkoutDate
+  );
+
+  console.log(info.checkinDate, info.checkoutDate);
+
   const deleteRoomCalendar = async () => {
-    const alldates = getDatesInRange(
-      bookingData.data.checkinDate,
-      bookingData.data.checkoutDate
-    );
     await axios.delete(
       `/rooms/availability/delete/${bookingData.data.roomId}`,
       {
@@ -47,6 +75,7 @@ const EditBooking = ({ inputs, title }) => {
   function refreshPage() {
     deleteRoomCalendar();
     window.location.reload(false);
+    setSelectedRooms([]);
   }
 
   useEffect(() => {
@@ -70,27 +99,6 @@ const EditBooking = ({ inputs, title }) => {
       });
     }
   }, [bookingData.data]);
-
-  const getDatesInRange = (checkinDate, checkoutDate) => {
-    const start = new Date(checkinDate);
-    const end = new Date(checkoutDate);
-
-    const date = new Date(start.getTime());
-
-    const dates = [];
-
-    while (date < end) {
-      if (date) dates.push(new Date(date).getTime());
-      date.setDate(date.getDate() + 1);
-    }
-
-    return dates;
-  };
-
-  const alldates = getDatesInRange(
-    info.checkinDate,
-    info.checkoutDate
-  );
 
   const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
   function dayDifference(checkinDate, checkoutDate) {
@@ -128,11 +136,18 @@ const EditBooking = ({ inputs, title }) => {
     const checked = e.target.checked;
     const value = e.target.value;
     const price = e.target.name;
-    setSelectedRooms(
-      checked
-        ? [...selectedRooms, value]
-        : selectedRooms.filter((item) => item !== value)
-    );
+    // only select 1 room
+    if (checked) {
+      if (selectedRooms.length === 0) {
+        setSelectedRooms([...selectedRooms, value]);
+        setPrice(checked ? price : 0);
+      } else {
+        alert("You can only select 1 room");
+        setSelectedRooms([]);
+        setPrice({});
+        return;
+      }
+    }
     setPrice(checked ? price : 0);
     setInfo((prev) => ({
       ...prev,
@@ -239,7 +254,7 @@ const EditBooking = ({ inputs, title }) => {
             const res = axios.put(
               `/rooms/availability/${roomId}`,
               {
-                dates: alldates,
+                dates: allDatesInfo,
               }
             );
             return res.data;
@@ -402,10 +417,9 @@ const EditBooking = ({ inputs, title }) => {
                               name={item.price}
                               key={roomNumber._id}
                               value={roomNumber._id}
-                              defaultChecked={
-                                roomNumber._id ===
-                                bookingData.data.roomId
-                              }
+                              checked={selectedRooms.includes(
+                                roomNumber._id
+                              )}
                               onChange={handleSelect}
                               disabled={
                                 !isAvailable(roomNumber)

@@ -74,7 +74,7 @@ export const deleteRoomAvailability = async (
   next
 ) => {
   try {
-    await Room.update(
+    await Room.updateOne(
       { "roomNumbers._id": req.params.id },
       {
         $pullAll: {

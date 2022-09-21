@@ -1,27 +1,36 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
-
 import "./reserve.css";
 import useFetch from "../../hooks/useFetch";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SearchContext } from "../../context/SearchContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { format, set, setDate } from "date-fns";
 
 const Reserve = ({ setOpen, hotelId }) => {
   const [selectedRooms, setSelectedRooms] = useState([]);
   const { data, loading, error } = useFetch(
     `/hotels/room/${hotelId}`
   );
-  const { dates } = useContext(SearchContext);
+  const [price, setPrice] = useState({});
+  const user = JSON.parse(localStorage.getItem("user"));
+  const getDate = JSON.parse(
+    localStorage.getItem("search")
+  );
+
+  const dates = getDate.dates;
 
   const getDatesInRange = (startDate, endDate) => {
+    // plus 1 day to start
     const start = new Date(startDate);
     const end = new Date(endDate);
 
     const date = new Date(start.getTime());
 
-    while ((date = end)) {
+    const dates = [];
+
+    while (date < end) {
       dates.push(new Date(date).getTime());
       date.setDate(date.getDate() + 1);
     }
@@ -45,29 +54,71 @@ const Reserve = ({ setOpen, hotelId }) => {
   const handleSelect = (e) => {
     const checked = e.target.checked;
     const value = e.target.value;
-    setSelectedRooms(
-      checked
-        ? [...selectedRooms, value]
-        : selectedRooms.filter((item) => item !== value)
-    );
+    const price = Number(e.target.name);
+    // only select 1 room
+    if (checked) {
+      if (selectedRooms.length === 0) {
+        setSelectedRooms([...selectedRooms, value]);
+        setPrice(checked ? price : 0);
+      } else {
+        alert("You can only select 1 room");
+        setSelectedRooms([]);
+        setPrice({});
+        return;
+      }
+    }
   };
+
+  const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+  function dayDifference(checkinDate, checkoutDate) {
+    const start = new Date(checkinDate);
+    const end = new Date(checkoutDate);
+    const timeDiff = Math.abs(
+      end.getTime() - start.getTime()
+    );
+    const diffDays = Math.ceil(
+      timeDiff / MILLISECONDS_PER_DAY
+    );
+    return diffDays;
+  }
+
+  const numberNight = dayDifference(
+    dates[0].startDate,
+    dates[0].endDate
+  );
+  console.log(dates[0].startDate, dates[0].endDate);
 
   const navigate = useNavigate();
 
   const handleClick = async () => {
     try {
       await Promise.all(
-        selectedRooms.map((roomId) => {
+        selectedRooms.map(async (roomId) => {
           const res = axios.put(
             `/rooms/availability/${roomId}`,
             {
               dates: alldates,
             }
           );
+          const newBooking = {
+            roomId: roomId,
+            userId: user._id,
+            status: "waiting",
+            addIn: false,
+            type: "day",
+            checkinDate: dates[0].startDate,
+            checkoutDate: dates[0].endDate,
+            employeeId: "628ca6d82d06ce64f49a1882",
+            paymentMethod: "unpaid",
+            totalPaid: numberNight * price,
+          };
+
+          await axios.post("/bookings", newBooking);
           return res.data;
         })
       );
       setOpen(false);
+
       navigate("/");
     } catch (err) {}
   };
@@ -86,7 +137,9 @@ const Reserve = ({ setOpen, hotelId }) => {
               <div className="rTitle">{item.title}</div>
               <div className="rDesc">{item.desc}</div>
               <div className="rMax">
-                Max people: <b>{item.maxPeople}</b>
+                Max people({item.maxPeople} adults and{" "}
+                {Math.round(item.maxPeople / 2)} kid):{" "}
+                <b>{item.maxPeople}</b>
               </div>
               <div className="rPrice">{item.price}</div>
             </div>
@@ -97,6 +150,10 @@ const Reserve = ({ setOpen, hotelId }) => {
                   <input
                     type="checkbox"
                     value={roomNumber._id}
+                    name={item.price}
+                    checked={selectedRooms.includes(
+                      roomNumber._id
+                    )}
                     onChange={handleSelect}
                     disabled={!isAvailable(roomNumber)}
                   />

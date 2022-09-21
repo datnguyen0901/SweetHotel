@@ -22,6 +22,11 @@
   margin-bottom: 50px;
 }
 
+.headerList:hover {
+  font-weight: bolder;
+  cursor: pointer;
+}
+
 .headerListItem {
   display: flex;
   align-items: center;
@@ -31,7 +36,7 @@
 .headerListItem.active {
   border: 1px solid white;
   padding: 10px;
-  border-radius: 20px;
+  border-radius: 10px;
 }
 
 .headerDesc {
@@ -60,6 +65,7 @@
   bottom: -25px;
   width: 100%;
   max-width: 1024px;
+  margin-bottom: 20px;
 }
 
 .headerIcon {
@@ -67,6 +73,7 @@
 }
 
 .headerSearchItem {
+  width: fit-content;
   display: flex;
   align-items: center;
   gap: 10px;

@@ -66,12 +66,46 @@ export const getBookings = async (req, res, next) => {
       });
     });
     const roomNumbersFlat = roomNumbers.flat();
+    //booking.roomId.toString()
     const bookingRoomNumbers = bookings.map((booking) => {
       return {
         ...booking._doc,
         roomNumber: roomNumbersFlat.find(
           (roomNumber) =>
-            roomNumber._id.toString() ===
+            roomNumber._id.toString() ==
+            booking.roomId.toString()
+        ).number,
+      };
+    });
+    res.status(200).json(bookingRoomNumbers);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getBookingsByUser = async (req, res, next) => {
+  try {
+    // by userId status = open or waiting
+    const bookings = await Booking.find({
+      userId: req.params.id,
+      status: { $in: ["open", "waiting"] },
+    }).sort({ status: -1 });
+    const rooms = await Room.find();
+    const roomNumbers = rooms.map((room) => {
+      return room.roomNumbers.map((roomNumber) => {
+        return {
+          _id: roomNumber._id,
+          number: roomNumber.number,
+        };
+      });
+    });
+    const roomNumbersFlat = roomNumbers.flat();
+    const bookingRoomNumbers = bookings.map((booking) => {
+      return {
+        ...booking._doc,
+        roomNumber: roomNumbersFlat.find(
+          (roomNumber) =>
+            roomNumber._id.toString() ==
             booking.roomId.toString()
         ).number,
       };
@@ -90,6 +124,29 @@ export const getBookingsByRoomId = async (
   try {
     const bookings = await Booking.find({
       roomId: req.params.id,
+    });
+    res.status(200).json(bookings);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const replaceBookingsByRoomId = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const bookings = await Booking.find({
+      roomId: req.params.id,
+    });
+    // update roomId to 632aabf237a27bae8e547831 in all bookings
+    bookings.forEach(async (booking) => {
+      await Booking.findByIdAndUpdate(
+        booking._id,
+        { $set: { roomId: "632aabf237a27bae8e547833" } },
+        { new: true }
+      );
     });
     res.status(200).json(bookings);
   } catch (error) {

@@ -15,6 +15,17 @@ export const SearchContext = createContext(INITIAL_STATE);
 const SearchReducer = (state, action) => {
   switch (action.type) {
     case "NEW_SEARCH":
+      action.payload.dates.forEach((date) => {
+        //plus 7 hours to match the date format in the database
+        date.startDate.setHours(
+          date.startDate.getHours() + 7
+        );
+        date.endDate.setHours(date.endDate.getHours() + 7);
+      });
+      localStorage.setItem(
+        "search",
+        JSON.stringify(action.payload)
+      );
       return action.payload;
     case "RESET_SEARCH":
       return INITIAL_STATE;

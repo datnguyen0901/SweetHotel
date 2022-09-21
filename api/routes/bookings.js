@@ -24,6 +24,8 @@ import {
   getIncomeBookingAndOrderByEmployeeIdLastWeek,
   getIncomeBookingAndOrderByEmployeeIdYesterday,
   getIncomeBookingAndOrderByEmployeeIdToday,
+  getBookingsByUser,
+  replaceBookingsByRoomId,
 } from "../controllers/BookingController.js";
 import { getRoomNumbers } from "../controllers/roomController.js";
 import {
@@ -45,6 +47,10 @@ router.get("/:id", verifyUser, getBooking);
 router.get("/", verifyAdmin, getBookings);
 //GETALLBYROOMID
 router.get("/room/:id", verifyUser, getBookingsByRoomId);
+//REPLACEALLBYROOMID
+router.get("/replace/:id", verifyUser, replaceBookingsByRoomId);
+//GETBOOKINGBYUSERID
+router.get("/user/:id", verifyUser, getBookingsByUser);
 //GETBOOKINGSPAIDTHISMONTH
 router.get(
   "/paid/now",
