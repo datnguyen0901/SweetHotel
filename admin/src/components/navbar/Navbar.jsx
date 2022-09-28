@@ -13,7 +13,11 @@ import { useTranslation } from "react-i18next";
 const Navbar = () => {
   const { dispatchDark } = useContext(DarkModeContext);
   const { user } = useContext(AuthContext);
-  const orders = useFetch(`/orders`);
+  const userData = JSON.parse(
+    localStorage.getItem("user")
+  ) || { roleId: "62b94302966d649ae7c461de" };
+  const hotelId = userData.hotelId;
+  const orders = useFetch(`/orders/hotel/room/${hotelId}`);
   // count orders with status waiting
   const ordersWaiting = orders.data.filter(
     (order) => order.status === "waiting"

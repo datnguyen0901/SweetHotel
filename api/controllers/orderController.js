@@ -3,6 +3,7 @@ import Order from "../models/Order.js";
 import Role from "../models/Role.js";
 import User from "../models/User.js";
 import Service from "../models/Service.js";
+import Room from "../models/Room.js";
 
 export const createOrder = async (req, res, next) => {
   const newOrder = new Order(req.body);
@@ -49,6 +50,78 @@ export const getOrder = async (req, res, next) => {
 export const getOrders = async (req, res, next) => {
   try {
     const orders = await Order.find().sort({ status: -1 });
+    res.status(200).json(orders);
+  } catch (error) {
+    next(error);
+  }
+};
+
+//get all orders by all booking in employee hotel
+export const getOrdersByAllBookingInHotel = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get all roomNumbers _id by hotelId
+    const rooms = await Room.find({
+      hotelId: req.params.id,
+    });
+    const roomNumbers = rooms.map((room) => {
+      return room.roomNumbers.map((roomNumber) => {
+        return roomNumber._id;
+      });
+    });
+    const roomNumbersFlat = roomNumbers.flat();
+    // get all bookings by roomNumbers _id
+    const bookings = await Booking.find({
+      roomId: { $in: roomNumbersFlat },
+    });
+    const bookingIds = bookings.map((booking) => {
+      return booking._id;
+    });
+    // get all orders by bookingIds, sort by status
+    const orders = await Order.find(
+      {
+        bookingId: { $in: bookingIds },
+      },
+      null,
+      { sort: { status: -1 } }
+    );
+    res.status(200).json(orders);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get 5 order sorted by createdAt desc
+export const getOrdersLatest = async (req, res, next) => {
+  try {
+    // get all roomNumbers _id by hotelId
+    const rooms = await Room.find({
+      hotelId: req.params.id,
+    });
+    const roomNumbers = rooms.map((room) => {
+      return room.roomNumbers.map((roomNumber) => {
+        return roomNumber._id;
+      });
+    });
+    const roomNumbersFlat = roomNumbers.flat();
+    // get all bookings by roomNumbers _id
+    const bookings = await Booking.find({
+      roomId: { $in: roomNumbersFlat },
+    });
+    const bookingIds = bookings.map((booking) => {
+      return booking._id;
+    });
+    // get all orders by bookingIds, sort by status
+    const orders = await Order.find(
+      {
+        bookingId: { $in: bookingIds },
+      },
+      null,
+      { sort: { status: -1 } }
+    ).limit(5);
     res.status(200).json(orders);
   } catch (error) {
     next(error);
@@ -177,18 +250,6 @@ export const getIncomeLastMonth = async (
   }
 };
 
-// get 5 order sorted by createdAt desc
-export const getOrdersLatest = async (req, res, next) => {
-  try {
-    const orders = await Order.find({ status: "waiting" })
-      .sort({ createdAt: 1 })
-      .limit(5);
-    res.status(200).json(orders);
-  } catch (error) {
-    next(error);
-  }
-};
-
 // get totalPrice of booking by userId today if paymentMethod is cash
 export const getIncomeOrderByUserId = async (
   req,
@@ -254,7 +315,10 @@ export const getIncomeByServiceThisYear = async (
         $in: bookings.map((booking) => booking._id),
       },
     });
-    const services = await Service.find();
+    const serviceHotel = await Service.find({
+      hotelId: hotelId,
+    });
+    const services = serviceHotel[0].storage;
     //get sum of quantity the serviceOrders make it flat data by name and type of service
     const serviceOrders = orders
       .map((order) => {
@@ -341,7 +405,10 @@ export const getIncomeByFoodThisYear = async (
         $in: bookings.map((booking) => booking._id),
       },
     });
-    const services = await Service.find();
+    const serviceHotel = await Service.find({
+      hotelId: hotelId,
+    });
+    const services = serviceHotel[0].storage;
     //get sum of quantity the serviceOrders make it flat data by name and type of service
     const serviceOrders = orders
       .map((order) => {
@@ -428,7 +495,10 @@ export const getIncomeByDrinkThisYear = async (
         $in: bookings.map((booking) => booking._id),
       },
     });
-    const services = await Service.find();
+    const serviceHotel = await Service.find({
+      hotelId: hotelId,
+    });
+    const services = serviceHotel[0].storage;
     //get sum of quantity the serviceOrders make it flat data by name and type of service
     const serviceOrders = orders
       .map((order) => {
@@ -519,7 +589,10 @@ export const getIncomeByServiceLastYear = async (
         $in: bookings.map((booking) => booking._id),
       },
     });
-    const services = await Service.find();
+    const serviceHotel = await Service.find({
+      hotelId: hotelId,
+    });
+    const services = serviceHotel[0].storage;
     //get sum of quantity the serviceOrders make it flat data by name and type of service
     const serviceOrders = orders
       .map((order) => {
@@ -610,7 +683,10 @@ export const getIncomeByFoodLastYear = async (
         $in: bookings.map((booking) => booking._id),
       },
     });
-    const services = await Service.find();
+    const serviceHotel = await Service.find({
+      hotelId: hotelId,
+    });
+    const services = serviceHotel[0].storage;
     //get sum of quantity the serviceOrders make it flat data by name and type of service
     const serviceOrders = orders
       .map((order) => {
@@ -701,7 +777,10 @@ export const getIncomeByDrinkLastYear = async (
         $in: bookings.map((booking) => booking._id),
       },
     });
-    const services = await Service.find();
+    const serviceHotel = await Service.find({
+      hotelId: hotelId,
+    });
+    const services = serviceHotel[0].storage;
     //get sum of quantity the serviceOrders make it flat data by name and type of service
     const serviceOrders = orders
       .map((order) => {
@@ -796,7 +875,10 @@ export const getIncomeByServiceLastMonth = async (
         $in: bookings.map((booking) => booking._id),
       },
     });
-    const services = await Service.find();
+    const serviceHotel = await Service.find({
+      hotelId: hotelId,
+    });
+    const services = serviceHotel[0].storage;
     //get sum of quantity the serviceOrders make it flat data by name and type of service
     const serviceOrders = orders
       .map((order) => {
@@ -890,7 +972,10 @@ export const getIncomeByServiceLastWeek = async (
         $in: bookings.map((booking) => booking._id),
       },
     });
-    const services = await Service.find();
+    const serviceHotel = await Service.find({
+      hotelId: hotelId,
+    });
+    const services = serviceHotel[0].storage;
     //get sum of quantity the serviceOrders make it flat data by name and type of service
     const serviceOrders = orders
       .map((order) => {
@@ -1002,7 +1087,10 @@ export const getIncomeByServiceYesterday = async (
         $in: bookings.map((booking) => booking._id),
       },
     });
-    const services = await Service.find();
+    const serviceHotel = await Service.find({
+      hotelId: hotelId,
+    });
+    const services = serviceHotel[0].storage;
     //get sum of quantity the serviceOrders make it flat data by name and type of service
     const serviceOrders = orders
       .map((order) => {

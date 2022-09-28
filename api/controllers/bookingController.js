@@ -47,6 +47,26 @@ export const getBooking = async (req, res, next) => {
   }
 };
 
+// get booking if checkinDate is passed and the status is waiting
+export const getBookingIfCheckinDateIsPassed = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const bookings = await Booking.find({
+      // yesterday
+      checkinDate: {
+        $lt: moment().subtract(1, "days").toDate(),
+      },
+      status: "waiting",
+    });
+    res.status(200).json(bookings);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getBookings = async (req, res, next) => {
   try {
     // get booking sort status "open" first
@@ -126,6 +146,46 @@ export const getBookingsByRoomId = async (
       roomId: req.params.id,
     });
     res.status(200).json(bookings);
+  } catch (error) {
+    next(error);
+  }
+};
+
+//get booking by hotelId
+export const getBookingsByHotelId = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get all roomNumbers _id by hotelId
+    const rooms = await Room.find({
+      hotelId: req.params.id,
+    });
+    const roomNumbers = rooms.map((room) => {
+      return room.roomNumbers.map((roomNumber) => {
+        return {
+          _id: roomNumber._id,
+          number: roomNumber.number,
+        };
+      });
+    });
+    const roomNumbersFlat = roomNumbers.flat();
+    // get all bookings by roomNumbers _id
+    const bookings = await Booking.find({
+      roomId: { $in: roomNumbersFlat },
+    }).sort({ status: -1 });
+    const bookingRoomNumbers = bookings.map((booking) => {
+      return {
+        ...booking._doc,
+        roomNumber: roomNumbersFlat.find(
+          (roomNumber) =>
+            roomNumber._id.toString() ==
+            booking.roomId.toString()
+        ).number,
+      };
+    });
+    res.status(200).json(bookingRoomNumbers);
   } catch (error) {
     next(error);
   }

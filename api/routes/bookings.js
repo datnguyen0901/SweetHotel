@@ -26,10 +26,12 @@ import {
   getIncomeBookingAndOrderByEmployeeIdToday,
   getBookingsByUser,
   replaceBookingsByRoomId,
+  getBookingIfCheckinDateIsPassed,
+  getBookingsByHotelId,
 } from "../controllers/BookingController.js";
-import { getRoomNumbers } from "../controllers/roomController.js";
 import {
   verifyAdmin,
+  verifyRole,
   verifyUser,
 } from "../utils/verifyToken.js";
 
@@ -40,7 +42,18 @@ router.post("/", verifyUser, createBooking);
 //UPDATE
 router.put("/:id", verifyUser, updateBooking);
 //DELETE
-router.delete("/:id", verifyAdmin, deleteBooking);
+router.delete(
+  "/:id",
+  verifyAdmin,
+  verifyRole,
+  deleteBooking
+);
+//DELETEBOOKINGIFCHECKINDATEISPASSED
+router.get(
+  "/deletebooking/checkindate",
+  verifyAdmin,
+  getBookingIfCheckinDateIsPassed
+);
 //GET
 router.get("/:id", verifyUser, getBooking);
 //GETALL
@@ -48,103 +61,114 @@ router.get("/", verifyAdmin, getBookings);
 //GETALLBYROOMID
 router.get("/room/:id", verifyUser, getBookingsByRoomId);
 //REPLACEALLBYROOMID
-router.get("/replace/:id", verifyUser, replaceBookingsByRoomId);
+router.get(
+  "/replace/:id",
+  verifyAdmin,
+  verifyRole,
+  replaceBookingsByRoomId
+);
 //GETBOOKINGBYUSERID
 router.get("/user/:id", verifyUser, getBookingsByUser);
 //GETBOOKINGSPAIDTHISMONTH
 router.get(
   "/paid/now",
-  verifyUser,
+  verifyAdmin,
   getBookingsPaidThisMonth
 );
 //GETINCOMETHISMONTH
-router.get("/income/now", verifyUser, getIncomeThisMonth);
+router.get("/income/now", verifyAdmin, getIncomeThisMonth);
 //GETBOOKINGSPAIDLASTMONTH
 router.get(
   "/paid/last",
-  verifyUser,
+  verifyAdmin,
   getBookingsPaidLastMonth
 );
 //GETINCOMELASTMONTH
-router.get("/income/last", verifyUser, getIncomeLastMonth);
+router.get("/income/last", verifyAdmin, getIncomeLastMonth);
 //GETBOOKINGBYUSERID
-router.get("/user/:id", verifyUser, getBookingByUserId);
+router.get("/user/:id", verifyAdmin, getBookingByUserId);
 //GETTOTALPAIDTODAYBYUSERID
 router.get(
   "/user/income/today/:id",
-  verifyUser,
+  verifyAdmin,
   getIncomeBookingByUserId
 );
 //GETTOTALPAIDLASTYEARBYUSERHOTELBYDAYANDHOUR
 router.get(
   "/hotel/income/lastyear/:id",
-  verifyUser,
+  verifyAdmin,
   getIncomeBookingByEmployeeIdLast
 );
 //GETTOTALPAIDTHISYEARBYUSERHOTELBYDAYANDHOUR
 router.get(
   "/hotel/income/year/:id",
-  verifyUser,
+  verifyAdmin,
   getIncomeBookingByEmployeeId
 );
 //GETTOTALPAIDLASTMONTHBYUSERHOTELBYDAYANDHOUR
 router.get(
   "/hotel/income/month/:id",
-  verifyUser,
+  verifyAdmin,
   getIncomeBookingByEmployeeIdThisMonth
 );
 //GETTOTALPAIDLASTWEEKBYUSERHOTELBYDAYANDHOUR
 router.get(
   "/hotel/income/week/:id",
-  verifyUser,
+  verifyAdmin,
   getIncomeBookingByEmployeeIdThisWeek
 );
 //GETTOTALPAIDYESTERDAYBYUSERHOTELBYDAYANDHOUR
 router.get(
   "/hotel/income/yesterday/:id",
-  verifyUser,
+  verifyAdmin,
   getIncomeBookingByEmployeeIdYesterday
 );
 //GETTOTALPAIDYESTERDAY
 router.get(
   "/hotel/income/yesterdaycheck/:id",
-  verifyUser,
+  verifyAdmin,
   getBookingByEmployeeIdYesterday
 );
 //GETINFOTHISYEARBYUSERHOTELINBOOKINGANDORDER
 router.get(
   "/hotel/info/year/:id",
-  verifyUser,
+  verifyAdmin,
   getIncomeBookingAndOrderByEmployeeIdThisYear
 );
 //GETINFOLASTYEARBYUSERHOTELINBOOKINGANDORDER
 router.get(
   "/hotel/info/lastyear/:id",
-  verifyUser,
+  verifyAdmin,
   getIncomeBookingAndOrderByEmployeeIdLastYear
 );
 //GETINFOLASTMONTHBYUSERHOTELINBOOKINGANDORDER
 router.get(
   "/hotel/info/lastmonth/:id",
-  verifyUser,
+  verifyAdmin,
   getIncomeBookingAndOrderByEmployeeIdLastMonth
 );
 //GETINFOLASTWEEKBYUSERHOTELINBOOKINGANDORDER
 router.get(
   "/hotel/info/lastweek/:id",
-  verifyUser,
+  verifyAdmin,
   getIncomeBookingAndOrderByEmployeeIdLastWeek
 );
 //GETINFOYESTERDAYBYUSERHOTELINBOOKINGANDORDER
 router.get(
   "/hotel/info/yesterday/:id",
-  verifyUser,
+  verifyAdmin,
   getIncomeBookingAndOrderByEmployeeIdYesterday
 );
 //GETINFOTODAYBYUSERHOTELINBOOKINGANDORDER
 router.get(
   "/hotel/info/today/:id",
-  verifyUser,
+  verifyAdmin,
   getIncomeBookingAndOrderByEmployeeIdToday
+);
+//GETALLBOOKINGBYROOMIDINROOMNUMBERBYTHEEMPLOYEEHOTEL
+router.get(
+  "/hotel/room/:id",
+  verifyAdmin,
+  getBookingsByHotelId
 );
 export default router;

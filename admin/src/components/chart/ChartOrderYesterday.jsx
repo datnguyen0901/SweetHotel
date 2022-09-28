@@ -57,7 +57,7 @@ const ChartOrderYesterday = ({ aspect, title }) => {
           <Legend />
           <Area
             type="monotone"
-            dataKey="price"
+            dataKey="quantity"
             fill="#8884d8"
             stroke="#8884d8"
           />
@@ -68,7 +68,7 @@ const ChartOrderYesterday = ({ aspect, title }) => {
           />
           <Line
             type="monotone"
-            dataKey="quantity"
+            dataKey="price"
             stroke="#ff7300"
           />
         </ComposedChart>

@@ -67,6 +67,22 @@ export const getRoomNumbers = async (req, res, next) => {
   }
 };
 
+// add Number into roomNumbers
+export const addRoomNumber = async (req, res, next) => {
+  try {
+    const room = await Room.findById(req.params.id);
+    const newRoomNumber = {
+      number: req.body.number,
+      unavailableDates: [],
+    };
+    room.roomNumbers.push(newRoomNumber);
+    await room.save();
+    res.status(200).json(room.roomNumbers);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // delete RoomAvailability
 export const deleteRoomAvailability = async (
   req,
@@ -183,7 +199,7 @@ export const getAvailableRoomsToday = async (
     today.getTime() - 7 * 60 * 60 * 1000
   );
   try {
-    const rooms = await Room.find({ hotel: hotelId });
+    const rooms = await Room.find({ hotelId: hotelId });
     const availableRooms = rooms.map((room) => {
       return room.roomNumbers.map((roomNumber) => {
         const unavailableDates =

@@ -14,19 +14,17 @@ import {
   finalizationInputs,
   hotelInputs,
   orderInputs,
-  productInputs,
   roleInputs,
   roomInputs,
   serviceInputs,
   userInputs,
 } from "./formSource";
 import "./style/dark.scss";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/AuthContext";
 import {
   bookingColumns,
-  calendarColumns,
   finalizationColumns,
   hotelColumns,
   orderColumns,
@@ -52,12 +50,10 @@ import NewService from "./pages/newService/NewService";
 import EditService from "./pages/newService/EditService";
 import EditOrder from "./pages/newOrder/EditOrder";
 import NewOrder from "./pages/newOrder/NewOrder";
-import ViewBooking from "./pages/newBooking/ViewBooking";
 import ListBooking from "./pages/newBooking/ListBooking";
 import NewFinalization from "./pages/newFinalization/NewFinalization";
 import EditFinalization from "./pages/newFinalization/EditFinalization";
 import {
-  Trans,
   useTranslation,
   withTranslation,
 } from "react-i18next";
@@ -86,6 +82,7 @@ import {
 import ListRoomAttendant from "./pages/newRoomAttendant/ListRoomAttendant";
 import ListAuditing from "./pages/newAuditing/ListRoomAttendant";
 import ListStats from "./pages/newStats/ListStats";
+import useFetch from "./hooks/useFetch";
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
@@ -95,6 +92,26 @@ function App() {
 
     if (!user || user.isAdmin) {
       return <Navigate to="/login" />;
+    }
+
+    return children;
+  };
+
+  // get hotelId from login user by roleId, set default is customer
+  const userData = JSON.parse(
+    localStorage.getItem("user")
+  ) || { roleId: "62b94302966d649ae7c461de" };
+  // get role.name of user
+  const { data } = useFetch(`/roles/${userData.roleId}`);
+
+  const RoleRoute = ({ children }) => {
+    if (data) {
+      if (data.name === "Receptionist") {
+        alert(
+          "You don't have permission to access this page"
+        );
+        return <Navigate to="/" />;
+      }
     }
 
     return children;
@@ -183,17 +200,19 @@ function App() {
                 path=":productId"
                 element={
                   <ProtectedRoute>
-                    {i18n.language === "en" ? (
-                      <EditRole
-                        inputs={roleInputs}
-                        title="Edit Role"
-                      />
-                    ) : (
-                      <EditRole
-                        inputs={roleInputsVN}
-                        title="Chỉnh sửa vai trò"
-                      />
-                    )}
+                    <RoleRoute>
+                      {i18n.language === "en" ? (
+                        <EditRole
+                          inputs={roleInputs}
+                          title="Edit Role"
+                        />
+                      ) : (
+                        <EditRole
+                          inputs={roleInputsVN}
+                          title="Chỉnh sửa vai trò"
+                        />
+                      )}
+                    </RoleRoute>
                   </ProtectedRoute>
                 }
               />
@@ -201,17 +220,19 @@ function App() {
                 path="new"
                 element={
                   <ProtectedRoute>
-                    {i18n.language === "en" ? (
-                      <NewRole
-                        inputs={roleInputs}
-                        title="Add New Role"
-                      />
-                    ) : (
-                      <NewRole
-                        inputs={roleInputsVN}
-                        title="Thêm mới vai trò"
-                      />
-                    )}
+                    <RoleRoute>
+                      {i18n.language === "en" ? (
+                        <NewRole
+                          inputs={roleInputs}
+                          title="Add New Role"
+                        />
+                      ) : (
+                        <NewRole
+                          inputs={roleInputsVN}
+                          title="Thêm mới vai trò"
+                        />
+                      )}
+                    </RoleRoute>
                   </ProtectedRoute>
                 }
               />
@@ -233,17 +254,19 @@ function App() {
                 path=":hotelId"
                 element={
                   <ProtectedRoute>
-                    {i18n.language === "en" ? (
-                      <EditHotel
-                        inputs={hotelInputs}
-                        title="Edit Hotel"
-                      />
-                    ) : (
-                      <EditHotel
-                        inputs={hotelInputsVN}
-                        title="Chỉnh sửa khách sạn"
-                      />
-                    )}
+                    <RoleRoute>
+                      {i18n.language === "en" ? (
+                        <EditHotel
+                          inputs={hotelInputs}
+                          title="Edit Hotel"
+                        />
+                      ) : (
+                        <EditHotel
+                          inputs={hotelInputsVN}
+                          title="Chỉnh sửa khách sạn"
+                        />
+                      )}
+                    </RoleRoute>
                   </ProtectedRoute>
                 }
               />
@@ -251,17 +274,19 @@ function App() {
                 path="new"
                 element={
                   <ProtectedRoute>
-                    {i18n.language === "en" ? (
-                      <NewHotel
-                        inputs={hotelInputs}
-                        title="Add New Hotel"
-                      />
-                    ) : (
-                      <NewHotel
-                        inputs={hotelInputsVN}
-                        title="Thêm mới khách sạn"
-                      />
-                    )}
+                    <RoleRoute>
+                      {i18n.language === "en" ? (
+                        <NewHotel
+                          inputs={hotelInputs}
+                          title="Add New Hotel"
+                        />
+                      ) : (
+                        <NewHotel
+                          inputs={hotelInputsVN}
+                          title="Thêm mới khách sạn"
+                        />
+                      )}
+                    </RoleRoute>
                   </ProtectedRoute>
                 }
               />
@@ -283,17 +308,19 @@ function App() {
                 path=":roomId"
                 element={
                   <ProtectedRoute>
-                    {i18n.language === "en" ? (
-                      <EditRoom
-                        inputs={roomInputs}
-                        title="Edit Room"
-                      />
-                    ) : (
-                      <EditRoom
-                        inputs={roomInputsVN}
-                        title="Chỉnh sửa phòng"
-                      />
-                    )}
+                    <RoleRoute>
+                      {i18n.language === "en" ? (
+                        <EditRoom
+                          inputs={roomInputs}
+                          title="Edit Room"
+                        />
+                      ) : (
+                        <EditRoom
+                          inputs={roomInputsVN}
+                          title="Chỉnh sửa phòng"
+                        />
+                      )}
+                    </RoleRoute>
                   </ProtectedRoute>
                 }
               />
@@ -325,17 +352,19 @@ function App() {
                 path="new"
                 element={
                   <ProtectedRoute>
-                    {i18n.language === "en" ? (
-                      <NewRoom
-                        inputs={roomInputs}
-                        title="Add New Room"
-                      />
-                    ) : (
-                      <NewRoom
-                        inputs={roomInputsVN}
-                        title="Thêm mới phòng"
-                      />
-                    )}
+                    <RoleRoute>
+                      {i18n.language === "en" ? (
+                        <NewRoom
+                          inputs={roomInputs}
+                          title="Add New Room"
+                        />
+                      ) : (
+                        <NewRoom
+                          inputs={roomInputsVN}
+                          title="Thêm mới phòng"
+                        />
+                      )}
+                    </RoleRoute>
                   </ProtectedRoute>
                 }
               />
@@ -411,17 +440,19 @@ function App() {
                 path=":productId"
                 element={
                   <ProtectedRoute>
-                    {i18n.language === "en" ? (
-                      <EditService
-                        inputs={serviceInputs}
-                        title="Edit Service"
-                      />
-                    ) : (
-                      <EditService
-                        inputs={serviceInputsVN}
-                        title="Chỉnh sửa dịch vụ"
-                      />
-                    )}
+                    <RoleRoute>
+                      {i18n.language === "en" ? (
+                        <EditService
+                          inputs={serviceInputs}
+                          title="Edit Service"
+                        />
+                      ) : (
+                        <EditService
+                          inputs={serviceInputsVN}
+                          title="Chỉnh sửa dịch vụ"
+                        />
+                      )}
+                    </RoleRoute>
                   </ProtectedRoute>
                 }
               />
@@ -429,17 +460,19 @@ function App() {
                 path="new"
                 element={
                   <ProtectedRoute>
-                    {i18n.language === "en" ? (
-                      <NewService
-                        inputs={serviceInputs}
-                        title="Add New Service"
-                      />
-                    ) : (
-                      <NewService
-                        inputs={serviceInputsVN}
-                        title="Thêm mới dịch vụ"
-                      />
-                    )}
+                    <RoleRoute>
+                      {i18n.language === "en" ? (
+                        <NewService
+                          inputs={serviceInputs}
+                          title="Add New Service"
+                        />
+                      ) : (
+                        <NewService
+                          inputs={serviceInputsVN}
+                          title="Thêm mới dịch vụ"
+                        />
+                      )}
+                    </RoleRoute>
                   </ProtectedRoute>
                 }
               />
@@ -531,17 +564,19 @@ function App() {
                 path=":productId"
                 element={
                   <ProtectedRoute>
-                    {i18n.language === "en" ? (
-                      <EditFinalization
-                        inputs={finalizationInputs}
-                        title="Edit Finalization"
-                      />
-                    ) : (
-                      <EditFinalization
-                        inputs={finalizationInputsVN}
-                        title="Chỉnh sửa kết toán"
-                      />
-                    )}
+                    <RoleRoute>
+                      {i18n.language === "en" ? (
+                        <EditFinalization
+                          inputs={finalizationInputs}
+                          title="Edit Finalization"
+                        />
+                      ) : (
+                        <EditFinalization
+                          inputs={finalizationInputsVN}
+                          title="Chỉnh sửa kết toán"
+                        />
+                      )}
+                    </RoleRoute>
                   </ProtectedRoute>
                 }
               />
@@ -605,15 +640,17 @@ function App() {
                 index
                 element={
                   <ProtectedRoute>
-                    {i18n.language === "en" ? (
-                      <ListAuditing
-                        columns={roomAttendantColumns}
-                      />
-                    ) : (
-                      <ListAuditing
-                        columns={roomAttendantColumnsVN}
-                      />
-                    )}
+                    <RoleRoute>
+                      {i18n.language === "en" ? (
+                        <ListAuditing
+                          columns={roomAttendantColumns}
+                        />
+                      ) : (
+                        <ListAuditing
+                          columns={roomAttendantColumnsVN}
+                        />
+                      )}
+                    </RoleRoute>
                   </ProtectedRoute>
                 }
               />
@@ -623,15 +660,17 @@ function App() {
                 index
                 element={
                   <ProtectedRoute>
-                    {i18n.language === "en" ? (
-                      <ListStats
-                        columns={roomAttendantColumns}
-                      />
-                    ) : (
-                      <ListStats
-                        columns={roomAttendantColumnsVN}
-                      />
-                    )}
+                    <RoleRoute>
+                      {i18n.language === "en" ? (
+                        <ListStats
+                          columns={roomAttendantColumns}
+                        />
+                      ) : (
+                        <ListStats
+                          columns={roomAttendantColumnsVN}
+                        />
+                      )}
+                    </RoleRoute>
                   </ProtectedRoute>
                 }
               />

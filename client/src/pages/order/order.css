@@ -1,149 +1,228 @@
-.hotelContainer {
-  display: flex;
+.bookingContainer {
+  display: flow-root !important;
   margin-top: 20px;
 }
 
-.hotelWrapper {
-  width: 100%;
-  max-width: 1024px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  position: relative;
+.title {
+  width: 20%;
+  margin: 20px auto;
+  text-align: center;
+  border: 3px solid #0071c2;
+  padding: 10px;
+  border-radius: 10px;
 }
 
-.bookNow {
-  position: absolute;
-  top: 10px;
-  right: 0;
-  border: none;
-  padding: 10px 20px;
-  background-color: #0071c2;
-  color: white;
-  font-weight: bold;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.hotelTitle {
-  font-size: 24px;
-}
-
-.hotelAddress {
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.hotelDistance {
-  color: #0071c2;
-  font-weight: 500;
-}
-
-.hotelPriceHighlight {
-  color: #008009;
-  font-weight: 500;
-}
-
-.hotelImages {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-.hotelImgWrapper {
-  width: 33%;
-}
-
-.hotelImg {
-  width: 100%;
-  object-fit: cover;
-  cursor: pointer;
-}
-
-.hotelDetails {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  margin-top: 20px;
-}
-
-.hotelDetailsTexts {
-  flex: 3;
-}
-
-.hotelDesc {
-  font-size: 14px;
-  margin-top: 20px;
-}
-
-.hotelDetailsPrice {
-  flex: 1;
-  background-color: #ebf3ff;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.hotelDetailsPrice > h1 {
-  font-size: 18px;
-  color: #555;
-}
-.hotelDetailsPrice > span {
-  font-size: 14px;
-}
-.hotelDetailsPrice > h2 {
-  font-weight: 300;
-}
-.hotelDetailsPrice > button {
-  border: none;
-  padding: 10px 20px;
-  background-color: #0071c2;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.slider {
-  position: sticky;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.613);
-  z-index: 999;
-  display: flex;
-  align-items: center;
-}
-
-.sliderWrapper {
-  width: 100%;
-  height: 100%;
+.list {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.sliderImg {
-  width: 80%;
-  height: 80vh;
+.type {
+  width: fit-content;
+  margin: 20px 10px;
+  text-align: center;
+  border: 3px solid #0071c2;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
 }
 
-.close {
+.icon-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  color: #333333;
+  background: #dddddd;
+  border: none;
+  outline: none;
+  border-radius: 50%;
+}
+
+.icon-button:hover {
+  cursor: pointer;
+  background: #0071c2;
+}
+
+.icon-button:active {
+  background: #cccccc;
+}
+
+.icon-button__badge {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  font-size: 30px;
-  color: lightgray;
+  top: -10px;
+  right: -10px;
+  width: 25px;
+  height: 25px;
+  background: red;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.type:hover {
+  background-color: #0071c2;
+  color: white;
+  font-size: larger;
+  transition: 0.5s;
+}
+
+img {
+  size: 50px;
+  transition: 0.5s;
+}
+
+img:hover {
+  background-color: white;
+  color: black;
+  transform: scale(1.2);
+}
+
+input {
+  width: fit-content;
+  margin: 5px auto;
+  text-align: center;
+  border: 3px solid #0071c2;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.card1 {
+  margin: 80px;
+  width: 250px;
+  height: 390px;
+  background-image: linear-gradient(white, #003580);
+  padding: 20px;
+  border-radius: 15px;
+  color: white;
+  position: relative;
+  float: left;
+  margin-left: 50px;
+}
+
+.card_heart {
+  font-size: 25px;
+  position: absolute;
+  right: 25px;
+  bottom: 25px;
+  transition: 0.5s;
   cursor: pointer;
 }
 
-.arrow {
-  margin: 20px;
-  font-size: 50px;
-  color: lightgray;
+.card_heart:hover {
+  transform: scale(1.2);
+}
+
+.card_img {
+  margin-top: 25px;
+  width: 100%;
+  height: 60%;
+  justify-content: center;
+  display: flex;
+}
+
+.card_img img {
+  margin: 0 50px 0 50px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background-color: transparent;
+  transition: 0.5s;
+}
+
+.card_title,
+.card_price {
+  margin-top: 25px;
+  font-size: 25px;
+  font-weight: bold;
+  text-align: center;
+  transition: 0.5s;
+}
+
+.card_size,
+.card_quantity {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.card_size span {
+  padding: 5px 5px;
+  background: #dadada;
+  color: black;
+  border-radius: 5px;
+  margin: 0 2px;
+  margin-left: 5px;
+  margin-bottom: 15px;
+}
+
+.card_quantity span {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin: 1px 5px;
+  margin-bottom: 10px;
+}
+
+.card_quantity_yes {
+  background-color: white;
+}
+
+.card_quantity_no {
+  background-color: black;
+}
+
+.card_quantity_brown {
+  background-color: brown;
+}
+
+.card_action button {
+  border: 5px;
+  outline: none;
+  color: black;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  margin-right: 10px;
+  transition: 0.5s;
   cursor: pointer;
+}
+
+.card_action button:hover {
+  transform: scale(1.2);
+}
+
+.card1:hover .card_img,
+.card1:hover .card_title,
+.card1:hover .card_price {
+  transform: translateY(-150px);
+}
+
+.card_size {
+  margin-top: 150px;
+}
+
+.card_size,
+.card_quantity,
+.card_action {
+  visibility: hidden;
+  opacity: 0;
+  transition: 0.5s;
+  transition-delay: 0.2s;
+}
+
+.card1:hover .card_size,
+.card1:hover .card_quantity,
+.card1:hover .card_action {
+  visibility: visible;
+  opacity: 100;
+}
+
+.card1:hover .card_size {
+  margin-top: -120px;
 }

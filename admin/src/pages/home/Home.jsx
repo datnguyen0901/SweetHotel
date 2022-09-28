@@ -7,9 +7,8 @@ import Chart from "../../components/chart/Chart";
 import Table from "../../components/table/Table";
 import { useTranslation } from "react-i18next";
 
-const Home = () => {  
-  const { t } = useTranslation();
-
+const Home = () => {
+  const [t] = useTranslation("common");
 
   return (
     <div className="home">

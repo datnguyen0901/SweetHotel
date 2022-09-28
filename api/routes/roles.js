@@ -6,16 +6,20 @@ import {
   getRole,
   getRoles,
 } from "../controllers/roleController.js";
-import { verifyAdmin } from "../utils/verifyToken.js";
+import {
+  verifyAdmin,
+  verifyRole,
+  verifyUser,
+} from "../utils/verifyToken.js";
 
 const router = express.Router();
 
 //CREATE
-router.post("/", verifyAdmin, createRole);
+router.post("/", verifyAdmin, verifyRole, createRole);
 //UPDATE
-router.put("/:id", verifyAdmin, updateRole);
+router.put("/:id", verifyAdmin, verifyRole, updateRole);
 //DELETE
-router.delete("/:id", verifyAdmin, deleteRole);
+router.delete("/:id", verifyAdmin, verifyRole, deleteRole);
 //GET
 router.get("/:id", verifyAdmin, getRole);
 //GETALL

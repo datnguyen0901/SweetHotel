@@ -1,5 +1,6 @@
 import Booking from "../models/Booking.js";
 import Finalization from "../models/Finalization.js";
+import Room from "../models/Room.js";
 
 export const createFinalization = async (
   req,
@@ -42,6 +43,40 @@ export const deleteFinalization = async (
   try {
     await Finalization.findByIdAndDelete(req.params.id);
     res.status(200).json("Finalization is deleted");
+  } catch (error) {
+    next(error);
+  }
+};
+
+//get all finalizations by all booking in employee hotel
+export const getFinalizationsByAllBookingInHotel = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    // get all roomNumbers _id by hotelId
+    const rooms = await Room.find({
+      hotelId: req.params.id,
+    });
+    const roomNumbers = rooms.map((room) => {
+      return room.roomNumbers.map((roomNumber) => {
+        return roomNumber._id;
+      });
+    });
+    const roomNumbersFlat = roomNumbers.flat();
+    // get all bookings by roomNumbers _id
+    const bookings = await Booking.find({
+      roomId: { $in: roomNumbersFlat },
+    });
+    const bookingIds = bookings.map((booking) => {
+      return booking._id;
+    });
+    // get all finalizations by bookingIds
+    const finalizations = await Finalization.find({
+      bookingId: { $in: bookingIds },
+    });
+    res.status(200).json(finalizations);
   } catch (error) {
     next(error);
   }
@@ -237,7 +272,7 @@ export const getFinalizationByUserId = async (
       bookingId: {
         $in: bookings.map((booking) => booking._id),
       },
-    });
+    }).limit(6);
     res.status(200).json(finalizations);
   } catch (error) {
     next(error);

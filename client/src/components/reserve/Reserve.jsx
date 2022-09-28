@@ -2,17 +2,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import "./reserve.css";
 import useFetch from "../../hooks/useFetch";
-import { useContext, useEffect, useState } from "react";
-import { SearchContext } from "../../context/SearchContext";
+import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { format, set, setDate } from "date-fns";
+import moment from "moment";
 
 const Reserve = ({ setOpen, hotelId }) => {
   const [selectedRooms, setSelectedRooms] = useState([]);
-  const { data, loading, error } = useFetch(
-    `/hotels/room/${hotelId}`
-  );
+  const { data } = useFetch(`/hotels/room/${hotelId}`);
   const [price, setPrice] = useState({});
   const user = JSON.parse(localStorage.getItem("user"));
   const getDate = JSON.parse(
@@ -43,11 +40,25 @@ const Reserve = ({ setOpen, hotelId }) => {
     dates[0].endDate
   );
 
+  console.log(
+    moment(dates[0].startDate).format("YYYY-MM-DDT00:00:00")
+  );
+
   const isAvailable = (roomNumber) => {
     const isFound = roomNumber.unavailableDates.some(
-      (date) => alldates.includes(new Date(date).getTime())
+      (date) => {
+        return !!(
+          date >=
+            moment(dates[0].startDate).format(
+              "YYYY-MM-DDT00:00:00"
+            ) &&
+          date <=
+            moment(dates[0].endDate).format(
+              "YYYY-MM-DDT00:00:00"
+            )
+        );
+      }
     );
-
     return !isFound;
   };
 
@@ -66,6 +77,10 @@ const Reserve = ({ setOpen, hotelId }) => {
         setPrice({});
         return;
       }
+    }
+    if (!checked) {
+      setSelectedRooms([]);
+      setPrice({});
     }
   };
 
@@ -86,7 +101,6 @@ const Reserve = ({ setOpen, hotelId }) => {
     dates[0].startDate,
     dates[0].endDate
   );
-  console.log(dates[0].startDate, dates[0].endDate);
 
   const navigate = useNavigate();
 
@@ -108,7 +122,7 @@ const Reserve = ({ setOpen, hotelId }) => {
             type: "day",
             checkinDate: dates[0].startDate,
             checkoutDate: dates[0].endDate,
-            employeeId: "628ca6d82d06ce64f49a1882",
+            employeeId: "628ca6d82d06ce64f49a1882", //default Admin account system
             paymentMethod: "unpaid",
             totalPaid: numberNight * price,
           };

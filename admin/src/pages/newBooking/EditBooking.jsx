@@ -46,20 +46,18 @@ const EditBooking = ({ inputs, title }) => {
   };
 
   const alldates = getDatesInRange(
-    moment(bookingData.data.checkinDate)
-      .add(7, "hours")
-      .format("YYYY-MM-DDTHH:mm"),
-    moment(bookingData.data.checkoutDate)
-      .add(7, "hours")
-      .format("YYYY-MM-DDTHH:mm")
+    moment(bookingData.data.checkinDate).format(
+      "YYYY-MM-DDTHH:mm"
+    ),
+    moment(bookingData.data.checkoutDate).format(
+      "YYYY-MM-DDTHH:mm"
+    )
   );
 
   const allDatesInfo = getDatesInRange(
     info.checkinDate,
-    info.checkoutDate
+    moment(info.checkoutDate).format("YYYY-MM-DDT12:00")
   );
-
-  console.log(info.checkinDate, info.checkoutDate);
 
   const deleteRoomCalendar = async () => {
     await axios.delete(
@@ -74,7 +72,7 @@ const EditBooking = ({ inputs, title }) => {
 
   function refreshPage() {
     deleteRoomCalendar();
-    window.location.reload(false);
+    window.location.reload();
     setSelectedRooms([]);
   }
 
@@ -84,13 +82,12 @@ const EditBooking = ({ inputs, title }) => {
       setInfo({
         roomId: bookingData.data.roomId,
         userId: bookingData.data.userId,
-        // checkinDate: plus 1 day more
-        checkinDate: moment(bookingData.data.checkinDate)
-          .add(7, "hours")
-          .format("YYYY-MM-DDTHH:mm"),
-        checkoutDate: moment(bookingData.data.checkoutDate)
-          .add(7, "hours")
-          .format("YYYY-MM-DDTHH:mm"),
+        checkinDate: moment(
+          bookingData.data.checkinDate
+        ).format("YYYY-MM-DDTHH:mm"),
+        checkoutDate: moment(
+          bookingData.data.checkoutDate
+        ).format("YYYY-MM-DDTHH:mm"),
         paymentMethod: bookingData.data.paymentMethod,
         note: bookingData.data.note,
         status: bookingData.data.status,
@@ -121,16 +118,33 @@ const EditBooking = ({ inputs, title }) => {
 
   const numberNight = dayDifference(
     info.checkinDate,
-    info.checkoutDate
+    moment(info.checkoutDate).format("YYYY-MM-DDT12:00")
   );
+
+  const checkoutDate =
+    info.type === "day"
+      ? moment(info.checkoutDate).format(
+          "YYYY-MM-DDT00:00:00"
+        )
+      : moment(info.checkoutDate).format(
+          "YYYY-MM-DDT23:59:59"
+        );
 
   const isAvailable = (roomNumber) => {
     const isFound = roomNumber.unavailableDates.some(
-      (date) => alldates.includes(new Date(date).getTime())
+      (date) => {
+        return !!(
+          date >=
+            moment(info.checkinDate).format(
+              "YYYY-MM-DDT00:00:00"
+            ) && date <= checkoutDate
+        );
+      }
     );
-
     return !isFound;
   };
+
+  console.log("info", info);
 
   const handleSelect = (e) => {
     const checked = e.target.checked;
@@ -147,6 +161,10 @@ const EditBooking = ({ inputs, title }) => {
         setPrice({});
         return;
       }
+    }
+    if (!checked) {
+      setSelectedRooms([]);
+      setPrice({});
     }
     setPrice(checked ? price : 0);
     setInfo((prev) => ({
@@ -212,7 +230,6 @@ const EditBooking = ({ inputs, title }) => {
       }));
     }
   };
-  console.log(info);
 
   const handleCheckAddIn = (e) => {
     const checked = e.target.checked;
@@ -239,37 +256,47 @@ const EditBooking = ({ inputs, title }) => {
         alert(t("booking.checkDate"));
       }
       if (
-        info.checkinDate !==
-          moment(bookingData.data.checkinDate)
-            .add(1, "days")
-            .format("YYYY-MM-DD") ||
-        info.checkoutDate !==
-          moment(bookingData.data.checkoutDate)
-            .add(1, "days")
-            .format("YYYY-MM-DD")
+        moment(info.checkinDate).format("YYYY-MM-DD") !==
+          moment(bookingData.data.checkinDate).format(
+            "YYYY-MM-DD"
+          ) ||
+        moment(info.checkoutDate).format("YYYY-MM-DD") !==
+          moment(bookingData.data.checkoutDate).format(
+            "YYYY-MM-DD"
+          ) ||
+        selectedRooms !== bookingData.data.roomId
       ) {
-        deleteRoomCalendar();
-        await Promise.all(
-          selectedRooms.map((roomId) => {
-            const res = axios.put(
-              `/rooms/availability/${roomId}`,
-              {
-                dates: allDatesInfo,
-              }
-            );
-            return res.data;
-          })
-        );
+        if (info.type === "hour") {
+          deleteRoomCalendar();
+          await Promise.all(
+            selectedRooms.map((roomId) => {
+              const res = axios.put(
+                `/rooms/availability/${roomId}`,
+                {
+                  dates: alldates,
+                }
+              );
+              return res.data;
+            })
+          );
+        } else {
+          deleteRoomCalendar();
+          await Promise.all(
+            selectedRooms.map((roomId) => {
+              const res = axios.put(
+                `/rooms/availability/${roomId}`,
+                {
+                  dates: allDatesInfo,
+                }
+              );
+              return res.data;
+            })
+          );
+        }
       }
 
       const EditBooking = {
         ...info,
-        checkinDate: moment(info.checkinDate)
-          .add(-7, "hours")
-          .format("YYYY-MM-DDTHH:mm"),
-        checkoutDate: moment(info.checkoutDate)
-          .add(-7, "hours")
-          .format("YYYY-MM-DDTHH:mm"),
         employeeId: user._id,
         roomId: selectedRooms,
         totalPaid: info.totalPaid,

@@ -2,27 +2,37 @@ import mongoose from "mongoose";
 
 const ServiceSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
+    hotelId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Hotel",
       required: true,
     },
-    desc: {
-      type: String,
-    },
-    price: {
-      type: Number,
-      required: true,
-    },
-    type: {
-      type: String,
-      required: true,
-    },
-    img: {
-      type: String,
-    },
-    quantity: {
-      type: Number,
-    },
+    storage: [
+      {
+        name: {
+          type: String,
+          required: true,
+        },
+        desc: {
+          type: String,
+        },
+        price: {
+          type: Number,
+          required: true,
+        },
+        type: {
+          type: String,
+          required: true,
+        },
+        img: {
+          type: String,
+        },
+        quantity: {
+          type: Number,
+        },
+      },
+      { timestamps: true },
+    ],
   },
   { timestamps: true }
 );

@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { createError } from "../utils/error.js";
+import Role from "../models/Role.js";
 
 export const register = async (req, res, next) => {
   try {
@@ -25,6 +26,8 @@ export const login = async (req, res, next) => {
     const user = await User.findOne({
       username: req.body.username,
     });
+    const role = await Role.findById(user.roleId);
+
     if (!user)
       return next(createError(404, "User not found."));
 
@@ -48,19 +51,25 @@ export const login = async (req, res, next) => {
       isAdmin,
       address,
       cid,
+      city,
+      createdAt,
+      email,
       country,
       gender,
       phone,
       ...otherDetails
     } = user._doc;
+
+    const oneDay = 24 * 60 * 60 * 1000;
+
     res
       .cookie("access_token", token, {
-        maxAge: 90000000,
+        maxAge: 30 * oneDay,
         httpOnly: true,
       })
       .status(200)
       .json({
-        details: { ...otherDetails },
+        details: { ...otherDetails, hotelId: role.hotelId },
         isAdmin,
       });
   } catch (error) {

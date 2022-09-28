@@ -14,10 +14,17 @@ const EditOrder = ({ inputs, title }) => {
   const orderId = useParams().productId;
   const orderData = useFetch(`/orders/${orderId}`);
   const bookingId = orderData.data.bookingId;
-  const user = JSON.parse(localStorage.getItem("user"));
+  // get hotelId from login user by roleId
+  const user = JSON.parse(localStorage.getItem("user")) || {
+    roleId: "62b94302966d649ae7c461de",
+  };
+  // get role.name of user
+  const hotelId = user.hotelId;
   const [info, setInfo] = useState({});
   const navigate = useNavigate();
-  const serviceData = useFetch(`/services`);
+  const serviceData = useFetch(
+    `/services/hotel/${hotelId}`
+  );
   const [selectedServices, setSelectedServices] = useState(
     []
   );
@@ -112,20 +119,23 @@ const EditOrder = ({ inputs, title }) => {
     // update quantity of service in selectedServices
     setSelectedServices((prev) =>
       prev.map((item) => {
-        if (
-          value > service.quantity &&
-          service.type !== "service"
-        ) {
-          return {
-            ...item,
-            quantity: 1,
-          };
-        } else {
-          return {
-            ...item,
-            quantity: parseInt(value, 10),
-          };
+        if (item.id === id) {
+          if (
+            value > service.quantity &&
+            service.type !== "service"
+          ) {
+            return {
+              ...item,
+              quantity: 1,
+            };
+          } else {
+            return {
+              ...item,
+              quantity: parseInt(value, 10),
+            };
+          }
         }
+        return item;
       })
     );
   };
@@ -141,19 +151,22 @@ const EditOrder = ({ inputs, title }) => {
     // Plus back the quantity of service in the service storage when delete the service in selectedServices
     orderData.data.serviceOrders.map(async (item) => {
       const service = await axios.get(
-        `/services/${item.serviceId}`
+        `/services/hotel/edit/${item.serviceId}`
       );
       if (service.data.type !== "service") {
-        selectedServices.forEach((service) => {
-          if (service.id !== item.serviceId) {
-            const service = serviceData.data.find(
-              (service) => service._id === item.serviceId
+        selectedServices.forEach(async (service) => {
+          if (service.id === id) {
+            const serviceQuantity = serviceData.data.find(
+              (service) => service._id === id
             );
             const newQuantity =
-              service.quantity + item.quantity;
-            axios.put(`/services/${item.serviceId}`, {
-              quantity: newQuantity,
-            });
+              serviceQuantity.quantity + service.quantity;
+            await axios.put(
+              `/services/hotel/storage/${id}`,
+              {
+                quantity: newQuantity,
+              }
+            );
           }
         });
       }
@@ -174,7 +187,7 @@ const EditOrder = ({ inputs, title }) => {
       // Minus the quantity of service in the service storage when ordered
       serviceOrders.map(async (item) => {
         const service = await axios.get(
-          `/services/${item.serviceId}`
+          `/services/hotel/edit/${item.serviceId}`
         );
         // get old quantity in orderData if not set quantity = 0
         const oldQuantity =
@@ -216,7 +229,7 @@ const EditOrder = ({ inputs, title }) => {
               (item.quantity - oldQuantity),
           };
           await axios.put(
-            `/services/${item.serviceId}`,
+            `/services/hotel/storage/${item.serviceId}`,
             newService
           );
         }

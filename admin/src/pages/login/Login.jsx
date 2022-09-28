@@ -16,7 +16,7 @@ const Login = () => {
     if (checkLogin) {
       navigate("/");
     }
-  }, [checkLogin]);
+  }, [checkLogin, navigate]);
 
   const [credentials, setCredentials] = useState({
     username: undefined,

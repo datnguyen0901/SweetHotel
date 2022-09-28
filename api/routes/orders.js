@@ -21,6 +21,7 @@ import {
   getIncomeByServiceLastMonth,
   getIncomeByServiceLastWeek,
   getIncomeByServiceYesterday,
+  getOrdersByAllBookingInHotel,
 } from "../controllers/OrderController.js";
 import {
   verifyAdmin,
@@ -36,11 +37,17 @@ router.put("/:id", verifyAdmin, updateOrder);
 //DELETE
 router.delete("/:id", verifyAdmin, deleteOrder);
 //GET
-router.get("/:id", verifyAdmin, getOrder);
+router.get("/:id", verifyUser, getOrder);
 //GETALL
 router.get("/", verifyAdmin, getOrders);
 //GETALL BY BOOKING
-router.get("/booking/:id", verifyAdmin, getOrdersByBooking);
+router.get("/booking/:id", verifyUser, getOrdersByBooking);
+//GET ALL ORDERS BY ALL BOOKINGS IN THE EMPLOYEE'S HOTEL
+router.get(
+  "/hotel/room/:id",
+  verifyUser,
+  getOrdersByAllBookingInHotel
+);
 //GETORDERSPAIDTHISMONTH
 router.get(
   "/paid/now",
@@ -52,17 +59,17 @@ router.get("/income/now", verifyAdmin, getIncomeThisMonth);
 //GETORDERSPAIDLASTMONTH
 router.get(
   "/paid/last",
-  verifyUser,
+  verifyAdmin,
   getOrdersPaidLastMonth
 );
 //GETINCOMELASTMONTH
 router.get("/income/last", verifyAdmin, getIncomeLastMonth);
 //GETLASTESTORDERS
-router.get("/sort/newest", verifyAdmin, getOrdersLatest);
+router.get("/sort/newest/:id", verifyAdmin, getOrdersLatest);
 //GETTOTALPAIDTODAYBYUSERID
 router.get(
   "/user/income/today/:id",
-  verifyUser,
+  verifyAdmin,
   getIncomeOrderByUserId
 );
 //GETINFOORDERSERVICETHISYEAR

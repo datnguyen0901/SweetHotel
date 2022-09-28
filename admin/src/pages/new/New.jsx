@@ -2,7 +2,7 @@ import "./new.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
@@ -18,6 +18,7 @@ const New = ({ inputs, title }) => {
   const [country, setCountry] = useState(undefined);
   const [region, setRegion] = useState(undefined);
   const { data, loading } = useFetch(`/roles`);
+  const hotel = useFetch(`/hotels`);
   const navigate = useNavigate();
   const handleChange = (e) => {
     setInfo((prev) => ({
@@ -25,6 +26,24 @@ const New = ({ inputs, title }) => {
       [e.target.id]: e.target.value,
     }));
   };
+
+  const userData = JSON.parse(
+    localStorage.getItem("user")
+  ) || { roleId: "62b94302966d649ae7c461de" };
+  // get role.name of user
+  const roleData = useFetch(`/roles/${userData.roleId}`);
+
+  useEffect(() => {
+    if (hotel.data) {
+      data.forEach((item) => {
+        hotel.data.forEach((hotel) => {
+          if (item.hotelId === hotel._id) {
+            item.hotelName = hotel.name;
+          }
+        });
+      });
+    }
+  }, [hotel.data, data]);
 
   const handleCheckIsAdmin = (e) => {
     setInfo((prev) => ({
@@ -56,6 +75,13 @@ const New = ({ inputs, title }) => {
     image.append("upload_preset", "upload");
 
     try {
+      if (roleData.data.name === "Receptionist") {
+        setInfo((prev) => ({
+          ...prev,
+          //auto set roleId of the created user is customer
+          roleId: "62b94302966d649ae7c461de",
+        }));
+      }
       if (file) {
         const uploadRes = await axios.post(
           "https://api.cloudinary.com/v1_1/sweethotel/image/upload",
@@ -70,16 +96,15 @@ const New = ({ inputs, title }) => {
           country: country,
           city: region,
         };
-        await axios.post("/auth/register", newUser);
+        await axios.post(`/auth/register`, newUser);
       } else {
         const newUser = {
           ...info,
           country: country,
           city: region,
         };
-        await axios.post("/auth/register", newUser);
+        await axios.post(`/auth/register`, newUser);
       }
-
       navigate("/users");
     } catch (error) {
       console.log(error);
@@ -189,7 +214,7 @@ const New = ({ inputs, title }) => {
                           key={role._id}
                           value={role._id}
                         >
-                          {role.name}
+                          {role.name} at {role.hotelName}
                         </option>
                       ))}
                 </select>

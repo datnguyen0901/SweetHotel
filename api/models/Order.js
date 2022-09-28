@@ -29,6 +29,7 @@ const OrderSchema = new mongoose.Schema(
       {
         serviceId: {
           type: mongoose.Schema.Types.ObjectId,
+          path: "storage",
           ref: "Service",
           required: true,
         },

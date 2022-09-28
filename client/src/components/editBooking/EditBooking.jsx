@@ -1,16 +1,13 @@
 import "./editBooking.css";
-import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import React, { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
-import { Autocomplete, TextField } from "@mui/material";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
 
-const EditBooking = ({ setOpen, bookingId }) => {
+const EditBooking = ({ setOpen, bookingId, dateState }) => {
   const [openModal, setOpenModal] = useState(false);
   const [info, setInfo] = useState({});
   const [price, setPrice] = useState({});
@@ -18,11 +15,8 @@ const EditBooking = ({ setOpen, bookingId }) => {
 
   const [t] = useTranslation("common");
 
-  const navigate = useNavigate();
-
   const id = bookingId.id;
   const bookingData = useFetch(`/bookings/${id}`);
-
   const hotelId = useFetch(
     `/hotels/gethotelid/${bookingData.data.roomId}`
   ).data;
@@ -35,13 +29,12 @@ const EditBooking = ({ setOpen, bookingId }) => {
       setInfo({
         roomId: bookingData.data.roomId,
         userId: bookingData.data.userId,
-        // checkinDate: plus 1 day more
-        checkinDate: moment(bookingData.data.checkinDate)
-          .add(7, "hours")
-          .format("YYYY-MM-DDTHH:mm"),
-        checkoutDate: moment(bookingData.data.checkoutDate)
-          .add(7, "hours")
-          .format("YYYY-MM-DDTHH:mm"),
+        checkinDate: moment(
+          bookingData.data.checkinDate
+        ).format("YYYY-MM-DDTHH:mm"),
+        checkoutDate: moment(
+          bookingData.data.checkoutDate
+        ).format("YYYY-MM-DDTHH:mm"),
         paymentMethod: bookingData.data.paymentMethod,
         note: bookingData.data.note,
         status: bookingData.data.status,
@@ -68,17 +61,12 @@ const EditBooking = ({ setOpen, bookingId }) => {
   };
 
   const alldates = getDatesInRange(
-    moment(bookingData.data.checkinDate)
-      .add(7, "hours")
-      .format("YYYY-MM-DDTHH:mm"),
-    moment(bookingData.data.checkoutDate)
-      .add(7, "hours")
-      .format("YYYY-MM-DDTHH:mm")
-  );
-
-  const allDatesInfo = getDatesInRange(
-    info.checkinDate,
-    info.checkoutDate
+    moment(bookingData.data.checkinDate).format(
+      "YYYY-MM-DDTHH:mm"
+    ),
+    moment(bookingData.data.checkoutDate).format(
+      "YYYY-MM-DDTHH:mm"
+    )
   );
 
   const deleteRoomCalendar = async () => {
@@ -110,12 +98,6 @@ const EditBooking = ({ setOpen, bookingId }) => {
     return diffDays;
   }
 
-  const getTimeToHour = (a) => {
-    // convert from millisecond to hour
-    let b = 1000 * 60 * 60;
-    return a / b;
-  };
-
   const numberNight = dayDifference(
     info.checkinDate,
     info.checkoutDate
@@ -123,9 +105,17 @@ const EditBooking = ({ setOpen, bookingId }) => {
 
   const isAvailable = (roomNumber) => {
     const isFound = roomNumber.unavailableDates.some(
-      (date) => alldates.includes(new Date(date).getTime())
+      (date) => {
+        return !!(date >=
+            moment(info.checkinDate).format(
+              "YYYY-MM-DDT00:00:00"
+            ) &&
+          date <=
+            moment(info.checkoutDate).format(
+              "YYYY-MM-DDT23:59:59"
+            ));
+      }
     );
-
     return !isFound;
   };
 
@@ -145,6 +135,10 @@ const EditBooking = ({ setOpen, bookingId }) => {
         return;
       }
     }
+    if (!checked) {
+      setSelectedRooms([]);
+      setPrice({});
+    }
     setPrice(checked ? price : 0);
     setInfo((prev) => ({
       ...prev,
@@ -153,64 +147,16 @@ const EditBooking = ({ setOpen, bookingId }) => {
   };
 
   const handleChange = (e) => {
-    if (info.type === "hour") {
-      //get price of the room
-      data.forEach((item) => {
-        item.roomNumbers.forEach((room) => {
-          if (room._id === bookingData.data.roomId) {
-            setPrice(item.price);
-          }
-        });
-      });
-      // calculate hour by checkInTime and checkOutTime
-      const checkInTime = new Date(info.checkinDate);
-      const checkOutTime = new Date(info.checkoutDate);
-      const hour = getTimeToHour(
-        checkOutTime.getTime() - checkInTime.getTime()
-      );
-      const priceFirstHour = 0.25 * price; // Fisrt hour is 25% of price
-      const priceNextHour = 0.1 * price; // Next hour is 10% of price
-      // calculate hour if hour-1 > 0 round up
-      const hourNext = Math.ceil(hour - 1);
-
-      // round the money
-      const totalPaidHour =
-        Math.round(priceFirstHour) +
-        Math.round(priceNextHour * hourNext);
-      setInfo((prev) => ({
-        ...prev,
-        [e.target.id]: e.target.value,
-        roomId: selectedRooms,
-        totalPaid: totalPaidHour,
-      }));
-    } else {
-      setInfo((prev) => ({
-        ...prev,
-        [e.target.id]: e.target.value,
-        roomId: selectedRooms,
-        totalPaid:
-          numberNight * price || bookingData.totalPaid,
-      }));
-    }
+    setInfo((prev) => ({
+      ...prev,
+      [e.target.id]: e.target.value,
+      roomId: selectedRooms,
+      totalPaid:
+        numberNight * price || bookingData.totalPaid,
+    }));
   };
 
-  const handleCheckAddIn = (e) => {
-    const checked = e.target.checked;
-    // checked ? setInfo totalPaid increase 20%
-    if (checked) {
-      setInfo((prev) => ({
-        ...prev,
-        addIn: true,
-        totalPaid: info.totalPaid * 1.2,
-      }));
-    } else {
-      setInfo((prev) => ({
-        ...prev,
-        addIn: false,
-        totalPaid: bookingData.totalPaid,
-      }));
-    }
-  };
+  console.log(info, selectedRooms);
 
   const handleClick = async (e) => {
     e.preventDefault();
@@ -226,7 +172,8 @@ const EditBooking = ({ setOpen, bookingId }) => {
         moment(info.checkoutDate).format("YYYY-MM-DD") !==
           moment(bookingData.data.checkoutDate).format(
             "YYYY-MM-DD"
-          )
+          ) ||
+        selectedRooms !== bookingData.data.roomId
       ) {
         deleteRoomCalendar();
         await Promise.all(
@@ -234,7 +181,7 @@ const EditBooking = ({ setOpen, bookingId }) => {
             const res = axios.put(
               `/rooms/availability/${roomId}`,
               {
-                dates: allDatesInfo,
+                dates: alldates,
               }
             );
             return res.data;
@@ -244,13 +191,7 @@ const EditBooking = ({ setOpen, bookingId }) => {
 
       const EditBooking = {
         ...info,
-        checkinDate: moment(info.checkinDate)
-          .add(-7, "hours")
-          .format("YYYY-MM-DDTHH:mm"),
-        checkoutDate: moment(info.checkoutDate)
-          .add(-7, "hours")
-          .format("YYYY-MM-DDTHH:mm"),
-        employeeId: info.employeeId,
+        employeeId: "630351005bc852bafce88230", // set default is Admin account
         roomId: selectedRooms,
         totalPaid: info.totalPaid,
       };
@@ -284,6 +225,7 @@ const EditBooking = ({ setOpen, bookingId }) => {
             <input
               type="datetime-local"
               id="checkinDate"
+              disabled={dateState}
               value={moment(info.checkinDate).format(
                 "YYYY-MM-DDTHH:mm"
               )}
@@ -294,7 +236,8 @@ const EditBooking = ({ setOpen, bookingId }) => {
             <h3>{t("booking.checkOut")}</h3>
             <input
               type="datetime-local"
-              id="checkinDate"
+              id="checkoutDate"
+              disabled={dateState}
               value={moment(info.checkoutDate).format(
                 "YYYY-MM-DDTHH:mm"
               )}
@@ -359,6 +302,7 @@ const EditBooking = ({ setOpen, bookingId }) => {
         <EditBooking
           setOpen={setOpenModal}
           bookingId={bookingId}
+          dateState={false}
         />
       )}
     </div>

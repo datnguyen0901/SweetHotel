@@ -29,30 +29,13 @@ const NewBooking = ({ inputs, title }) => {
   useEffect(() => {
     if (data) {
       setInfo({
+        // today
         checkinDate: moment().format("YYYY-MM-DDTHH:mm"),
         checkoutDate: moment().format("YYYY-MM-DDTHH:mm"),
         type: "day",
       });
     }
   }, [data]);
-
-  console.log("info", info);
-
-  const getDatesInRange = (checkinDate, checkoutDate) => {
-    const start = new Date(checkinDate);
-    const end = new Date(checkoutDate);
-
-    const date = new Date(start.getTime());
-
-    const dates = [];
-
-    while (date < end) {
-      dates.push(new Date(date).getTime());
-      date.setDate(date.getDate() + 1);
-    }
-
-    return dates;
-  };
 
   const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
   function dayDifference(checkinDate, checkoutDate) {
@@ -73,33 +56,75 @@ const NewBooking = ({ inputs, title }) => {
     return a / b;
   };
 
+  const getDatesInRange = (checkinDate, checkoutDate) => {
+    const start = new Date(checkinDate);
+    const end = new Date(checkoutDate);
+
+    const date = new Date(start.getTime());
+
+    const dates = [];
+
+    while (date < end) {
+      if (date) dates.push(new Date(date).getTime());
+      date.setDate(date.getDate() + 1);
+    }
+
+    return dates;
+  };
+
   const alldates = getDatesInRange(
     info.checkinDate,
-    info.checkoutDate
+    // format  to YYYY-MM-DDT12:00
+    moment(info.checkoutDate).format("YYYY-MM-DDT12:00")
   );
 
-  const numberNight = dayDifference(
-    info.checkinDate,
-    info.checkoutDate
-  );
+  const checkoutDate =
+    info.type === "day"
+      ? moment(info.checkoutDate).format(
+          "YYYY-MM-DDT00:00:00"
+        )
+      : moment(info.checkoutDate).format(
+          "YYYY-MM-DDT23:59:59"
+        );
 
   const isAvailable = (roomNumber) => {
     const isFound = roomNumber.unavailableDates.some(
-      (date) => alldates.includes(new Date(date).getTime())
+      (date) => {
+        return !!(
+          date >=
+            moment(info.checkinDate).format(
+              "YYYY-MM-DDT00:00:00"
+            ) && date <= checkoutDate
+        );
+      }
     );
-
     return !isFound;
   };
+
+  const numberNight = dayDifference(
+    info.checkinDate,
+    moment(info.checkoutDate).format("YYYY-MM-DDT12:00")
+  );
 
   const handleSelect = (e) => {
     const checked = e.target.checked;
     const value = e.target.value;
     const price = Number(e.target.name);
-    setSelectedRooms(
-      checked
-        ? [...selectedRooms, value]
-        : selectedRooms.filter((item) => item !== value)
-    );
+    if (checked) {
+      if (selectedRooms.length === 0) {
+        setSelectedRooms([...selectedRooms, value]);
+        setPrice(checked ? price : 0);
+      } else {
+        alert("You can only select 1 room");
+        setSelectedRooms([]);
+        setPrice({});
+        return;
+      }
+    }
+    if (!checked) {
+      setSelectedRooms([]);
+      setPrice({});
+    }
     setPrice(checked ? price : 0);
     setInfo((prev) => ({
       ...prev,
@@ -147,12 +172,20 @@ const NewBooking = ({ inputs, title }) => {
   };
 
   const handleChange = (e) => {
-    setInfo((prev) => ({
-      ...prev,
-      [e.target.id]: e.target.value,
-      roomId: selectedRooms,
-      totalPaid: numberNight * price,
-    }));
+    if (
+      e.target.id === "checkinDate" &&
+      e.target.value < moment().format("YYYY-MM-DDTHH:mm")
+    ) {
+      alert("Checkin date must be greater than today");
+      window.location.reload();
+    } else {
+      setInfo((prev) => ({
+        ...prev,
+        [e.target.id]: e.target.value,
+        roomId: selectedRooms,
+        totalPaid: numberNight * price,
+      }));
+    }
   };
 
   const handleCheckAddIn = (e) => {
@@ -178,12 +211,12 @@ const NewBooking = ({ inputs, title }) => {
     try {
       const newBooking = {
         ...info,
-        checkinDate: moment(info.checkinDate)
-          .add(-7, "hours")
-          .format("YYYY-MM-DDTHH:mm"),
-        checkoutDate: moment(info.checkoutDate)
-          .add(-7, "hours")
-          .format("YYYY-MM-DDTHH:mm"),
+        checkinDate: moment(info.checkinDate).format(
+          "YYYY-MM-DDTHH:mm"
+        ),
+        checkoutDate: moment(info.checkoutDate).format(
+          "YYYY-MM-DDTHH:mm"
+        ),
         employeeId: user._id,
         roomId: selectedRooms,
         totalPaid: numberNight * price,
@@ -331,7 +364,7 @@ const NewBooking = ({ inputs, title }) => {
 
                     {item.roomNumbers?.map((roomNumber) => (
                       <div className="room">
-                        <li>
+                        <li key={roomNumber._id}>
                           <div className="rNumber">
                             <label>
                               {roomNumber.number}

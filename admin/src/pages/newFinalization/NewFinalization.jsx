@@ -6,15 +6,20 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 import { useTranslation } from "react-i18next";
-import moment from "moment";
-
 const NewFinalization = ({ inputs, title }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const [info, setInfo] = useState({});
   const navigate = useNavigate();
   const bookingId = useParams().productId || "";
-  const [totalPaidValue, setTotalPaidValue] = useState(0);
-  const [totalUnPaidValue, setTotalUnPaidValue] =
+  const [totalPaidValueBooking, setTotalPaidValueBooking] =
+    useState(0);
+  const [
+    totalUnPaidValueBooking,
+    setTotalUnPaidValueBooking,
+  ] = useState(0);
+  const [totalPaidValueOrder, setTotalPaidValueOrder] =
+    useState(0);
+  const [totalUnPaidValueOrder, setTotalUnPaidValueOrder] =
     useState(0);
   const bookingData = useFetch(`/bookings/${bookingId}`);
 
@@ -25,11 +30,7 @@ const NewFinalization = ({ inputs, title }) => {
       `/rooms/availability/delete/${bookingData.data.roomId}`,
       {
         data: {
-          dates: [
-            moment(bookingData.data.checkinDate)
-              .add(1, "days")
-              .format("YYYY-MM-DD"),
-          ],
+          dates: [bookingData.data.checkinDate],
         },
       }
     );
@@ -44,34 +45,50 @@ const NewFinalization = ({ inputs, title }) => {
     }
     if (booking.data) {
       if (booking.data.paymentMethod === "unpaid") {
-        setTotalUnPaidValue(booking.data.totalPaid);
-        setTotalPaidValue(0);
+        setTotalUnPaidValueBooking(booking.data.totalPaid);
+        setTotalPaidValueBooking(0);
       } else {
-        setTotalPaidValue(booking.data.totalPaid);
-        setTotalUnPaidValue(0);
+        setTotalPaidValueBooking(booking.data.totalPaid);
+        setTotalUnPaidValueBooking(0);
       }
     }
   }, [booking.data, navigate]);
 
   //get all order by bookingId
   const order = useFetch(`/orders/booking/${bookingId}`);
+  // calculate totalPaid and totalUnPaid from order.data
   useEffect(() => {
     if (order.data) {
+      let totalPaid = 0;
+      let totalUnPaid = 0;
       order.data.forEach((item) => {
         if (item.paymentMethod === "unpaid") {
-          // sum all unpaid value
-          let totalUnPaid = totalUnPaidValue;
           totalUnPaid += item.totalPaid;
-          setTotalUnPaidValue(totalUnPaid);
         } else {
-          // sum all paid value
-          let totalPaid = totalPaidValue;
           totalPaid += item.totalPaid;
-          setTotalPaidValue(totalPaid);
         }
       });
+      setTotalPaidValueOrder(totalPaid);
+      setTotalUnPaidValueOrder(totalUnPaid);
     }
-  }, [order.data, totalPaidValue, totalUnPaidValue]);
+  }, [order.data]);
+  // useEffect(() => {
+  //   if (order.data) {
+  //     order.data.forEach((item) => {
+  //       if (item.paymentMethod === "unpaid") {
+  //         // sum all unpaid value
+  //         let totalUnPaid = totalUnPaidValue;
+  //         totalUnPaid += item.totalPaid;
+  //         setTotalUnPaidValue(totalUnPaid);
+  //       } else {
+  //         // sum all paid value
+  //         let totalPaid = totalPaidValue;
+  //         totalPaid += item.totalPaid;
+  //         setTotalPaidValue(totalPaid);
+  //       }
+  //     });
+  //   }
+  // }, [order.data, totalPaidValue, totalUnPaidValue]);
 
   const handleChange = (e) => {
     setInfo((prev) => ({
@@ -86,8 +103,9 @@ const NewFinalization = ({ inputs, title }) => {
       const newFinalization = {
         ...info,
         bookingId: bookingId,
-        paid: totalPaidValue,
-        unpaid: totalUnPaidValue,
+        paid: totalPaidValueBooking + totalPaidValueOrder,
+        unpaid:
+          totalUnPaidValueBooking + totalUnPaidValueOrder,
         employeeId: user._id,
       };
 
@@ -138,7 +156,10 @@ const NewFinalization = ({ inputs, title }) => {
                   id="paid"
                   onChange={handleChange}
                   type="number"
-                  placeholder={totalPaidValue}
+                  placeholder={
+                    totalPaidValueBooking +
+                    totalPaidValueOrder
+                  }
                   disabled
                 />
               </div>
@@ -148,7 +169,10 @@ const NewFinalization = ({ inputs, title }) => {
                   id="unpaid"
                   onChange={handleChange}
                   type="number"
-                  placeholder={totalUnPaidValue}
+                  placeholder={
+                    totalUnPaidValueBooking +
+                    totalUnPaidValueOrder
+                  }
                 />
               </div>
               {inputs.map((input) => (

@@ -13,11 +13,9 @@ import {
   getFinalizationByUserId,
   getFinalizationsPaidThisYearByUserId,
   getUnpaidByUserIdToday,
+  getFinalizationsByAllBookingInHotel,
 } from "../controllers/finalizationController.js";
-import {
-  verifyAdmin,
-  verifyUser,
-} from "../utils/verifyToken.js";
+import { verifyAdmin, verifyUser } from "../utils/verifyToken.js";
 
 const router = express.Router();
 
@@ -31,44 +29,50 @@ router.delete("/:id", verifyAdmin, deleteFinalization);
 router.get("/:id", verifyAdmin, getFinalization);
 //GETALL
 router.get("/", verifyAdmin, getFinalizations);
+//GET ALL FINALIZATIONS BY ALL BOOKINGS IN THE EMPLOYEE'S HOTEL
+router.get(
+  "/hotel/room/:id",
+  verifyUser,
+  getFinalizationsByAllBookingInHotel
+);
 //GETFinalizationSPAIDTHISMONTH
 router.get(
   "/paid/now",
-  verifyUser,
+  verifyAdmin,
   getFinalizationsPaidThisMonth
 );
 //GETINCOMETHISMONTH
-router.get("/income/now", verifyUser, getIncomeThisMonth);
+router.get("/income/now", verifyAdmin, getIncomeThisMonth);
 //GETFinalizationSPAIDLASTMONTH
 router.get(
   "/paid/last",
-  verifyUser,
+  verifyAdmin,
   getFinalizationsPaidLastMonth
 );
 //GETINCOMELASTMONTH
-router.get("/income/last", verifyUser, getIncomeLastMonth);
+router.get("/income/last", verifyAdmin, getIncomeLastMonth);
 //GETINCOMEEACHMONTHINTHISYEAR
 router.get(
   "/income/each",
-  verifyUser,
+  verifyAdmin,
   getFinalizationsPaidThisYear
 );
 //GETFINALIZATIONBYUSERID
 router.get(
   "/user/:id",
-  verifyUser,
+  verifyAdmin,
   getFinalizationByUserId
 );
 //GETFINALIZATIONBYUSERIDINTHISYEAR
 router.get(
   "/user/each/:id",
-  verifyUser,
+  verifyAdmin,
   getFinalizationsPaidThisYearByUserId
 );
 //GETTOTALPAIDTODAYBYUSERID
 router.get(
   "/user/income/today/:id",
-  verifyUser,
+  verifyAdmin,
   getUnpaidByUserIdToday
 );
 

@@ -1,6 +1,6 @@
 import "../../components/datatable/datatable.scss";
 import { DataGrid } from "@mui/x-data-grid";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
@@ -9,7 +9,20 @@ import moment from "moment";
 
 const ViewBooking = ({ columns }) => {
   const [list, setList] = useState([]);
-  const { data } = useFetch(`/bookings`);
+
+  const bookingFailed = useFetch(
+    `/bookings/deletebooking/checkindate`
+  );
+  // get hotelId from login user by roleId
+  const user = JSON.parse(localStorage.getItem("user")) || {
+    roleId: "62b94302966d649ae7c461de",
+  };
+  // get role.name of user
+  const dataRole = useFetch(`/roles/${user.roleId}`);
+  const hotelId = user.hotelId;
+  const { data } = useFetch(
+    `/bookings/hotel/room/${hotelId}`
+  );
 
   const getDatesInRange = (checkinDate, checkoutDate) => {
     const start = new Date(checkinDate);
@@ -29,6 +42,31 @@ const ViewBooking = ({ columns }) => {
 
   const [t] = useTranslation("common");
 
+  const handleClearBooking = async () => {
+    try {
+      if (bookingFailed.data) {
+        bookingFailed.data.forEach((item) => {
+          deleteRoomCalendar(
+            item.roomId,
+            item.checkinDate,
+            item.checkoutDate,
+            item.type
+          );
+          handleDeleteForClearBooking(
+            item._id,
+            item.roomId,
+            item.checkinDate,
+            item.checkoutDate,
+            item.type
+          );
+        });
+      }
+      window.location.reload();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const deleteRoomCalendar = async (
     roomId,
     checkinDate,
@@ -45,9 +83,7 @@ const ViewBooking = ({ columns }) => {
         {
           data: {
             dates: [
-              moment(checkinDate)
-                .add(1, "days")
-                .format("YYYY-MM-DD"),
+              moment(checkinDate).format("YYYY-MM-DD"),
             ],
           },
         }
@@ -70,6 +106,21 @@ const ViewBooking = ({ columns }) => {
     }
   }, [data]);
 
+  useEffect(() => {
+    list.forEach((item) => {
+      if (item.checkinDate) {
+        item.checkinDate = moment(item.checkinDate).format(
+          "YYYY-MM-DD HH:mm"
+        );
+      }
+      if (item.checkoutDate) {
+        item.checkoutDate = moment(
+          item.checkoutDate
+        ).format("YYYY-MM-DD HH:mm");
+      }
+    });
+  }, [list]);
+
   const handleDelete = async (
     id,
     roomId,
@@ -78,6 +129,14 @@ const ViewBooking = ({ columns }) => {
     type
   ) => {
     try {
+      if (dataRole) {
+        if (dataRole.data.name === "Receptionist") {
+          alert(
+            "You don't have permission to access this page"
+          );
+          return <Navigate to="/" />;
+        }
+      }
       if (window.confirm(t("dataTable.confirm")) === true) {
         await axios.delete(`/bookings/${id}`);
         deleteRoomCalendar(
@@ -88,6 +147,27 @@ const ViewBooking = ({ columns }) => {
         );
         setList(list.filter((item) => item._id !== id));
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDeleteForClearBooking = async (
+    id,
+    roomId,
+    checkinDate,
+    checkoutDate,
+    type
+  ) => {
+    try {
+      await axios.delete(`/bookings/${id}`);
+      deleteRoomCalendar(
+        roomId,
+        checkinDate,
+        checkoutDate,
+        type
+      );
+      setList(list.filter((item) => item._id !== id));
     } catch (error) {
       console.log(error);
     }
@@ -157,11 +237,16 @@ const ViewBooking = ({ columns }) => {
         className="datagrid"
         rows={list}
         columns={columns.concat(actionColumn)}
-        pageSize={8}
-        rowsPerPageOptions={[8]}
+        pageSize={10}
+        rowsPerPageOptions={[10]}
         checkboxSelection
         getRowId={(row) => row._id}
       />
+      <button onClick={handleClearBooking}>
+        <div className="clearBookingButton">
+          Clear Bookings
+        </div>
+      </button>
     </div>
   );
 };

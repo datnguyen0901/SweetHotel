@@ -6,12 +6,21 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import useFetch from "../../hooks/useFetch";
 
 const NewService = ({ inputs, title }) => {
   const [info, setInfo] = useState({});
   const navigate = useNavigate();
   const [file, setFile] = useState("");
-
+  // get hotelId from login user by roleId
+  const user = JSON.parse(localStorage.getItem("user")) || {
+    roleId: "62b94302966d649ae7c461de",
+  };
+  // get role.name of user
+  const hotelId = user.hotelId;
+  const checkService = useFetch(
+    `/services/hotel/valid/${hotelId}`
+  );
   const [t] = useTranslation("common");
 
   const handleChange = (e) => {
@@ -20,6 +29,7 @@ const NewService = ({ inputs, title }) => {
       [e.target.id]: e.target.value,
     }));
   };
+  console.log(info);
 
   const handleClick = async (e) => {
     e.preventDefault();
@@ -27,6 +37,15 @@ const NewService = ({ inputs, title }) => {
     image.append("file", file);
     image.append("upload_preset", "upload");
     try {
+      // check checkService.data is empty
+      if (checkService.data.length === 0) {
+        const newService = {
+          hotelId: hotelId,
+          storage: [],
+        };
+        await axios.post(`/services`, newService);
+      }
+
       if (file) {
         const uploadRes = await axios.post(
           "https://api.cloudinary.com/v1_1/sweethotel/image/upload",
@@ -36,16 +55,21 @@ const NewService = ({ inputs, title }) => {
         const { url } = uploadRes.data;
 
         const newService = {
-          ...info,
-          img: url,
+          storage: [{ ...info, img: url }],
         };
 
-        await axios.post("/services", newService);
+        await axios.put(
+          `/services/hotel/${hotelId}`,
+          newService
+        );
       } else {
         const newService = {
-          ...info,
+          storage: [info],
         };
-        await axios.post("/services", newService);
+        await axios.put(
+          `/services/hotel/${hotelId}`,
+          newService
+        );
       }
       navigate("/services");
     } catch (err) {
@@ -91,17 +115,55 @@ const NewService = ({ inputs, title }) => {
                   style={{ display: "none" }}
                 />
               </div>
-              {inputs.map((input) => (
-                <div className="formInput" key={input.id}>
-                  <label>{input.label}</label>
-                  <input
-                    id={input.id}
-                    onChange={handleChange}
-                    type={input.type}
-                    placeholder={input.placeholder}
-                  />
-                </div>
-              ))}
+              <div className="formInput">
+                <label>Name</label>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Enter Service Name"
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="formInput">
+                <label>Describe</label>
+                <input
+                  id="desc"
+                  type="text"
+                  placeholder="Describe Service"
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="formInput">
+                <label>Price</label>
+                <input
+                  id="price"
+                  type="number"
+                  placeholder="Enter Price without currency"
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="formInput">
+                <label>Type</label>
+                <input
+                  id="type"
+                  type="text"
+                  placeholder="Enter Service Type like: food, drink, etc"
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="formInput">
+                <label>Quantity</label>
+                <input
+                  id="quantity"
+                  type="number"
+                  placeholder="Enter Service Quantity"
+                  onChange={handleChange}
+                />
+              </div>
 
               <div className="formInput">
                 <button onClick={handleClick}>

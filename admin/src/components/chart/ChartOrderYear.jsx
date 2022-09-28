@@ -80,6 +80,7 @@ const ChartOrderYear = ({ aspect, title }) => {
           <YAxis
             dataKey="quantity"
             name="Quantity"
+            domain={[0, 15000]}
             unit=""
           />
           <ZAxis

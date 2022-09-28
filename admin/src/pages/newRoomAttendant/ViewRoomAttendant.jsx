@@ -73,8 +73,8 @@ const ViewRoomAttendant = ({ columns }) => {
         rows={list}
         sortModel={[]}
         columns={columns.concat(actionColumn)}
-        pageSize={8}
-        rowsPerPageOptions={[8]}
+        pageSize={10}
+        rowsPerPageOptions={[10]}
         checkboxSelection
         getRowId={(row) => row._id}
       />

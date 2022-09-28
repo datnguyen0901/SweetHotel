@@ -3,12 +3,11 @@ import Navbar from "../../components/navbar/Navbar";
 import Header from "../../components/header/Header";
 import MailList from "../../components/mailList/MailList";
 import Footer from "../../components/footer/Footer";
-import {  useState } from "react";
+import { useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import { useNavigate } from "react-router-dom";
 import CircleIcon from "@mui/icons-material/Circle";
 import { useTranslation } from "react-i18next";
-import axios from "axios";
 import moment from "moment";
 import EditBooking from "../../components/editBooking/EditBooking";
 
@@ -23,76 +22,65 @@ const Booking = () => {
 
   const [t] = useTranslation("common");
 
-  const date = new Date();
-  const today = date.toISOString().split("T")[0];
+  //get today format YYYY-MM-DDT12:00
+  const today = moment().format("YYYY-MM-DDT12:00");
 
   const navigate = useNavigate();
 
-  const getDatesInRange = (checkinDate, checkoutDate) => {
-    const start = new Date(checkinDate);
-    const end = new Date(checkoutDate);
+  // const getDatesInRange = (checkinDate, checkoutDate) => {
+  //   const start = new Date(checkinDate);
+  //   const end = new Date(checkoutDate);
 
-    const date = new Date(start.getTime());
+  //   const date = new Date(start.getTime());
 
-    const dates = [];
+  //   const dates = [];
 
-    while (date < end) {
-      if (date) dates.push(new Date(date).getTime());
-      date.setDate(date.getDate() + 1);
-    }
+  //   while (date < end) {
+  //     if (date) dates.push(new Date(date).getTime());
+  //     date.setDate(date.getDate() + 1);
+  //   }
 
-    return dates;
-  };
+  //   return dates;
+  // };
 
-  const deleteRoomCalendar = async (
-    roomId,
-    checkinDate,
-    checkoutDate
-  ) => {
-    const alldates = getDatesInRange(
-      checkinDate,
-      checkoutDate
-    );
-    await axios.delete(
-      `/rooms/availability/delete/${roomId}`,
-      {
-        data: {
-          dates: alldates,
-        },
-      }
-    );
-  };
+  // const deleteRoomCalendar = async (
+  //   roomId,
+  //   checkinDate,
+  //   checkoutDate
+  // ) => {
+  //   const alldates = getDatesInRange(
+  //     checkinDate,
+  //     checkoutDate
+  //   );
+  //   await axios.delete(
+  //     `/rooms/availability/delete/${roomId}`,
+  //     {
+  //       data: {
+  //         dates: alldates,
+  //       },
+  //     }
+  //   );
+  // };
 
   const handleDelete = async (
     id,
     roomId,
     checkinDate,
-    checkoutDate,
+    checkoutDate
   ) => {
     try {
-      var checkinDate = moment(checkoutDate)
-        .add(-7, "hours")
-        .format("YYYY-MM-DDTHH:mm");
-      var checkoutDate = moment(checkoutDate)
-        .add(-7, "hours")
-        .format("YYYY-MM-DDTHH:mm");
-      if (window.confirm(t("dataTable.confirm")) === true) {
-        await axios.delete(`/bookings/${id}`);
-        deleteRoomCalendar(
-          roomId,
-          checkinDate,
-          checkoutDate
-        );
-        window.location.reload();
-      }
+      alert("Please contact us to delete your booking!");
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleClick = (
-    id,
-  ) => {
+  const handleOrder = (id) => {
+    navigate(`/order/${id}`);
+  };
+
+  const handleClick = (id) => {
     if (user) {
       setBookingId({ id });
       setOpenModal(true);
@@ -149,7 +137,12 @@ const Booking = () => {
     if (checkinDate < today && status === "open") {
       return (
         <>
-          <button className="booking__button">Order</button>
+          <button
+            className="booking__button"
+            onClick={() => handleOrder(id)}
+          >
+            Order
+          </button>
           {paymentMethod === "unpaid" ? (
             <button className="booking__button">Pay</button>
           ) : null}
@@ -240,6 +233,7 @@ const Booking = () => {
         <EditBooking
           setOpen={setOpenModal}
           bookingId={bookingId}
+          dateState={true}
         />
       )}
     </div>

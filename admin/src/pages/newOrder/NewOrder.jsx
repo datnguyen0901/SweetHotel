@@ -1,7 +1,7 @@
 import "./newOrder.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,14 +10,30 @@ import useFetch from "../../hooks/useFetch";
 import { useTranslation } from "react-i18next";
 
 const NewOrder = ({ inputs, title }) => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  // get hotelId from login user by roleId
+  const user = JSON.parse(localStorage.getItem("user")) || {
+    roleId: "62b94302966d649ae7c461de",
+  };
+  // get role.name of user
+  const hotelId = user.hotelId;
   const [info, setInfo] = useState({});
   const navigate = useNavigate();
-  const serviceData = useFetch(`/services`);
+  const serviceData = useFetch(
+    `/services/hotel/${hotelId}`
+  );
   const [selectedServices, setSelectedServices] = useState(
     []
   );
   const bookingId = useParams().productId || "";
+
+  // get totalPaid if paymentMethod is unpaid
+  const booking = useFetch(`/bookings/${bookingId}`);
+  useEffect(() => {
+    if (booking.data.status === "closed") {
+      navigate("/bookings");
+      alert("This booking is closed");
+    }
+  }, [booking.data, navigate]);
 
   const [t] = useTranslation("common");
 
@@ -61,14 +77,34 @@ const NewOrder = ({ inputs, title }) => {
   const handleChangeService = (e) => {
     const value = e.target.value;
     const id = e.target.name;
+    const service = serviceData.data.find(
+      (service) => service._id === id
+    );
+    if (
+      value > service.quantity &&
+      service.type !== "service"
+    ) {
+      alert("We only have " + service.quantity);
+      window.location.reload();
+    }
     // update quantity of service in selectedServices
     setSelectedServices((prev) =>
       prev.map((item) => {
         if (item.id === id) {
-          return {
-            ...item,
-            quantity: parseInt(value, 10),
-          };
+          if (
+            value > service.quantity &&
+            service.type !== "service"
+          ) {
+            return {
+              ...item,
+              quantity: 1,
+            };
+          } else {
+            return {
+              ...item,
+              quantity: parseInt(value, 10),
+            };
+          }
         }
         return item;
       })
@@ -99,7 +135,7 @@ const NewOrder = ({ inputs, title }) => {
       // Minus the quantity of service in the service storage when ordered
       serviceOrders.map(async (item) => {
         const service = await axios.get(
-          `/services/${item.serviceId}`
+          `/services/hotel/edit/${item.serviceId}`
         );
         if (
           service.data.quantity < item.quantity &&
@@ -111,15 +147,6 @@ const NewOrder = ({ inputs, title }) => {
               t("order.alertQuantity2")
           );
           return;
-        } else {
-          const newOrder = {
-            ...info,
-            employeeId: user._id,
-            serviceOrders,
-            totalPaid: total,
-          };
-          await axios.post("/orders", newOrder);
-          navigate("/orders");
         }
         if (service.data.type !== "service") {
           const newService = {
@@ -127,11 +154,19 @@ const NewOrder = ({ inputs, title }) => {
             quantity: service.data.quantity - item.quantity,
           };
           await axios.put(
-            `/services/${item.serviceId}`,
+            `/services/hotel/storage/${item.serviceId}`,
             newService
           );
         }
       });
+      const newOrder = {
+        ...info,
+        employeeId: user._id,
+        serviceOrders,
+        totalPaid: total,
+      };
+      await axios.post("/orders", newOrder);
+      navigate("/orders");
     } catch (err) {
       console.log(err);
     }

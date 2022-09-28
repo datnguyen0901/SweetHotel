@@ -118,7 +118,7 @@ export const bookingColumnsVN = [
   {
     field: "roomNumber",
     headerName: "Số phòng",
-    width: 110,
+    width: 80,
   },
   {
     field: "checkinDate",
@@ -133,12 +133,12 @@ export const bookingColumnsVN = [
   {
     field: "type",
     headerName: "Loại",
-    width: 100,
+    width: 50,
   },
   {
     field: "status",
     headerName: "Trạng thái",
-    width: 180,
+    width: 80,
   },
   {
     field: "paymentMethod",

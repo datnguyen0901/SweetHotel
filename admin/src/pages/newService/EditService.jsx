@@ -17,7 +17,9 @@ const EditService = ({ inputs, title }) => {
   const [t] = useTranslation("common");
 
   const navigate = useNavigate();
-  const dataService = useFetch(`/services/${id}`);
+  const dataService = useFetch(
+    `/services/hotel/edit/${id}`
+  );
 
   //set hotelID to the info of the hotel
   useEffect(() => {
@@ -32,6 +34,8 @@ const EditService = ({ inputs, title }) => {
       [e.target.id]: e.target.value,
     }));
   };
+
+  console.log(info);
 
   const handleClick = async (e) => {
     e.preventDefault();
@@ -52,12 +56,18 @@ const EditService = ({ inputs, title }) => {
           img: url,
         };
 
-        await axios.put(`/services/${id}`, newService);
+        await axios.put(
+          `/services/hotel/storage/${id}`,
+          newService
+        );
       } else {
         const newService = {
           ...info,
         };
-        await axios.put(`/services/${id}`, newService);
+        await axios.put(
+          `/services/hotel/storage/${id}`,
+          newService
+        );
       }
       navigate("/services");
     } catch (err) {
@@ -103,20 +113,61 @@ const EditService = ({ inputs, title }) => {
                   style={{ display: "none" }}
                 />
               </div>
-              {inputs.map((input) => (
-                <div className="formInput" key={input.id}>
-                  <label>{input.label}</label>
-                  <input
-                    id={input.id}
-                    placeholder={dataService.data[input.id]}
-                    onChange={handleChange}
-                    type={input.type}
-                    defaultValue={
-                      dataService.data[input.id]
-                    }
-                  />
-                </div>
-              ))}
+
+              <div className="formInput">
+                <label>Name</label>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Enter Service Name"
+                  onChange={handleChange}
+                  value={info.name}
+                />
+              </div>
+
+              <div className="formInput">
+                <label>Describe</label>
+                <input
+                  id="desc"
+                  type="text"
+                  placeholder="Describe Service"
+                  onChange={handleChange}
+                  value={info.desc}
+                />
+              </div>
+
+              <div className="formInput">
+                <label>Price</label>
+                <input
+                  id="price"
+                  type="number"
+                  placeholder="Enter Price without currency"
+                  onChange={handleChange}
+                  value={info.price}
+                />
+              </div>
+
+              <div className="formInput">
+                <label>Type</label>
+                <input
+                  id="type"
+                  type="text"
+                  placeholder="Enter Service Type like: food, drink, etc"
+                  onChange={handleChange}
+                  value={info.type}
+                />
+              </div>
+
+              <div className="formInput">
+                <label>Quantity</label>
+                <input
+                  id="quantity"
+                  type="number"
+                  placeholder="Enter Service Quantity"
+                  onChange={handleChange}
+                  value={info.quantity}
+                />
+              </div>
 
               <div className="formInput">
                 <button onClick={handleClick}>

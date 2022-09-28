@@ -11,8 +11,9 @@ import useFetch from "../../hooks/useFetch";
 import { useTranslation } from "react-i18next";
 
 const List = () => {
-  // get data from order sort newest
-  const rows = useFetch(`/orders/sort/newest`);
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const hotelId = userData.hotelId;
+  const rows = useFetch(`/orders/sort/newest/${hotelId}`);
 
   const [t] = useTranslation("common");
 

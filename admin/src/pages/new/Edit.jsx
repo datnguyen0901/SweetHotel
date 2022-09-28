@@ -21,7 +21,14 @@ const Edit = ({ inputs, title }) => {
   const [country, setCountry] = useState(undefined);
   const [region, setRegion] = useState(undefined);
   const { data, loading } = useFetch(`/users/${id}`);
+  const hotel = useFetch(`/hotels`);
   const dataRole = useFetch(`/roles`);
+
+  const userData = JSON.parse(
+    localStorage.getItem("user")
+  ) || { roleId: "62b94302966d649ae7c461de" };
+  // get role.name of user
+  const roleData = useFetch(`/roles/${userData.roleId}`);
 
   const [t] = useTranslation("common");
 
@@ -33,6 +40,18 @@ const Edit = ({ inputs, title }) => {
       setRegion(data.city);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (hotel.data) {
+      dataRole.data.forEach((item) => {
+        hotel.data.forEach((hotel) => {
+          if (item.hotelId === hotel._id) {
+            item.hotelName = hotel.name;
+          }
+        });
+      });
+    }
+  }, [hotel.data, dataRole.data]);
 
   const handleChange = (e) => {
     setInfo((prev) => ({
@@ -174,6 +193,9 @@ const Edit = ({ inputs, title }) => {
                   id="roleId"
                   onChange={handleChange}
                   value={info.roleId}
+                  disabled={
+                    roleData.data?.name === "Receptionist"
+                  }
                 >
                   {loading
                     ? "loading"
@@ -183,7 +205,7 @@ const Edit = ({ inputs, title }) => {
                           key={role._id}
                           value={role._id}
                         >
-                          {role.name}
+                          {role.name} at {role.hotelName}
                         </option>
                       ))}
                 </select>

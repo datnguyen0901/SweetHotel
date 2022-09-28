@@ -1,6 +1,10 @@
 import "./datatable.scss";
 import { DataGrid } from "@mui/x-data-grid";
-import { Link, useLocation } from "react-router-dom";
+import {
+  Link,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
@@ -8,21 +12,76 @@ import { useTranslation } from "react-i18next";
 
 const Datatable = ({ columns }) => {
   const location = useLocation();
+  // get hotelId from login user by roleId
+  const user = JSON.parse(localStorage.getItem("user")) || {
+    roleId: "62b94302966d649ae7c461de",
+  };
+  // get role.name of user
+  const dataRole = useFetch(`/roles/${user.roleId}`);
+  // get role.name of user
+  const hotelId = user.hotelId;
   const path = location.pathname.split("/")[1];
+
   const [list, setList] = useState([]);
   const { data } = useFetch(`/${path}`);
 
+  const dataOrder = useFetch(
+    `/orders/hotel/room/${hotelId}`
+  );
+  const dataFinalization = useFetch(
+    `/finalizations/hotel/room/${hotelId}`
+  );
+  const dataService = useFetch(
+    `/services/hotel/${hotelId}`
+  );
+
   useEffect(() => {
-    setList(data);
-  }, [data]);
+    if (path === "finalizations") {
+      setList(dataFinalization.data);
+    }
+    if (path === "orders") {
+      setList(dataOrder.data);
+    }
+    if (path === "services") {
+      setList(dataService.data);
+    }
+    if (
+      path !== "finalizations" &&
+      path !== "orders" &&
+      path !== "services"
+    ) {
+      setList(data);
+    }
+  }, [
+    data,
+    path,
+    dataOrder,
+    dataFinalization,
+    dataService,
+  ]);
 
   const [t] = useTranslation("common");
 
   const handleDelete = async (id) => {
     try {
+      if (dataRole) {
+        if (dataRole.data.name === "Receptionist") {
+          alert(
+            "You don't have permission to access this page"
+          );
+          return <Navigate to="/" />;
+        }
+      }
       if (window.confirm(t("dataTable.confirm")) === true) {
-        await axios.delete(`/${path}/${id}`);
+        if (path === "services") {
+          await axios.delete(
+            `/services/hotel/storage/${id}`
+          );
+        } else {
+          await axios.delete(`/${path}/${id}`);
+        }
         setList(list.filter((item) => item._id !== id));
+        window.location.reload();
       }
     } catch (error) {
       console.log(error);
@@ -77,8 +136,8 @@ const Datatable = ({ columns }) => {
         className="datagrid"
         rows={list}
         columns={columns.concat(actionColumn)}
-        pageSize={8}
-        rowsPerPageOptions={[8]}
+        pageSize={10}
+        rowsPerPageOptions={[10]}
         checkboxSelection
         getRowId={(row) => row._id}
       />

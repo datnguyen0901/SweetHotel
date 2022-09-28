@@ -110,17 +110,6 @@ const Header = ({ type }) => {
             <FontAwesomeIcon icon={faCalendarMinus} />
             <span>Booking</span>
           </div>
-          <div
-            className={
-              path === "order"
-                ? "headerListItem active"
-                : "headerListItem"
-            }
-            onClick={() => navigate("/order")}
-          >
-            <FontAwesomeIcon icon={faBell} />
-            <span>Orders</span>
-          </div>
         </div>
         {type !== "list" && (
           <>

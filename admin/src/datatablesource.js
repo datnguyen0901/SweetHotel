@@ -133,17 +133,17 @@ export const bookingColumns = [
   {
     field: "type",
     headerName: "Type",
-    width: 100,
+    width: 50,
   },
   {
     field: "status",
     headerName: "Status",
-    width: 180,
+    width: 80,
   },
   {
     field: "paymentMethod",
     headerName: "Payment Method",
-    width: 180,
+    width: 130,
   },
   {
     field: "note",
