@@ -12,6 +12,7 @@ import ordersRoute from "./routes/orders.js";
 import finalizationsRoute from "./routes/finalizations.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+
 const app = express();
 dotenv.config();
 
@@ -32,7 +33,9 @@ mongoose.connection.on("connected", () => {
   console.log("MongoDB connected");
 });
 
+
 //middlewares
+app.use(cookieParser());
 app.use(cookieParser());
 app.use(cors());
 app.use(express.json());

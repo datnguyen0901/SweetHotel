@@ -10,10 +10,13 @@ import CircleIcon from "@mui/icons-material/Circle";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
 import EditBooking from "../../components/editBooking/EditBooking";
+import axios from "axios";
+import Payment from "../../components/payment/Payment";
 
 const Booking = () => {
   const [bookingId, setBookingId] = useState({});
   const [openModal, setOpenModal] = useState(false);
+  const [page, setPage] = useState("editBooking");
   const user = JSON.parse(localStorage.getItem("user"));
 
   const { data, loading } = useFetch(
@@ -82,11 +85,41 @@ const Booking = () => {
 
   const handleClick = (id) => {
     if (user) {
+      setPage("editBooking");
       setBookingId({ id });
       setOpenModal(true);
     } else {
       navigate("/login");
     }
+  };
+
+  const handlePayment = (id) => {
+    if (user) {
+      setPage("payment");
+      setBookingId({ id });
+      setOpenModal(true);
+    } else {
+      navigate("/login");
+    }
+  }
+    
+  const handleVNPay = (id) => {
+    const payment = {
+      amount: 100000,
+      bookingId: id,
+      orderInfo: "Payment for booking",
+      orderType: "bookingVNPay",
+      locale: "",
+    };
+    // axios with header
+    axios
+      .post("/bookings/onlinepayment/vnpay", payment)
+      .then((res) => {
+        window.location.replace(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   function displayButton(
@@ -129,7 +162,12 @@ const Booking = () => {
             Delete
           </button>
           {paymentMethod === "unpaid" ? (
-            <button className="booking__button">Pay</button>
+            <button
+              className="booking__button"
+              onClick={() => handlePayment(id)}
+            >
+              Pay
+            </button>
           ) : null}
         </>
       );
@@ -144,7 +182,12 @@ const Booking = () => {
             Order
           </button>
           {paymentMethod === "unpaid" ? (
-            <button className="booking__button">Pay</button>
+            <button
+              className="booking__button"
+              onClick={() => handlePayment(id)}
+            >
+              Pay
+            </button>
           ) : null}
         </>
       );
@@ -229,13 +272,22 @@ const Booking = () => {
           <Footer />
         </div>
       )}
-      {openModal && (
+      {openModal && page === "editBooking" && (
         <EditBooking
           setOpen={setOpenModal}
           bookingId={bookingId}
           dateState={true}
         />
+      ) || (
+        openModal && page === "payment" && (
+          <Payment
+            setOpen={setOpenModal}
+            bookingId={bookingId}
+            handleVNPay={handleVNPay}
+          />
+        )
       )}
+
     </div>
   );
 };

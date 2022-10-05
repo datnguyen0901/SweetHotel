@@ -42,6 +42,9 @@ const BookingSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    onlinePaymentId: {
+      type: String,
+    },
     addIn: {
       type: Boolean,
       default: false,

@@ -28,6 +28,11 @@ import {
   replaceBookingsByRoomId,
   getBookingIfCheckinDateIsPassed,
   getBookingsByHotelId,
+  bookingVnPay,
+  bookingVnPayReturn,
+  bookingVnPayIPN,
+  bookingPaypalPay,
+  bookingPaypalPaySuccess,
 } from "../controllers/BookingController.js";
 import {
   verifyAdmin,
@@ -171,4 +176,36 @@ router.get(
   verifyAdmin,
   getBookingsByHotelId
 );
+//ONLINEPAYMENTBYVNPAY
+router.post(
+  "/onlinepayment/vnpay",
+  verifyUser,
+  bookingVnPay
+);
+
+//RETURNONLINEPAYMENTBYVNPAY
+router.get(
+  "/onlinepayment/vnpay_return",
+  verifyUser,
+  bookingVnPayReturn
+);
+//IPNONLINEPAYMENTBYVNPAY
+router.get(
+  "/onlinepayment/vnpay_ipn",
+  verifyUser,
+  bookingVnPayIPN
+);
+//ONLINEPAYMENTBYPAYPAL
+router.post(
+  "/onlinepayment/paypal",
+  verifyUser,
+  bookingPaypalPay
+);
+//PAYPALSUCCESS
+router.get(
+  "/onlinepayment/paypal/success/:id",
+  verifyUser,
+  bookingPaypalPaySuccess
+);
+
 export default router;

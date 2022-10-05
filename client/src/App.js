@@ -9,6 +9,8 @@ import Hotel from "./pages/hotel/Hotel";
 import List from "./pages/list/List";
 import Login from "./pages/login/Login";
 import Order from "./pages/order/Order";
+import PaypalCancel from "./pages/payment/PaypalCancel";
+import PaypalSuccess from "./pages/payment/PaypalSuccess";
 import Register from "./pages/register/Register";
 
 function App() {
@@ -22,6 +24,14 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/booking" element={<Booking />} />
         <Route path="/order/:id" element={<Order />} />
+        <Route
+          path="/booking/success"
+          element={<PaypalSuccess />}
+        />
+        <Route
+          path="/booking/cancel"
+          element={<PaypalCancel />}
+        />
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
     </BrowserRouter>

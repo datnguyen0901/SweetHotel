@@ -5,6 +5,18 @@ import Role from "../models/Role.js";
 import Order from "../models/Order.js";
 import Finalization from "../models/Finalization.js";
 import moment from "moment";
+import dateFormat from "dateformat";
+import crypto from "crypto";
+import querystring from "qs";
+import paypal from "paypal-rest-sdk";
+
+paypal.configure({
+  mode: "sandbox", //sandbox or live
+  client_id:
+    "AVNYzsI8sb-AfWOVr2xat7NZSqVDoDuElNplMPR8jH8yrCi_d7jEV5Lbz38aiKaZ6wMBcL0ztwqUWSzE",
+  client_secret:
+    "EDi0APVnGo3PWwaWfZS_Mbz9WuYDKc_HRAMRjEyH5vHItNzh9lglfC2qw9X0_ADg-PCdUNUaGfwiSXKF",
+});
 
 export const createBooking = async (req, res, next) => {
   const newBooking = new Booking(req.body);
@@ -209,6 +221,292 @@ export const replaceBookingsByRoomId = async (
       );
     });
     res.status(200).json(bookings);
+  } catch (error) {
+    next(error);
+  }
+};
+
+function sortObject(obj) {
+  let sorted = {};
+  let str = [];
+  let key;
+  for (key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      str.push(encodeURIComponent(key));
+    }
+  }
+  str.sort();
+  for (key = 0; key < str.length; key++) {
+    sorted[str[key]] = encodeURIComponent(
+      obj[str[key]]
+    ).replace(/%20/g, "+");
+  }
+  return sorted;
+}
+
+export const bookingVnPay = async (req, res, next) => {
+  try {
+    let ipAddr =
+      req.headers["x-forwarded-for"] ||
+      req.connection.remoteAddress ||
+      req.socket.remoteAddress ||
+      req.connection.socket.remoteAddress;
+
+    const tmnCode = "0XYGSHRC";
+    const secretKey = "XRZSFEZFZKBNXDWXGEHSGRFNEOXFKUKW";
+    let vnpUrl =
+      "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+    let returnUrl =
+      "http://localhost:8800/api/bookings/onlinepayment/vnpay_return";
+
+    let date = new Date();
+
+    let createDate = dateFormat(date, "yyyymmddHHmmss");
+    let amount = parseFloat(req.body.amount);
+    // let bankCode = req.body.bankCode;
+    let orderInfo = req.body.orderInfo;
+    let orderType = req.body.orderType;
+    let bookingId = req.body.bookingId;
+    let locale = req.body.locale;
+    if (locale === null || locale === "") {
+      locale = "vn";
+    }
+    let currCode = "VND";
+    let vnp_Params = {};
+    vnp_Params["vnp_Version"] = "2.1.0";
+    vnp_Params["vnp_Command"] = "pay";
+    vnp_Params["vnp_TmnCode"] = tmnCode;
+    // vnp_Params['vnp_Merchant'] = ''
+    vnp_Params["vnp_Locale"] = locale;
+    vnp_Params["vnp_CurrCode"] = currCode;
+    vnp_Params["vnp_TxnRef"] = bookingId;
+    vnp_Params["vnp_OrderInfo"] = orderInfo;
+    vnp_Params["vnp_OrderType"] = orderType;
+    vnp_Params["vnp_Amount"] = amount * 100;
+    vnp_Params["vnp_ReturnUrl"] = returnUrl; // return booking page
+    vnp_Params["vnp_IpAddr"] = ipAddr;
+    vnp_Params["vnp_CreateDate"] = createDate;
+    // if (bankCode !== null && bankCode !== "") {
+    //   vnp_Params["vnp_BankCode"] = bankCode;
+    // }
+
+    vnp_Params = sortObject(vnp_Params);
+
+    let signData = querystring.stringify(vnp_Params, {
+      encode: false,
+    });
+    let hmac = crypto.createHmac("sha512", secretKey);
+    let signed = hmac
+      .update(Buffer.from(signData, "utf-8"))
+      .digest("hex");
+    vnp_Params["vnp_SecureHash"] = signed;
+    vnpUrl +=
+      "?" +
+      querystring.stringify(vnp_Params, { encode: false });
+
+    res.header("Access-Control-Allow-Origin", "*");
+    res.redirect(vnpUrl);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const bookingVnPayReturn = async (
+  req,
+  res,
+  next
+) => {
+  let vnp_Params = req.query;
+
+  let secureHash = vnp_Params["vnp_SecureHash"];
+  let bookingId = vnp_Params["vnp_TxnRef"];
+  let transactionId = vnp_Params["vnp_TransactionNo"];
+
+  delete vnp_Params["vnp_SecureHash"];
+  delete vnp_Params["vnp_SecureHashType"];
+
+  vnp_Params = sortObject(vnp_Params);
+
+  let secretKey = "XRZSFEZFZKBNXDWXGEHSGRFNEOXFKUKW";
+
+  let signData = querystring.stringify(vnp_Params, {
+    encode: false,
+  });
+
+  let hmac = crypto.createHmac("sha512", secretKey);
+  let signed = hmac
+    .update(Buffer.from(signData, "utf-8"))
+    .digest("hex");
+
+  if (secureHash === signed) {
+    //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
+
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "X-Requested-With"
+    );
+    Booking.findByIdAndUpdate(
+      bookingId,
+      {
+        paymentMethod: "online",
+        onlinePaymentId: transactionId,
+        note: "Payment success by VnPAY",
+      },
+      { new: true }
+    ).then((booking) => {
+      res.redirect("http://localhost:3000/booking/success");
+    });
+  }
+};
+
+export const bookingVnPayIPN = async (req, res, next) => {
+  let vnp_Params = req.query;
+  let secureHash = vnp_Params["vnp_SecureHash"];
+
+  delete vnp_Params["vnp_SecureHash"];
+  delete vnp_Params["vnp_SecureHashType"];
+
+  vnp_Params = sortObject(vnp_Params);
+
+  let secretKey = "XRZSFEZFZKBNXDWXGEHSGRFNEOXFKUKW";
+
+  let signData = querystring.stringify(vnp_Params, {
+    encode: false,
+  });
+
+  let hmac = crypto.createHmac("sha512", secretKey);
+  let signed = hmac
+    .update(Buffer.from(signData, "utf-8"))
+    .digest("hex");
+
+  if (secureHash === signed) {
+    let bookingId = vnp_Params["vnp_TxnRef"];
+    let rspCode = vnp_Params["vnp_ResponseCode"];
+    //Kiem tra du lieu co hop le khong, cap nhat trang thai don hang va gui ket qua cho VNPAY theo dinh dang duoi
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "X-Requested-With"
+    );
+    res
+      .status(200)
+      .json({ RspCode: "00", Message: "success" });
+  } else {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "X-Requested-With"
+    );
+    res
+      .status(200)
+      .json({ RspCode: "97", Message: "Fail checksum" });
+  }
+};
+
+export const bookingPaypalPay = async (req, res, next) => {
+  try {
+    const bookingId = req.body.sku;
+    let create_payment_json = {
+      intent: "sale",
+      payer: {
+        payment_method: "paypal",
+      },
+      redirect_urls: {
+        return_url: `http://localhost:8800/api/bookings/onlinepayment/paypal/success/${bookingId}`,
+        cancel_url:
+          "http://localhost:8800/api/bookings/onlinepayment/paypal/cancel",
+      },
+      transactions: [
+        {
+          item_list: {
+            items: [
+              {
+                name: req.body.name,
+                sku: req.body.sku,
+                price: req.body.price,
+                currency: req.body.currency,
+                quantity: req.body.quantity,
+              },
+            ],
+          },
+          amount: {
+            currency: "USD",
+            total: req.body.price,
+          },
+          description: "This is the payment description.",
+        },
+      ],
+    };
+
+    paypal.payment.create(
+      create_payment_json,
+      function (error, payment) {
+        if (error) {
+          throw error;
+        } else {
+          for (const element of payment.links) {
+            if (element.rel === "approval_url") {
+              res.redirect(element.href);
+            }
+          }
+        }
+      }
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const bookingPaypalPaySuccess = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const payerId = req.query.PayerID;
+    const paymentId = req.query.paymentId;
+    const bookingId = req.params.id;
+
+    const booking = await Booking.findById(bookingId);
+
+    const execute_payment_json = {
+      payer_id: payerId,
+      transactions: [
+        {
+          amount: {
+            currency: "USD",
+            total: booking.totalPaid,
+          },
+        },
+      ],
+    };
+
+    paypal.payment.execute(
+      paymentId,
+      execute_payment_json,
+      function (error, payment) {
+        if (error) {
+          res.redirect(
+            "http://localhost:3000/booking/cancel"
+          );
+        } else {
+          Booking.findByIdAndUpdate(
+            bookingId,
+            {
+              paymentMethod: "online",
+              onlinePaymentId: paymentId,
+              note: "Payment success by Paypal",
+            },
+            { new: true }
+          ).then((booking) => {
+            res.redirect(
+              "http://localhost:3000/booking/success"
+            );
+          });
+        }
+      }
+    );
   } catch (error) {
     next(error);
   }
