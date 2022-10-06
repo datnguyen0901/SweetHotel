@@ -304,8 +304,7 @@ export const bookingVnPay = async (req, res, next) => {
       "?" +
       querystring.stringify(vnp_Params, { encode: false });
 
-    res.header("Access-Control-Allow-Origin", "*");
-    res.redirect(vnpUrl);
+    return res.status(200).json(vnpUrl);
   } catch (error) {
     next(error);
   }
@@ -447,7 +446,7 @@ export const bookingPaypalPay = async (req, res, next) => {
         } else {
           for (const element of payment.links) {
             if (element.rel === "approval_url") {
-              res.redirect(element.href);
+              return res.status(200).json(element.href);
             }
           }
         }

@@ -51,7 +51,7 @@ const Payment = ({ setOpen, bookingId, dateState }) => {
     return parseFloat(vnd).toFixed(1);
   };
 
-  const handleVNPay = () => {
+  const handleVNPay = async () => {
     const payment = {
       amount: convert(info.totalPaid),
       bookingId: id,
@@ -59,8 +59,8 @@ const Payment = ({ setOpen, bookingId, dateState }) => {
       orderType: "bookingVNPay",
       locale: "",
     };
-    // axios with header
-    axios
+
+    await axios
       .post("/bookings/onlinepayment/vnpay", payment)
       .then((res) => {
         window.location.replace(res.data);
@@ -70,7 +70,7 @@ const Payment = ({ setOpen, bookingId, dateState }) => {
       });
   };
 
-  const handlePaypal = () => {
+  const handlePaypal = async () => {
     const payment = {
       name: "Payment for booking" + id,
       sku: id,
@@ -79,7 +79,7 @@ const Payment = ({ setOpen, bookingId, dateState }) => {
       quantity: 1,
     };
     // axios with header
-    axios
+    await axios
       .post("/bookings/onlinepayment/paypal", payment)
       .then((res) => {
         window.location.replace(res.data);
