@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import useFetch from "../../hooks/useFetch.js";
 import "./featured.css";
 
@@ -5,6 +6,8 @@ const Featured = () => {
   const { data, loading } = useFetch(
     "/hotels/countByCity?cities=Hồ Chí Minh (Sài Gòn),Hà Nội,Đà Nẵng"
   );
+
+  const [t] = useTranslation("common");
 
   return (
     <div className="featured">
@@ -20,7 +23,9 @@ const Featured = () => {
             />
             <div className="featuredTitles">
               <h1>Hồ Chí Minh</h1>
-              <h2>{data[0]} properties</h2>
+              <h2>
+                {data[0]} {t("properties")}
+              </h2>
             </div>
           </div>
 
@@ -32,7 +37,9 @@ const Featured = () => {
             />
             <div className="featuredTitles">
               <h1>Hà Nội</h1>
-              <h2>{data[1]} properties</h2>
+              <h2>
+                {data[1]} {t("properties")}
+              </h2>
             </div>
           </div>
           <div className="featuredItem">
@@ -43,7 +50,9 @@ const Featured = () => {
             />
             <div className="featuredTitles">
               <h1>Đà Nẵng</h1>
-              <h2>{data[2]} properties</h2>
+              <h2>
+                {data[2]} {t("properties")}
+              </h2>
             </div>
           </div>
         </>

@@ -8,6 +8,7 @@ import TableIncomeLastMonth from "../../components/table/TableIncomeLastMonth";
 import TableIncomeLastWeek from "../../components/table/TableIncomeLastWeek";
 import TableIncomeYesterday from "../../components/table/TableIncomeYesterday";
 import TableIncomeToday from "../../components/table/TableIncomeToday";
+import TableRevenueAccountant from "../../components/table/TableRevenueAccountant";
 import useFetch from "../../hooks/useFetch";
 
 const ViewAuditing = ({ columns }) => {
@@ -35,6 +36,12 @@ const ViewAuditing = ({ columns }) => {
   const userIdArray = user.map((user) => user._id);
   // get 1st one
   const userId = userIdArray[0];
+
+  const userLoginInfo = useFetch(
+    `/users/${userLogin._id}`
+  ).data;
+  const role = useFetch(`/roles/${userLoginInfo.roleId}`);
+  const permissions = role.data.name;
 
   const [employee, setEmployee] = useState();
   const handleChangeEmployee = (e) => {
@@ -65,6 +72,9 @@ const ViewAuditing = ({ columns }) => {
         return <TableIncomeToday userId={userId} />;
       }
     }
+    if (timeFrame === "revenueToday") {
+      return <TableRevenueAccountant />;
+    }
   }
 
   return (
@@ -73,6 +83,16 @@ const ViewAuditing = ({ columns }) => {
         {t("auditing")}
 
         <div>
+          {permissions === "Accountant" && (
+            <button
+              value={"revenueToday"}
+              onClick={(e) =>
+                handleChangeTimeFrame(e.target)
+              }
+            >
+              {t("revenueToday")}
+            </button>
+          )}
           <button
             value={"today"}
             onClick={(e) => handleChangeTimeFrame(e.target)}

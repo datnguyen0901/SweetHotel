@@ -11,10 +11,12 @@ import {
   getHotelRooms,
   getHotelCities,
   getHotelIdByRoomId,
+  getHotelName,
 } from "../controllers/hotelController.js";
 import { createError } from "../utils/error.js";
 import {
   verifyAdmin,
+  verifyToken,
   verifyUser,
 } from "../utils/verifyToken.js";
 
@@ -27,22 +29,24 @@ router.put("/:id", verifyAdmin, updateHotel);
 //DELETE
 router.delete("/:id", verifyAdmin, deleteHotel);
 //GET
-router.get("/find/:id", verifyUser, getHotel);
+router.get("/find/:id", verifyToken, getHotel);
 //GETALL
-router.get("/", verifyUser, getHotels);
+router.get("/", verifyToken, getHotels);
 
-router.get("/countByCity", verifyUser, countByCity);
-router.get("/countByType", verifyUser, countByType);
-router.get("/room/:id", verifyUser, getHotelRooms);
+router.get("/countByCity", verifyToken, countByCity);
+router.get("/countByType", verifyToken, countByType);
+router.get("/room/:id", verifyToken, getHotelRooms);
 
 //GETALLHOTELCITY
-router.get("/getname/city", verifyUser, getHotelCities);
+router.get("/getname/city", verifyToken, getHotelCities);
 
 //GETHOTELIDBYROOMID
 router.get(
   "/gethotelid/:id",
-  verifyUser,
+  verifyToken,
   getHotelIdByRoomId
 );
+// test get hotel name by roomNumber._id
+router.get("/gethotelname/test/:id", verifyToken, getHotelName);
 
 export default router;

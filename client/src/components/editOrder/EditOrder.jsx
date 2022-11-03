@@ -21,7 +21,7 @@ const EditOrder = ({
     []
   );
 
-  const [t] = useTranslation("common");
+  const [t, i18n] = useTranslation("common");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,12 +61,13 @@ const EditOrder = ({
   };
 
   const handleDelete = (id) => {
-    // confirm delete
-    alert(t("order.alertDeleted"));
-    // delete service in selectedServices
-    setSelectedServices((prev) =>
-      prev.filter((item) => item.id !== id)
-    );
+    // confirm delete or cancel
+    if (window.confirm(t("order.alertDeleted"))) {
+      // delete service in selectedServices
+      setSelectedServices((prev) =>
+        prev.filter((item) => item.id !== id)
+      );
+    }
   };
 
   const handleClick = async (e) => {
@@ -120,6 +121,12 @@ const EditOrder = ({
     }
   };
 
+  // convert usd to vnd
+  const convert = (usd) => {
+    const vnd = usd * 24000;
+    return parseFloat(vnd).toFixed(1);
+  };
+
   return (
     <div className="reserveEditOrder">
       <div className="rContainerEditOrder">
@@ -129,17 +136,17 @@ const EditOrder = ({
           onClick={() => setOpen(false)}
         />
         <div className="rTitleEditOrder">
-          <h1>Your Order</h1>
+          <h1>{t("yourOrder")}</h1>
         </div>
         <div className="rContentEditOrder">
           <table>
             <thead>
               <tr>
-                <th>No.</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total Price</th>
+                <th>{t("no")}</th>
+                <th>{t("name")}</th>
+                <th>{t("price")}</th>
+                <th>{t("quantity")}</th>
+                <th>{t("bookingCurrency")}</th>
               </tr>
             </thead>
             {selectedServices.map((item) => (
@@ -147,7 +154,11 @@ const EditOrder = ({
                 <tr key={item.id}>
                   <td>{serviceOrders.indexOf(item) + 1}</td>
                   <td>{item.name}</td>
-                  <td>{item.price}$</td>
+                  {i18n.language === "en" ? (
+                    <td>{item.price}$</td>
+                  ) : (
+                    <td>{convert(item.price)}đ</td>
+                  )}
                   <td>
                     <input
                       id="quantity"
@@ -160,9 +171,16 @@ const EditOrder = ({
                     />
                   </td>
                   {/* display the total price by multiplying the quantity and price */}
-                  <td>
-                    {item.quantity * item.price + " $"}
-                  </td>
+                  {i18n.language === "en" ? (
+                    <td>
+                      {item.quantity * item.price + " $"}
+                    </td>
+                  ) : (
+                    <td>
+                      {convert(item.quantity * item.price) +
+                        " đ"}
+                    </td>
+                  )}
                   {/* delete row */}
                   <td>
                     <button
@@ -179,14 +197,16 @@ const EditOrder = ({
         </div>
 
         <div className="labelEditOrder">
-          <h3>Total: {total}$</h3>
-          <h5>
-            You will be notified by phone when the hotel
-            confirms your order.
-          </h5>
+          <h3>
+            {t("bookingCurrency")}{" "}
+            {i18n.language === "en"
+              ? total
+              : convert(total)}
+          </h3>
+          <h5>{t("noteOrder")}</h5>
         </div>
         <button onClick={handleClick} className="rButton">
-          Order Now!
+          {t("orderNow")}
         </button>
       </div>
       {openModal && (

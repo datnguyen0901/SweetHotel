@@ -6,6 +6,9 @@
 }
 
 .loginContainer {
+  padding: 20px;
+  border: #0071c2 3px solid;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;

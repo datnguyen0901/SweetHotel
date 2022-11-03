@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import useFetch from "../../hooks/useFetch.js";
 import "./featuredProperties.css";
 
@@ -5,6 +6,8 @@ const FeaturedProperties = () => {
   const { data, loading, error } = useFetch(
     "/hotels?featured=true&limit=5"
   );
+
+  const [t] = useTranslation("common");
 
   return (
     <div className="fp">
@@ -22,7 +25,8 @@ const FeaturedProperties = () => {
               <span className="fpName">{item.name}</span>
               <span className="fpCity">{item.city}</span>
               <span className="fpPrice">
-                Starting from ${item.cheapestPrice}
+                {t("startPrice")}
+                {item.cheapestPrice}
               </span>
               {item.rating && (
                 <div className="fpRating">

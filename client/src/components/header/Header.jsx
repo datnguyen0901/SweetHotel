@@ -96,8 +96,8 @@ const Header = ({ type }) => {
             }
             onClick={() => navigate("/")}
           >
-            <FontAwesomeIcon icon={faBed} />
-            <span>Stays</span>
+            <FontAwesomeIcon icon={faCalendarMinus} />
+            <span>{t("widget.title.booking")}</span>
           </div>
           <div
             className={
@@ -107,26 +107,22 @@ const Header = ({ type }) => {
             }
             onClick={() => navigate("/booking")}
           >
-            <FontAwesomeIcon icon={faCalendarMinus} />
-            <span>Booking</span>
+            <FontAwesomeIcon icon={faBed} />
+            <span>{t("widget.title.stays")}</span>
           </div>
         </div>
         {type !== "list" && (
           <>
             <h1 className="headerTitle">
-              A lifetime of discounts? It's Genius.
+              {t("homeSlogan")}
             </h1>
-            <p className="headerDesc">
-              Get rewarded for your travels – unlock instant
-              savings of 10% or more with a free SweetHotel
-              account
-            </p>
+            <p className="headerDesc">{t("homeNote")}</p>
             {!user && (
               <button
                 className="headerBtn"
                 onClick={() => navigate("/login")}
               >
-                Sign in / Register
+                {t("login.login")} / {t("login.register")}
               </button>
             )}
             <div className="headerSearch">
@@ -146,7 +142,7 @@ const Header = ({ type }) => {
                     <TextField
                       {...params}
                       className="headerSearchText"
-                      label="Where are you going?"
+                      label={t("searchQuestion")}
                       variant="standard"
                       required
                       id="city"
@@ -195,12 +191,16 @@ const Header = ({ type }) => {
                     setOpenOptions(!openOptions)
                   }
                   className="headerSearchText"
-                >{`${options.adult} adult · ${options.children} children · ${options.room} room`}</span>
+                >{`${options.adult} ${t("adults")} · ${
+                  options.children
+                } ${t("children")} · ${options.room} ${t(
+                  "rooms.rooms"
+                )}`}</span>
                 {openOptions && (
                   <div className="options">
                     <div className="optionItem">
                       <span className="optionText">
-                        Adult
+                        {t("adults")}
                       </span>
                       <div className="optionCounter">
                         <button
@@ -227,7 +227,7 @@ const Header = ({ type }) => {
                     </div>
                     <div className="optionItem">
                       <span className="optionText">
-                        Children
+                        {t("children")}
                       </span>
                       <div className="optionCounter">
                         <button
@@ -254,7 +254,7 @@ const Header = ({ type }) => {
                     </div>
                     <div className="optionItem">
                       <span className="optionText">
-                        Room
+                        {t("rooms.rooms")}
                       </span>
                       <div className="optionCounter">
                         <button
@@ -287,7 +287,7 @@ const Header = ({ type }) => {
                   className="headerBtn"
                   onClick={handleSearch}
                 >
-                  Search
+                  {t("search")}
                 </button>
               </div>
             </div>

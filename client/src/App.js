@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   BrowserRouter,
   Routes,
@@ -11,9 +12,14 @@ import Login from "./pages/login/Login";
 import Order from "./pages/order/Order";
 import PaypalCancel from "./pages/payment/PaypalCancel";
 import PaypalSuccess from "./pages/payment/PaypalSuccess";
+import Profile from "./pages/profile/Profile";
 import Register from "./pages/register/Register";
+import ChangePassword from "./pages/profile/ChangePassword";
+import ResetPassword from "./pages/resetPassword/ResetPassword";
 
 function App() {
+  const [t, i18n] = useTranslation("common");
+
   return (
     <BrowserRouter>
       <Routes>
@@ -31,6 +37,15 @@ function App() {
         <Route
           path="/booking/cancel"
           element={<PaypalCancel />}
+        />
+        <Route path="/profile" element={<Profile />} />
+        <Route
+          path="/profile/changepassword/:id"
+          element={<ChangePassword />}
+        />
+        <Route
+          path="/resetpassword"
+          element={<ResetPassword />}
         />
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>

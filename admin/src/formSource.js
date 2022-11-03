@@ -150,12 +150,6 @@ export const bookingInputs = [
     placeholder: "waiting/open/closed",
   },
   {
-    id: "paymentMethod",
-    label: "Payment Method",
-    type: "text",
-    placeholder: "cash/online/unpaid",
-  },
-  {
     id: "note",
     label: "Note",
     type: "text",

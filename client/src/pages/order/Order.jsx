@@ -65,56 +65,83 @@ const Order = () => {
     }
   };
 
-  const [t] = useTranslation("common");
+  const [t, i18n] = useTranslation("common");
 
   const navigate = useNavigate();
 
   const handleAddService = (id, price, name) => {
-    const newService = {
-      id: id,
-      name: name,
-      price: parseInt(price, 10),
-      quantity: parseInt(quantity, 10),
-    };
-    setSelectedServices([...selectedServices, newService]);
-    setQuantity(1);
+    // check if service is already in selectedServices
+    const check = selectedServices.find(
+      (item) => item.id === id
+    );
+    if (check) {
+      // update quantity of service in selectedServices
+      setSelectedServices((prev) =>
+        prev.map((item) => {
+          if (item.id === id) {
+            return {
+              ...item,
+              quantity:
+                item.quantity + parseInt(quantity, 10),
+            };
+          }
+          return item;
+        })
+      );
+    } else {
+      const newService = {
+        id: id,
+        name: name,
+        price: parseInt(price, 10),
+        quantity: parseInt(quantity, 10),
+      };
+      setSelectedServices([
+        ...selectedServices,
+        newService,
+      ]);
+      setQuantity(1);
+    }
   };
 
   const handleServiceOrder = () => {
     if (selectedServices.length > 0) {
       setOpenModal(true);
     } else {
-      alert("Please select service");
+      alert(t("alertService"));
     }
   };
 
-  console.log(selectedServices);
+  // convert usd to vnd
+  const convert = (usd) => {
+    const vnd = usd * 24000;
+    return parseFloat(vnd).toFixed(1);
+  };
 
   return (
     <div>
       <Navbar />
       <Header type="list" />
       <div className="title">
-        <h1>Order Services</h1>
+        <h1>{t("orderTitle")}</h1>
       </div>
       <div className="list">
         <div
           className="type"
           onClick={() => handleSelectType("food")}
         >
-          <h3>Food</h3>
+          <h3>{t("food")}</h3>
         </div>{" "}
         <div
           className="type"
           onClick={() => handleSelectType("drink")}
         >
-          <h3>Drink</h3>
+          <h3>{t("drink")}</h3>
         </div>{" "}
         <div
           className="type"
           onClick={() => handleSelectType("service")}
         >
-          <h3>Service</h3>
+          <h3>{t("service")}</h3>
         </div>
       </div>
       {loading ? (
@@ -133,13 +160,19 @@ const Order = () => {
                 <h3>{item.name}</h3>
               </div>
               <div className="card_price">
-                <h3>{item.price}$</h3>
+                {i18n.language === "en" ? (
+                  <h3>{item.price}$</h3>
+                ) : (
+                  <h3>{convert(item.price)}đ</h3>
+                )}
               </div>
               <div className="card_size">
-                <h3>Describe: {item.desc}</h3>
+                <h3>
+                  {t("description")} {item.desc}
+                </h3>
               </div>
               <div className="card_quantity">
-                Select quantity:
+                {t("selectQuantity")}
                 <input
                   type="number"
                   min="1"
@@ -162,7 +195,7 @@ const Order = () => {
                     )
                   }
                 >
-                  Add to cart
+                  {t("addCart")}
                 </button>
               </div>
             </div>

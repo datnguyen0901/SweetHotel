@@ -72,7 +72,7 @@ const Booking = () => {
     checkoutDate
   ) => {
     try {
-      alert("Please contact us to delete your booking!");
+      alert(t("alertDeleteBooking"));
       window.location.reload();
     } catch (error) {
       console.log(error);
@@ -101,8 +101,8 @@ const Booking = () => {
     } else {
       navigate("/login");
     }
-  }
-    
+  };
+
   const handleVNPay = (id) => {
     const payment = {
       amount: 100000,
@@ -145,7 +145,7 @@ const Booking = () => {
               )
             }
           >
-            Edit
+            {t("edit")}
           </button>
           <button
             className="booking__button"
@@ -159,14 +159,14 @@ const Booking = () => {
               )
             }
           >
-            Delete
+            {t("delete")}
           </button>
           {paymentMethod === "unpaid" ? (
             <button
               className="booking__button"
               onClick={() => handlePayment(id)}
             >
-              Pay
+              {t("pay")}
             </button>
           ) : null}
         </>
@@ -179,14 +179,14 @@ const Booking = () => {
             className="booking__button"
             onClick={() => handleOrder(id)}
           >
-            Order
+            {t("orderService")}
           </button>
           {paymentMethod === "unpaid" ? (
             <button
               className="booking__button"
               onClick={() => handlePayment(id)}
             >
-              Pay
+              {t("pay")}
             </button>
           ) : null}
         </>
@@ -199,7 +199,7 @@ const Booking = () => {
       <Navbar />
       <Header type="list" />
       <div className="title">
-        <h1>Manage your booking</h1>
+        <h1>{t("manageBooking")}</h1>
       </div>
       {loading ? (
         "loading"
@@ -224,31 +224,35 @@ const Booking = () => {
                 )}
               </div>
               <div class="card_title">
-                <h3>Room : {item.roomNumber}</h3>
+                <h3>
+                  {t("room")} : {item.roomNumber}
+                </h3>
               </div>
               <div class="card_price">
-                <h3>
-                  {" "}
-                  {item.status}{" "}
-                  {item.status === "waiting" ? (
+                {item.status === "waiting" ? (
+                  <h3>
+                    {t("waiting")}{" "}
                     <CircleIcon
                       className="statusIcon"
                       style={{ color: "gold" }}
                     />
-                  ) : (
+                  </h3>
+                ) : (
+                  <h3>
+                    {t("open")}{" "}
                     <CircleIcon
                       className="statusIcon"
                       style={{ color: "lime" }}
                     />
-                  )}
-                </h3>
+                  </h3>
+                )}
               </div>
               <div class="card_size">
                 <h3>{item._id}</h3>
               </div>
               <div class="card_color">
                 {/* format date {item.checkinDate} to dd/mm/yyyy */}
-                Check-in Date :{" "}
+                {t("checkInDate")} :{" "}
                 <h3>
                   {item.checkinDate.slice(8, 10)}/
                   {item.checkinDate.slice(5, 7)}/
@@ -272,22 +276,20 @@ const Booking = () => {
           <Footer />
         </div>
       )}
-      {openModal && page === "editBooking" && (
+      {(openModal && page === "editBooking" && (
         <EditBooking
           setOpen={setOpenModal}
           bookingId={bookingId}
           dateState={true}
         />
-      ) || (
-        openModal && page === "payment" && (
+      )) ||
+        (openModal && page === "payment" && (
           <Payment
             setOpen={setOpenModal}
             bookingId={bookingId}
             handleVNPay={handleVNPay}
           />
-        )
-      )}
-
+        ))}
     </div>
   );
 };

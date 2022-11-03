@@ -34,6 +34,10 @@ const Datatable = ({ columns }) => {
   const dataService = useFetch(
     `/services/hotel/${hotelId}`
   );
+  const dataUsers = useFetch(
+    `/users/hotel/employee/${user._id}`
+  );
+  const dataUsersForAdmin = useFetch(`/users`);
 
   useEffect(() => {
     if (path === "finalizations") {
@@ -45,10 +49,18 @@ const Datatable = ({ columns }) => {
     if (path === "services") {
       setList(dataService.data);
     }
+    if (path === "users") {
+      if (dataRole.data.name === "Admin") {
+        setList(dataUsersForAdmin.data);
+      } else {
+        setList(dataUsers.data);
+      }
+    }
     if (
       path !== "finalizations" &&
       path !== "orders" &&
-      path !== "services"
+      path !== "services" &&
+      path !== "users"
     ) {
       setList(data);
     }
@@ -58,6 +70,9 @@ const Datatable = ({ columns }) => {
     dataOrder,
     dataFinalization,
     dataService,
+    dataUsers,
+    dataUsersForAdmin,
+    dataRole,
   ]);
 
   const [t] = useTranslation("common");

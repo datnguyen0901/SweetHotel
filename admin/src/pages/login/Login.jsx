@@ -48,6 +48,7 @@ const Login = () => {
         });
 
         navigate("/");
+        window.location.reload();
       } else {
         dispatch({
           type: "LOGIN_FAILURE",

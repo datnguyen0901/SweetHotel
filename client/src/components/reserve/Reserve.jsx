@@ -6,6 +6,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 const Reserve = ({ setOpen, hotelId }) => {
   const [selectedRooms, setSelectedRooms] = useState([]);
@@ -108,7 +109,7 @@ const Reserve = ({ setOpen, hotelId }) => {
     try {
       await Promise.all(
         selectedRooms.map(async (roomId) => {
-          const res = axios.put(
+          await axios.put(
             `/rooms/availability/${roomId}`,
             {
               dates: alldates,
@@ -127,15 +128,19 @@ const Reserve = ({ setOpen, hotelId }) => {
             totalPaid: numberNight * price,
           };
 
-          await axios.post("/bookings", newBooking);
-          return res.data;
+          const bookingId = await axios.post("/bookings", newBooking);
+
+          await axios.post(`/bookings/email/${bookingId.data._id}`);
         })
       );
       setOpen(false);
 
-      navigate("/");
+      navigate("/booking");
     } catch (err) {}
   };
+
+  const [t] = useTranslation("common");
+
   return (
     <div className="reserve">
       <div className="rContainer">
@@ -144,16 +149,17 @@ const Reserve = ({ setOpen, hotelId }) => {
           className="rClose"
           onClick={() => setOpen(false)}
         />
-        <span>Select your rooms:</span>
+        <span>{t("selectRoom")}</span>
         {data.map((item) => (
           <div className="rItem" key={item._id}>
             <div className="rItemInfo">
               <div className="rTitle">{item.title}</div>
               <div className="rDesc">{item.desc}</div>
               <div className="rMax">
-                Max people({item.maxPeople} adults and{" "}
-                {Math.round(item.maxPeople / 2)} kid):{" "}
-                <b>{item.maxPeople}</b>
+                {t("maxPeople")}({item.maxPeople}{" "}
+                {t("adultsAnd")}{" "}
+                {Math.round(item.maxPeople / 2)}{" "}
+                {t("children")}): <b>{item.maxPeople}</b>
               </div>
               <div className="rPrice">{item.price}</div>
             </div>
@@ -177,7 +183,7 @@ const Reserve = ({ setOpen, hotelId }) => {
           </div>
         ))}
         <button onClick={handleClick} className="rButton">
-          Reserve Now!
+          {t("bookingNow")}
         </button>
       </div>
     </div>

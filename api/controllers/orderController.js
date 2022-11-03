@@ -1053,8 +1053,8 @@ export const getIncomeByServiceYesterday = async (
       Date.UTC(
         yesterday.getFullYear(),
         yesterday.getMonth(),
-        yesterday.getDate(),
-        0,
+        yesterday.getDate()-1,
+        7,
         0,
         0
       )
@@ -1065,7 +1065,7 @@ export const getIncomeByServiceYesterday = async (
         yesterday.getFullYear(),
         yesterday.getMonth(),
         yesterday.getDate(),
-        23,
+        6,
         59,
         59
       )

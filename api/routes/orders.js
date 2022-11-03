@@ -25,15 +25,16 @@ import {
 } from "../controllers/OrderController.js";
 import {
   verifyAdmin,
+  verifyToken,
   verifyUser,
 } from "../utils/verifyToken.js";
 
 const router = express.Router();
 
 //CREATE
-router.post("/", verifyUser, createOrder);
+router.post("/", verifyToken, createOrder);
 //UPDATE
-router.put("/:id", verifyAdmin, updateOrder);
+router.put("/:id", verifyToken, updateOrder);
 //DELETE
 router.delete("/:id", verifyAdmin, deleteOrder);
 //GET

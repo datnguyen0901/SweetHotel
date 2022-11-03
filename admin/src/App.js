@@ -90,7 +90,15 @@ function App() {
   const ProtectedRoute = ({ children }) => {
     const { user } = useContext(AuthContext);
 
-    if (!user || user.isAdmin) {
+    if (!user) {
+      return <Navigate to="/login" />;
+    }
+    if (!user.isAdmin) {
+      localStorage.removeItem("user");
+      // clear cookies access token
+      document.cookie =
+        "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
       return <Navigate to="/login" />;
     }
 

@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { DateRange } from "react-date-range";
 import SearchItem from "../../components/searchItem/SearchItem";
 import useFetch from "../../hooks/useFetch";
+import { useTranslation } from "react-i18next";
 
 const List = () => {
   const location = useLocation();
@@ -21,13 +22,19 @@ const List = () => {
   const [min, setMin] = useState(undefined);
   const [max, setMax] = useState(undefined);
 
-  console.log("location.state", location.state);
-
   const { data, loading, error, reFetch } = useFetch(
-    `/hotels?city=${destination}&min=${min || 0}&max=${
+    `/hotels?city=${destination}&min=${min || 1}&max=${
       max || 999
     }`
   );
+
+  const [t] = useTranslation("common");
+
+  const handleDate = () => {
+    //alert if user want to change date please go back to home page
+    alert("Please go back to home page to change date!");
+    return;
+  };
 
   const handleClick = () => {
     reFetch();
@@ -40,18 +47,20 @@ const List = () => {
       <div className="listContainer">
         <div className="listWrapper">
           <div className="listSearch">
-            <h1 className="lsTitle">Search</h1>
+            <h1 className="lsTitle">{t("search")}</h1>
             <div className="lsItem">
-              <label>Destination</label>
+              <label>{t("destination")}</label>
               <input
                 placeholder={destination}
                 type="text"
+                disabled
               />
             </div>
             <div className="lsItem">
-              <label>Check-in Date</label>
+              <label>{t("checkInDate")}</label>
               <span
-                onClick={() => setOpenDate(!openDate)}
+                onClick={handleDate}
+                disabled
               >{`${format(
                 dates[0].startDate,
                 "MM/dd/yyyy"
@@ -61,6 +70,7 @@ const List = () => {
               )}`}</span>
               {openDate && (
                 <DateRange
+                  disabled
                   onChange={(item) =>
                     setDates([item.selection])
                   }
@@ -70,11 +80,12 @@ const List = () => {
               )}
             </div>
             <div className="lsItem">
-              <label>Options</label>
+              <label>{t("options")}</label>
               <div className="lsOptions">
                 <div className="lsOptionItem">
                   <span className="lsOptionText">
-                    Min price <small>per night</small>
+                    {t("minPrice")}{" "}
+                    <small>{t("perNight")}</small>
                   </span>
                   <input
                     type="number"
@@ -84,7 +95,8 @@ const List = () => {
                 </div>
                 <div className="lsOptionItem">
                   <span className="lsOptionText">
-                    Max price <small>per night</small>
+                    {t("maxPrice")}{" "}
+                    <small>{t("perNight")}</small>
                   </span>
                   <input
                     type="number"
@@ -94,38 +106,45 @@ const List = () => {
                 </div>
                 <div className="lsOptionItem">
                   <span className="lsOptionText">
-                    Adult
+                    {t("adults")}
                   </span>
                   <input
                     type="number"
                     min={1}
                     className="lsOptionInput"
                     placeholder={options.adult}
+                    disabled
                   />
                 </div>
                 <div className="lsOptionItem">
                   <span className="lsOptionText">
-                    Children
+                    {t("children")}
                   </span>
                   <input
                     type="number"
                     min={0}
                     className="lsOptionInput"
                     placeholder={options.children}
+                    disabled
                   />
                 </div>
                 <div className="lsOptionItem">
-                  <span className="lsOptionText">Room</span>
+                  <span className="lsOptionText">
+                    {t("rooms.rooms")}
+                  </span>
                   <input
                     type="number"
                     min={1}
                     className="lsOptionInput"
                     placeholder={options.room}
+                    disabled
                   />
                 </div>
               </div>
             </div>
-            <button onClick={handleClick}>Search</button>
+            <button onClick={handleClick}>
+              {t("search")}
+            </button>
           </div>
           <div className="listResult">
             {loading ? (

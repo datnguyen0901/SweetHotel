@@ -3,9 +3,23 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { createError } from "../utils/error.js";
 import Role from "../models/Role.js";
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const register = async (req, res, next) => {
   try {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(req.body.password, salt);
 
@@ -15,9 +29,24 @@ export const register = async (req, res, next) => {
     });
 
     await newUser.save();
-    res.status(200).json("User has been created.");
+
+    //find user by email
+    const user = await User.findOne({
+      email: req.body.email,
+    });
+
+    const url = `http://localhost:8800/api/users/confirm/${user._id}`;
+
+    transporter.sendMail({
+      to: req.body.email,
+      subject: "Verify Account",
+      html: `Click <a href = '${url}'>here</a> to confirm your email.`,
+    });
+    return res.status(201).send({
+      message: `Sent a verification email to ${req.body.email}`,
+    });
   } catch (error) {
-    next(error);
+    return res.status(500).send(err);
   }
 };
 
@@ -39,6 +68,15 @@ export const login = async (req, res, next) => {
       return next(
         createError(400, "Wrong password or username!")
       );
+
+    if (user.status !== "active") {
+      return next(
+        createError(
+          400,
+          "Your account is not activated yet. Please check your mail or contact us."
+        )
+      );
+    }
 
     const token = jwt.sign(
       { id: user._id, isAdmin: user.isAdmin },
@@ -69,7 +107,11 @@ export const login = async (req, res, next) => {
       })
       .status(200)
       .json({
-        details: { ...otherDetails, hotelId: role.hotelId },
+        details: {
+          ...otherDetails,
+          isAdmin: isAdmin,
+          hotelId: role.hotelId,
+        },
         isAdmin,
       });
   } catch (error) {

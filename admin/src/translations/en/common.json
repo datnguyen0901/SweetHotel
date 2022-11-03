@@ -1,4 +1,5 @@
 {
+  "revenueToday": "Revenue Today (Accountant)",
   "welcome": {
     "title": "The best home is our hotel !"
   },
@@ -176,6 +177,8 @@
   "paid": "Paid",
   "unpaid": "Unpaid",
   "checkingType": "Checking Type",
+  "cash": "Cash",
+  "pos": "POS",
   "hotel": {
     "featured": "Featured"
   },

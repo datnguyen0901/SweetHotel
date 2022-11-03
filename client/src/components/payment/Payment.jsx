@@ -12,7 +12,7 @@ const Payment = ({ setOpen, bookingId, dateState }) => {
   const [openModal, setOpenModal] = useState(false);
   const [info, setInfo] = useState({});
 
-  const [t] = useTranslation("common");
+  const [t, i18n] = useTranslation("common");
 
   const id = bookingId.id;
   const bookingData = useFetch(`/bookings/${id}`);
@@ -98,11 +98,11 @@ const Payment = ({ setOpen, bookingId, dateState }) => {
           onClick={() => setOpen(false)}
         />
         <div className="rTitleEditBooking">
-          <h1>Payment Session</h1>
+          <h1>{t("paymentSession")}</h1>
         </div>
         <div className="rContentEditBooking">
           <div className="labelEditBooking">
-            <h3>{t("booking.checkIn")}</h3>
+            <h3>{t("booking.checkInTime")}</h3>
             <input
               type="datetime-local"
               id="checkinDate"
@@ -113,7 +113,7 @@ const Payment = ({ setOpen, bookingId, dateState }) => {
             />
           </div>
           <div className="labelEditBooking">
-            <h3>{t("booking.checkOut")}</h3>
+            <h3>{t("booking.checkOutTime")}</h3>
             <input
               type="datetime-local"
               id="checkoutDate"
@@ -134,32 +134,32 @@ const Payment = ({ setOpen, bookingId, dateState }) => {
           />
         </div>
         <div className="labelEditBooking">
-          <h3>{t("booking.total")}</h3>
+          <h3>{t("bookingCurrency")}</h3>
           <input
             disabled
             id="totalPaid"
             type="number"
-            value={info.totalPaid}
-            placeholder={info.totalPaid}
+            placeholder={
+              i18n.language === "en"
+                ? info.totalPaid
+                : convert(info.totalPaid)
+            }
           />
         </div>
         <div className="labelEditBooking">
-          <h5>
-            Please choose payment method to complete your
-            payment
-          </h5>
+          <h5>{t("paymentNote")}</h5>
         </div>
         <button
           onClick={() => handleVNPay()}
           className="rButton"
         >
-          Vn Pay
+          {t("vnpay")}
         </button>
         <button
           onClick={() => handlePaypal()}
           className="rButton"
         >
-          Paypal
+          {t("paypal")}
         </button>
       </div>
       {openModal && (

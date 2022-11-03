@@ -1,5 +1,6 @@
 import Booking from "../models/Booking.js";
 import Room from "../models/Room.js";
+import Hotel from "../models/Hotel.js";
 import User from "../models/User.js";
 import Role from "../models/Role.js";
 import Order from "../models/Order.js";
@@ -9,6 +10,8 @@ import dateFormat from "dateformat";
 import crypto from "crypto";
 import querystring from "qs";
 import paypal from "paypal-rest-sdk";
+import nodemailer from "nodemailer";
+import QRCode from "qrcode";
 
 paypal.configure({
   mode: "sandbox", //sandbox or live
@@ -22,9 +25,59 @@ export const createBooking = async (req, res, next) => {
   const newBooking = new Booking(req.body);
   try {
     const savedBooking = await newBooking.save();
-    res.status(200).json(savedBooking);
+    return res.status(201).json(savedBooking);
   } catch (error) {
     next(error);
+  }
+};
+
+export const mailBooking = async (req, res, next) => {
+  try {
+    const bookingId = req.params.id;
+    const booking = await Booking.findById(bookingId);
+    const user = await User.findById(booking.userId);
+
+    const checkInDate = dateFormat(
+      booking.checkInDate,
+      "dd/mm/yyyy"
+    );
+
+    const rooms = await Room.find();
+    //return hotelId if roomNumber._id === req.params.id
+    const hotelId = rooms.find((room) =>
+      room.roomNumbers.filter(
+        (roomNumber) => roomNumber._id == req.params.id
+      )
+    ).hotelId;
+    const hotel = await Hotel.findOne({ _id: hotelId });
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const url = `http://localhost:3000/bookings/${booking._id}`;
+
+    let img = "";
+    let qr = await QRCode.toDataURL(url);
+    img = `<image src= " ` + qr + `" />`;
+
+    transporter.sendMail({
+      to: user.email,
+      subject: "Booking Information",
+      attachDataUrls: true,
+      html: `This is your booking code: ${booking._id}. Check-in Date: ${checkInDate} at ${hotel.name}. Please Check In after 14 p.m to make sure your room is ready. It's our pleasure to serve you.  <br> <br> <img src="' + ${img} + '"> `,
+    });
+    return res.status(201).send({
+      message: `Sent a booking code to ${user.email}`,
+    });
+  } catch (error) {
+    return res.status(500).send(err);
   }
 };
 
@@ -1023,8 +1076,8 @@ export const getIncomeBookingByEmployeeIdYesterday = async (
       Date.UTC(
         yesterday.getFullYear(),
         yesterday.getMonth(),
-        yesterday.getDate(),
-        0,
+        yesterday.getDate()-1,
+        7,
         0,
         0
       )
@@ -1035,7 +1088,7 @@ export const getIncomeBookingByEmployeeIdYesterday = async (
         yesterday.getFullYear(),
         yesterday.getMonth(),
         yesterday.getDate(),
-        23,
+        6,
         59,
         59
       )
@@ -1121,8 +1174,8 @@ export const getBookingByEmployeeIdYesterday = async (
       Date.UTC(
         yesterday.getFullYear(),
         yesterday.getMonth(),
-        yesterday.getDate(),
-        0,
+        yesterday.getDate()-1,
+        7,
         0,
         0
       )
@@ -1133,7 +1186,7 @@ export const getBookingByEmployeeIdYesterday = async (
         yesterday.getFullYear(),
         yesterday.getMonth(),
         yesterday.getDate(),
-        23,
+        6,
         59,
         59
       )
@@ -1567,7 +1620,7 @@ export const getIncomeBookingAndOrderByEmployeeIdYesterday =
           thisYear.getFullYear(),
           thisYear.getMonth(),
           thisYear.getDate() - 1,
-          0,
+          7,
           0,
           0
         )
@@ -1577,8 +1630,8 @@ export const getIncomeBookingAndOrderByEmployeeIdYesterday =
         Date.UTC(
           thisYear.getFullYear(),
           thisYear.getMonth(),
-          thisYear.getDate() - 1,
-          23,
+          thisYear.getDate(),
+          6,
           59,
           59
         )
@@ -1724,6 +1777,85 @@ export const getIncomeBookingAndOrderByEmployeeIdToday =
         ...ordersWithCheckingType,
         ...finalizationsWithCheckingType,
       ];
+      res.status(200).json(income);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+export const getBookingMoneyPayByEachHotelOnlinePayment =
+  async (req, res, next) => {
+    try {
+      const thisYear = new Date();
+      const yesterdayUTCStart = new Date(
+        Date.UTC(
+          thisYear.getFullYear(),
+          thisYear.getMonth(),
+          thisYear.getDate() - 1,
+          7,
+          0,
+          0
+        )
+      );
+      const yesterdayUTCEnd = new Date(
+        Date.UTC(
+          thisYear.getFullYear(),
+          thisYear.getMonth(),
+          thisYear.getDate(),
+          6,
+          59,
+          59
+        )
+      );
+      const bookings = await Booking.find({
+        paymentMethod: "online",
+        createdAt: {
+          $gte: yesterdayUTCStart,
+          $lte: yesterdayUTCEnd,
+        },
+      });
+      // get roomId by hotelId
+      const rooms = await Room.find()
+        .populate("hotelId")
+        .exec();
+      const hotels = await Hotel.find();
+      // get _id in roomNumbers of rooms
+      const roomNumbersId = rooms.map((room) =>
+        room.roomNumbers.map(
+          (
+            roomNumber // return roomNumber._id and room.hotelId
+          ) => ({
+            roomNumberId: roomNumber._id,
+            hotelId: room.hotelId._id,
+          })
+        )
+      );
+
+      // flat roomNumbersId
+      const flatRoomNumbersId = roomNumbersId.flat();
+
+      // get totalPaid of booking by roomId filter by hotel name
+      const income = hotels.map((hotel) => {
+        const totalPaid = bookings
+          .filter((booking) =>
+            flatRoomNumbersId.find(
+              (roomNumberId) =>
+                roomNumberId.roomNumberId.toString() ===
+                  booking.roomId.toString() &&
+                roomNumberId.hotelId.toString() ===
+                  hotel._id.toString()
+            )
+          )
+          .reduce(
+            (acc, booking) => acc + booking.totalPaid,
+            0
+          );
+        return {
+          hotelId: hotel._id,
+          name: hotel.name,
+          totalPaid,
+        };
+      });
       res.status(200).json(income);
     } catch (error) {
       next(error);

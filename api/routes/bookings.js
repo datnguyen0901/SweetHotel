@@ -33,36 +33,40 @@ import {
   bookingVnPayIPN,
   bookingPaypalPay,
   bookingPaypalPaySuccess,
+  mailBooking,
+  getBookingMoneyPayByEachHotelOnlinePayment,
 } from "../controllers/BookingController.js";
 import {
   verifyAdmin,
   verifyRole,
+  verifyToken,
   verifyUser,
 } from "../utils/verifyToken.js";
 
 const router = express.Router();
 
 //CREATE
-router.post("/", verifyUser, createBooking);
+router.post("/", verifyToken, createBooking);
+//SEND EMAIL
+router.post("/email/:id", verifyToken, mailBooking);
 //UPDATE
-router.put("/:id", verifyUser, updateBooking);
+router.put("/:id", verifyToken, updateBooking);
 //DELETE
 router.delete(
   "/:id",
   verifyAdmin,
-  verifyRole,
   deleteBooking
 );
 //DELETEBOOKINGIFCHECKINDATEISPASSED
 router.get(
   "/deletebooking/checkindate",
-  verifyAdmin,
+  verifyToken,
   getBookingIfCheckinDateIsPassed
 );
 //GET
-router.get("/:id", verifyUser, getBooking);
+router.get("/:id", verifyToken, getBooking);
 //GETALL
-router.get("/", verifyAdmin, getBookings);
+router.get("/", verifyToken, getBookings);
 //GETALLBYROOMID
 router.get("/room/:id", verifyUser, getBookingsByRoomId);
 //REPLACEALLBYROOMID
@@ -206,6 +210,12 @@ router.get(
   "/onlinepayment/paypal/success/:id",
   verifyUser,
   bookingPaypalPaySuccess
+);
+//getRevenueByEachHotelYesterday
+router.get(
+  "/hotel/revenue/yesterday",
+  verifyAdmin,
+  getBookingMoneyPayByEachHotelOnlinePayment
 );
 
 export default router;

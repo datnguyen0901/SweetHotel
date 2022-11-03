@@ -150,12 +150,6 @@ export const bookingInputsVN = [
     placeholder: "waiting/open/closed",
   },
   {
-    id: "paymentMethod",
-    label: "Phương thức thanh toán",
-    type: "text",
-    placeholder: "cash/online/unpaid",
-  },
-  {
     id: "note",
     label: "Ghi chú",
     type: "text",

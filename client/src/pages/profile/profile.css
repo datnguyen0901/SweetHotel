@@ -1,0 +1,79 @@
+.profile {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2vh;
+}
+
+.profileContainer {
+  padding: 20px;
+  border: #0071c2 3px solid;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.profileForm {
+  display: flex;
+  flex-direction: auto;
+  gap: 5px;
+}
+
+.profileForm-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.profileTitle {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.profileLabel {
+  font-size: 1rem;
+  margin-bottom: 5px;
+}
+
+.profileTerm {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+.profileCheckbox {
+  margin-bottom: 5px;
+}
+
+.profileInput {
+  height: 25px;
+  width: 25vw;
+  padding: 10px;
+  margin-bottom: 5px;
+}
+
+.profileSelect {
+  height: 49px;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 5px;
+}
+
+.profileButton {
+  border: none;
+  padding: 10px 20px;
+  background-color: #0071c2;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.profileButton:disabled {
+  background-color: #0071c28c;
+  cursor: not-allowed;
+}

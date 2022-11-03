@@ -17,6 +17,7 @@ const New = ({ inputs, title }) => {
   const [info, setInfo] = useState({});
   const [country, setCountry] = useState(undefined);
   const [region, setRegion] = useState(undefined);
+  const [roleSelect, setRoleSelect] = useState([]);
   const { data, loading } = useFetch(`/roles`);
   const hotel = useFetch(`/hotels`);
   const navigate = useNavigate();
@@ -43,7 +44,42 @@ const New = ({ inputs, title }) => {
         });
       });
     }
-  }, [hotel.data, data]);
+    if (roleData.data) {
+      if (roleData.data.name === "Receptionist") {
+        // just show Receptionist and Customer in roleSelect
+        setRoleSelect(
+          data.filter((item) => {
+            return (
+              item.name === "Receptionist" ||
+              item.name === "Customer"
+            );
+          })
+        );
+      }
+      if (roleData.data.name === "Admin") {
+        // just show Receptionist and Customer
+        setRoleSelect(data);
+      }
+      if (
+        roleData.data.name === "Manager" ||
+        "Owner" ||
+        "QA"
+      ) {
+        // just show Receptionist and Customer
+        setRoleSelect(
+          data.filter((item) => {
+            return (
+              item.name === "Receptionist" ||
+              item.name === "Customer" ||
+              item.name === "Manager" ||
+              item.name === "Owner" ||
+              item.name === "QA"
+            );
+          })
+        );
+      }
+    }
+  }, [hotel.data, data, roleData.data]);
 
   const handleCheckIsAdmin = (e) => {
     setInfo((prev) => ({
@@ -95,6 +131,7 @@ const New = ({ inputs, title }) => {
           img: url,
           country: country,
           city: region,
+          status: "active",
         };
         await axios.post(`/auth/register`, newUser);
       } else {
@@ -102,6 +139,7 @@ const New = ({ inputs, title }) => {
           ...info,
           country: country,
           city: region,
+          status: "active",
         };
         await axios.post(`/auth/register`, newUser);
       }
@@ -208,8 +246,8 @@ const New = ({ inputs, title }) => {
                   </option>
                   {loading
                     ? "loading"
-                    : data &&
-                      data.map((role) => (
+                    : roleSelect &&
+                      roleSelect.map((role) => (
                         <option
                           key={role._id}
                           value={role._id}

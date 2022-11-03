@@ -7,17 +7,20 @@ import {
   CountryDropdown,
   RegionDropdown,
 } from "react-country-region-selector";
+import { useTranslation } from "react-i18next";
 
 const Register = () => {
   const [info, setInfo] = useState({});
-  const [gender, setGender] = useState(undefined);
   const [country, setCountry] = useState(undefined);
   const [region, setRegion] = useState(undefined);
+  const [term, setTerm] = useState(false);
 
   const { user, loading, error, dispatch } =
     useContext(AuthContext);
 
   const navigate = useNavigate();
+
+  const [t] = useTranslation("common");
 
   const handleChange = (e) => {
     setInfo((prev) => ({
@@ -25,161 +28,229 @@ const Register = () => {
       [e.target.id]: e.target.value,
       country: country,
       city: region,
-      gender: gender,
+      status: "pending", // wait for activation from email
       // roleId auto set as customer
       roleId: "62b94302966d649ae7c461de",
     }));
   };
 
+  const handleClickTerm = () => {
+    //open file Term.pdf in public folder in a small window
+    window.open("/Term.pdf", "_blank");
+  };
+
+  const handleSelectTerm = (e) => {
+    const checked = e.target.checked;
+    if (checked) {
+      setTerm(true);
+    } else {
+      setTerm(false);
+    }
+  };
+
+  console.log(info);
+  console.log(term);
+
+  function checkEmpty() {
+    for (let key in info) {
+      if (info[key] === "") {
+        return true;
+      }
+    }
+    return false;
+  }
+
   const handleClick = async (e) => {
     // check if all fields are filled
-    if (!info.gender) {
-      alert("Please select your gender");
+    if (checkEmpty()) {
+      alert(t("alertFillAllFields"));
       return;
     }
 
     e.preventDefault();
     try {
-      await axios.post("/auth/register", info);
+      if (term) {
+        await axios.post("/auth/register", info);
 
-      navigate("/login");
+        navigate("/login");
+      } else {
+        alert(t("alertTerms"));
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
   return (
-    <div className="login">
-      <div className="loginContainer">
-        <div className="title">
-          <h1>Register</h1>
+    <div className="register">
+      <div className="registerContainer">
+        <div className="registerTitle">
+          <h1>{t("register")}</h1>
         </div>
-        <div className="form">
+        <div className="registerForm">
           <form onSubmit={handleClick}>
-            <div className="form-group">
-              <label className="label">Username</label>
+            <div className="registerForm-group">
+              <label className="registerLabel">
+                {t("username")}
+              </label>
               <input
                 type="text"
-                placeholder="Enter username"
+                placeholder={t("enterUsername")}
                 id="username"
                 onChange={handleChange}
-                className="loginInput"
+                className="registerInput"
               />
             </div>
 
-            <div className="form-group">
-              <label className="label">Full Name</label>
+            <div className="registerForm-group">
+              <label className="registerLabel">
+                {t("fullName")}
+              </label>
               <input
                 type="text"
-                placeholder="Enter full name"
+                placeholder={t("enterFullName")}
                 id="fullName"
                 onChange={handleChange}
-                className="loginInput"
+                className="registerInput"
               />
             </div>
 
-            <div className="form-group">
-              <label className="label">Gender</label>
+            <div className="registerForm-group">
+              <label className="registerLabel">
+                {t("gender")}
+              </label>
               <select
                 id="gender"
-                onChange={(e) =>
-                  setGender(
-                    e.target.options[e.target.selectedIndex]
-                      .value
-                  )
-                }
-                className="loginSelect"
+                onChange={handleChange}
+                className="registerSelect"
               >
                 <option value="" disabled>
-                  Select Gender
+                  {t("selectGender")}
                 </option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
+                <option value="male"> {t("male")}</option>
+                <option value="female">
+                  {" "}
+                  {t("female")}
+                </option>
               </select>
             </div>
 
-            <div className="form-group">
-              <label className="label">Address</label>
+            <div className="registerForm-group">
+              <label className="registerLabel">
+                {t("address")}
+              </label>
               <input
                 type="text"
-                placeholder="Enter address"
+                placeholder={t("enterAddress")}
                 id="address"
                 onChange={handleChange}
-                className="loginInput"
+                className="registerInput"
               />
             </div>
 
-            <div className="form-group">
-              <label className="label">CID/Passport</label>
+            <div className="registerForm-group">
+              <label className="registerLabel">
+                {t("cid")}
+              </label>
               <input
                 type="text"
-                placeholder="Enter CID or Passport"
+                placeholder={t("enterCid")}
                 id="cid"
                 onChange={handleChange}
-                className="loginInput"
+                className="registerInput"
               />
             </div>
 
-            <div className="form-group">
-              <label className="label">Email</label>
+            <div className="registerForm-group">
+              <label className="registerLabel">
+                {" "}
+                {t("email")}
+              </label>
               <input
                 type="text"
-                placeholder="Enter email address"
+                placeholder={t("enterEmail")}
                 id="email"
                 onChange={handleChange}
-                className="loginInput"
+                className="registerInput"
               />
             </div>
 
-            <div className="form-group">
-              <label className="label">Country</label>
+            <div className="registerForm-group">
+              <label className="registerLabel">
+                {t("country")}
+              </label>
               <CountryDropdown
-                className="loginSelect"
+                className="registerSelect"
                 value={country}
                 onChange={(val) => setCountry(val)}
               />
             </div>
 
-            <div className="form-group">
-              <label className="label">City</label>
+            <div className="registerForm-group">
+              <label className="registerLabel">
+                {" "}
+                {t("city")}
+              </label>
               <RegionDropdown
-                className="loginSelect"
+                className="registerSelect"
                 country={country}
                 value={region}
                 onChange={(val) => setRegion(val)}
               />
             </div>
 
-            <div className="form-group">
-              <label className="label">Phone</label>
+            <div className="registerForm-group">
+              <label className="registerLabel">
+                {" "}
+                {t("phone")}
+              </label>
               <input
                 type="text"
-                placeholder="Enter Phone Number"
+                placeholder={t("enterPhone")}
                 id="phone"
                 onChange={handleChange}
-                className="loginInput"
+                className="registerInput"
               />
             </div>
 
-            <div className="form-group">
-              <label className="label">Password</label>
+            <div className="registerForm-group">
+              <label className="registerLabel">
+                {t("password")}
+              </label>
               <input
                 type="password"
-                placeholder="Enter password"
+                placeholder={t("enterPassword")}
                 id="password"
                 onChange={handleChange}
-                className="loginInput"
+                className="registerInput"
               />
             </div>
+            {/* check box  Term and Condition */}
+            <br></br>
+            <div className="">
+              <input
+                type="checkbox"
+                id="term"
+                className="registerCheckbox"
+                onChange={handleSelectTerm}
+              />
+              {"   "}
+              <label
+                className="registerTerm"
+                onClick={handleClickTerm}
+              >
+                {t("agreeTerms")}
+              </label>
+            </div>
+            <button
+              disabled={loading}
+              onClick={handleClick}
+              className="registerButton"
+            >
+              {t("register")}
+            </button>
           </form>
         </div>
-        <button
-          disabled={loading}
-          onClick={handleClick}
-          className="loginButton"
-        >
-          Register
-        </button>
         {error && <span>{error.message}</span>}
       </div>
     </div>

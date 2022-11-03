@@ -16,6 +16,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { SearchContext } from "../../context/SearchContext";
 import { AuthContext } from "../../context/AuthContext";
 import Reserve from "../../components/reserve/Reserve";
+import { useTranslation } from "react-i18next";
 
 const Hotel = () => {
   const location = useLocation();
@@ -85,6 +86,9 @@ const Hotel = () => {
       navigate("/login");
     }
   };
+
+  const [t] = useTranslation("common");
+
   return (
     <div>
       <Navbar />
@@ -124,7 +128,7 @@ const Hotel = () => {
               className="bookNow"
               onClick={handleClick}
             >
-              Reserve or Book Now!
+              {t("reserveOrBookNow")}
             </button>
             <h1 className="hotelTitle">{data.name}</h1>
             <div className="hotelAddress">
@@ -132,12 +136,12 @@ const Hotel = () => {
               <span>{data.address}</span>
             </div>
             <span className="hotelDistance">
-              Excellent location – {data.distance}m from
-              center
+              {t("excellentLocation")} {data.distance}m{" "}
+              {t("fromCenter")}
             </span>
             <span className="hotelPriceHighlight">
-              Book a stay over ${data.cheapestPrice} at this
-              property and get a free airport taxi
+              {t("stayOver")} {data.cheapestPrice}{" "}
+              {t("propertyFreeAirportTransfer")}
             </span>
             <div className="hotelImages">
               {data.photos?.map((photo, i) => (
@@ -157,12 +161,11 @@ const Hotel = () => {
                 <p className="hotelDesc">{data.desc}</p>
               </div>
               <div className="hotelDetailsPrice">
-                <h1>Perfect for a {days}-night stay!</h1>
-                <span>
-                  Located in the real heart of Krakow, this
-                  property has an excellent location score
-                  of 9.8!
-                </span>
+                <h1>
+                  {t("perfectFor")} {days}
+                  {t("night")}
+                </h1>
+                <span>{t("callUs")}</span>
                 <h2>
                   <b>
                     $
@@ -170,10 +173,10 @@ const Hotel = () => {
                       data.cheapestPrice *
                       options.room}
                   </b>{" "}
-                  ({days} nights)
+                  ({days} {t("nightStay")})
                 </h2>
                 <button onClick={handleClick}>
-                  Reserve or Book Now!
+                  {t("reserveOrBookNow")}
                 </button>
               </div>
             </div>

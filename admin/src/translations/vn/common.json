@@ -1,4 +1,5 @@
 {
+  "revenueToday": "Doanh thu hôm nay(Kế Toán)",
   "welcome": {
     "title": "Khách sạn cũng là nhà !"
   },
@@ -176,6 +177,8 @@
   "paid": "Đã thanh toán",
   "unpaid": "Chưa thanh toán",
   "checkingType": "Kiểu kiểm tra",
+  "cash": "Tiền mặt",
+  "pos": "Máy POS",
   "hotel": {
     "featured": "Tiện ích"
   },

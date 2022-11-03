@@ -3,6 +3,7 @@ import "./login.css";
 import { useContext, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Login = () => {
   const [credentials, setCredentials] = useState({
@@ -43,19 +44,24 @@ const Login = () => {
     }
   };
 
+  const [t] = useTranslation("common");
+
   return (
     <div className="login">
       <div className="loginContainer">
+        <div className="loginTitle">
+          <h1>{t("login.login")}</h1>
+        </div>
         <input
           type="text"
-          placeholder="username"
+          placeholder={t("login.username")}
           id="username"
           onChange={handleChange}
           className="loginInput"
         />
         <input
           type="password"
-          placeholder="password"
+          placeholder={t("login.password")}
           id="password"
           onChange={handleChange}
           className="loginInput"
@@ -65,14 +71,21 @@ const Login = () => {
           onClick={handleClick}
           className="loginButton"
         >
-          Login
+          {t("login.login")}
+        </button>
+        <button
+          disabled={loading}
+          onClick={() => navigate("/resetpassword")}
+          className="loginButton"
+        >
+          {t("forgetPassword")}
         </button>
         <button
           disabled={loading}
           onClick={() => navigate("/register")}
           className="loginButton"
         >
-          Not have account?
+          {t("login.question")}
         </button>
         {error && <span>{error.message}</span>}
       </div>

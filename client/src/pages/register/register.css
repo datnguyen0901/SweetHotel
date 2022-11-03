@@ -1,53 +1,71 @@
-.login {
-  height: 100vh;
+.register {
+  height: auto;
   display: flex;
   align-items: center;
-  justify-content: baseline;
+  justify-content: center;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
 }
 
-.loginContainer {
+.registerContainer {
+  padding: 0px 20px 0px 20px;
+  border: #0071c2 3px solid;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
-.form {
+.registerForm {
   display: flex;
   flex-direction: auto;
   gap: 5px;
 }
 
-.form-group {
+.registerForm-group {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
-.title {
+.registerTitle {
   font-size: 1rem;
   font-weight: bold;
   margin-bottom: 5px;
 }
 
-.label {
+.registerLabel {
   font-size: 1rem;
   font-weight: bold;
   margin-bottom: 5px;
 }
 
-.loginInput {
+.registerTerm {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+.registerCheckbox {
+  margin-bottom: 5px;
+}
+
+.registerInput {
   height: 25px;
+  width: 25vw;
   padding: 10px;
   margin-bottom: 5px;
 }
 
-.loginSelect {
+.registerSelect {
   height: 49px;
   padding: 10px;
+  border-radius: 10px;
   margin-bottom: 5px;
 }
 
-.loginButton {
+.registerButton {
   border: none;
   padding: 10px 20px;
   background-color: #0071c2;
@@ -55,9 +73,10 @@
   font-weight: bold;
   cursor: pointer;
   border-radius: 5px;
+  margin: 10px 0px;
 }
 
-.loginButton:disabled {
+.registerButton:disabled {
   background-color: #0071c28c;
   cursor: not-allowed;
 }

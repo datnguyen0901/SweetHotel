@@ -33,6 +33,7 @@ const NewBooking = ({ inputs, title }) => {
         checkinDate: moment().format("YYYY-MM-DDTHH:mm"),
         checkoutDate: moment().format("YYYY-MM-DDTHH:mm"),
         type: "day",
+        paymentMethod: "unpaid",
       });
     }
   }, [data]);
@@ -255,6 +256,8 @@ const NewBooking = ({ inputs, title }) => {
       console.log(err);
     }
   };
+
+  console.log(info);
   return (
     <div className="new">
       <Sidebar />
@@ -264,7 +267,7 @@ const NewBooking = ({ inputs, title }) => {
           <h1>{title}</h1>
         </div>
         <div className="bottom">
-          <div className="right          ">
+          <div className="right">
             <form>
               {inputs.map((input) => (
                 <div className="formInput" key={input.id}>
@@ -282,6 +285,36 @@ const NewBooking = ({ inputs, title }) => {
 
               <div className="formInput">
                 <label>
+                  {t("paymentMethod")}{" "}
+                  <select
+                    id="paymentMethod"
+                    onChange={handleChange}
+                    defaultValue={info.paymentMethod}
+                  >
+                    <option value="unpaid">
+                      {t("unpaid")}
+                    </option>
+                    <option value="cash">
+                      {t("cash")}
+                    </option>
+                    <option value="pos">{t("pos")}</option>
+                  </select>
+                </label>
+                <br></br>
+                <label>
+                  <div>{t("booking.addIn")}</div>
+                  <div>
+                    <input
+                      id="addIn"
+                      type="checkbox"
+                      onChange={handleCheckAddIn}
+                    />
+                  </div>
+                </label>
+              </div>
+
+              <div className="formInput">
+                <label>
                   {t("booking.type")}
                   <select
                     id="type"
@@ -295,17 +328,6 @@ const NewBooking = ({ inputs, title }) => {
                       {t("booking.hour")}
                     </option>
                   </select>
-                </label>
-                <br></br>
-                <label>
-                  <div>{t("booking.addIn")}</div>
-                  <div>
-                    <input
-                      id="addIn"
-                      type="checkbox"
-                      onChange={handleCheckAddIn}
-                    />
-                  </div>
                 </label>
               </div>
 

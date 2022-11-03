@@ -28,6 +28,11 @@ const EditBooking = ({ inputs, title }) => {
   const hotelData = useFetch(`/hotels/find/${hotelId}`);
   const { data } = useFetch(`/hotels/room/${hotelId}`);
   const bookingData = useFetch(`/bookings/${id}`);
+  const userCustomer = useFetch(
+    `/users/${bookingData.data.userId}`
+  );
+  const customerCID = userCustomer.data.cid;
+  const customerName = userCustomer.data.fullName;
 
   const getDatesInRange = (checkinDate, checkoutDate) => {
     const start = new Date(checkinDate);
@@ -143,8 +148,6 @@ const EditBooking = ({ inputs, title }) => {
     );
     return !isFound;
   };
-
-  console.log("info", info);
 
   const handleSelect = (e) => {
     const checked = e.target.checked;
@@ -338,19 +341,28 @@ const EditBooking = ({ inputs, title }) => {
 
               <div className="formInput">
                 <label>
-                  {t("booking.type")}
+                  {t("paymentMethod")}{" "}
                   <select
-                    id="type"
+                    id="paymentMethod"
                     onChange={handleChange}
-                    defaultValue={info.type}
-                    value={info.type}
+                    defaultValue={info.paymentMethod}
+                    value={info.paymentMethod}
+                    disabled={
+                      info.paymentMethod !== "unpaid" &&
+                      user.roleId !==
+                        "62a07cba02af48b2f8a38d9b"
+                        ? // 62a07cba02af48b2f8a38d9b is admin roleId
+                          true
+                        : false
+                    }
                   >
-                    <option value="day">
-                      {t("booking.day")}
+                    <option value="unpaid">
+                      {t("unpaid")}
                     </option>
-                    <option value="hour">
-                      {t("booking.hour")}
+                    <option value="cash">
+                      {t("cash")}
                     </option>
+                    <option value="pos">{t("pos")}</option>
                   </select>
                 </label>
                 <br></br>
@@ -370,7 +382,29 @@ const EditBooking = ({ inputs, title }) => {
               </div>
 
               <div className="formInput">
-                <label>{t("booking.bookingUser")}</label>
+                <label>
+                  {t("booking.type")}
+                  <select
+                    id="type"
+                    onChange={handleChange}
+                    defaultValue={info.type}
+                    value={info.type}
+                  >
+                    <option value="day">
+                      {t("booking.day")}
+                    </option>
+                    <option value="hour">
+                      {t("booking.hour")}
+                    </option>
+                  </select>
+                </label>
+              </div>
+
+              <div className="formInput">
+                <label>
+                  {t("booking.bookingUser")} :{" "}
+                  {customerName} - {customerCID}
+                </label>
                 {/* search username from userData */}
                 <Autocomplete
                   id="userId"

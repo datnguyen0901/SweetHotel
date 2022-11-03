@@ -106,14 +106,16 @@ const EditBooking = ({ setOpen, bookingId, dateState }) => {
   const isAvailable = (roomNumber) => {
     const isFound = roomNumber.unavailableDates.some(
       (date) => {
-        return !!(date >=
+        return !!(
+          date >=
             moment(info.checkinDate).format(
               "YYYY-MM-DDT00:00:00"
             ) &&
           date <=
             moment(info.checkoutDate).format(
               "YYYY-MM-DDT23:59:59"
-            ));
+            )
+        );
       }
     );
     return !isFound;
@@ -212,16 +214,16 @@ const EditBooking = ({ setOpen, bookingId, dateState }) => {
           onClick={() => setOpen(false)}
         />
         <div className="rTitleEditBooking">
-          <h1>{t("booking.editBooking")}</h1>
+          <h1>{t("editBooking")}</h1>
           <div className="formInput">
             <div onClick={refreshPage} className="editRoom">
-              Click here if you want to edit your Booking!
+              {t("noteEditBooking")}
             </div>
           </div>
         </div>
         <div className="rContentEditBooking">
           <div className="labelEditBooking">
-            <h3>{t("booking.checkIn")}</h3>
+            <h3>{t("booking.checkInTime")}</h3>
             <input
               type="datetime-local"
               id="checkinDate"
@@ -233,7 +235,7 @@ const EditBooking = ({ setOpen, bookingId, dateState }) => {
             />
           </div>
           <div className="labelEditBooking">
-            <h3>{t("booking.checkOut")}</h3>
+            <h3>{t("booking.checkOutTime")}</h3>
             <input
               type="datetime-local"
               id="checkoutDate"
@@ -246,7 +248,7 @@ const EditBooking = ({ setOpen, bookingId, dateState }) => {
           </div>
         </div>
         <div className="labelEditBooking">
-          <h3>{t("booking.room")}</h3>
+          <h3>{t("booking.roomNumbers")}</h3>
           {data.map((item) => (
             <div className="rSelectRoomsBooking">
               <div className="rTitle">{item.title}</div>
@@ -289,13 +291,10 @@ const EditBooking = ({ setOpen, bookingId, dateState }) => {
           />
         </div>
         <div className="labelEditBooking">
-          <h5>
-            Total Price is showed solely for reference to
-            help identify your Booking Fee
-          </h5>
+          <h5>{t("noteBooking")}</h5>
         </div>
         <button onClick={handleClick} className="rButton">
-          Edit
+          {t("edit")}
         </button>
       </div>
       {openModal && (

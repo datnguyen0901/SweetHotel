@@ -48,7 +48,10 @@ export const getHotels = async (req, res, next) => {
   try {
     const hotels = await Hotel.find({
       ...others,
-      cheapestPrice: { $gt: min || 1, $lt: max || 999 },
+      cheapestPrice: {
+        $gt: min - 1 || 0,
+        $lt: max || 999,
+      },
     }).limit(req.query.limit);
     res.status(200).json(hotels);
   } catch (error) {
@@ -123,6 +126,23 @@ export const getHotelCities = async (req, res, next) => {
       return { city: city };
     });
     res.status(200).json(list);
+  } catch (error) {
+    next(error);
+  }
+};
+
+//test get hotel name by roomNumber._id
+export const getHotelName = async (req, res, next) => {
+  try {
+    const rooms = await Room.find();
+    //return hotelId if roomNumber._id === req.params.id
+    const hotelId = rooms.find((room) =>
+      room.roomNumbers.filter(
+        (roomNumber) => roomNumber._id == req.params.id
+      )
+    ).hotelId;
+    const hotel = await Hotel.findOne({ _id: hotelId });
+    res.status(200).json(hotel);
   } catch (error) {
     next(error);
   }

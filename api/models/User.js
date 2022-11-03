@@ -30,6 +30,11 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    status: {
+      type: String,
+      required: true,
+      default: "pending",
+    },    
     country: {
       type: String,
       required: true,

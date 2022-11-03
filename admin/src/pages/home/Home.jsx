@@ -6,6 +6,9 @@ import Featured from "../../components/featured/Featured";
 import Chart from "../../components/chart/Chart";
 import Table from "../../components/table/Table";
 import { useTranslation } from "react-i18next";
+import useFetch from "../../hooks/useFetch";
+import { useEffect } from "react";
+import { Navigate } from "react-router-dom";
 
 const Home = () => {
   const [t] = useTranslation("common");

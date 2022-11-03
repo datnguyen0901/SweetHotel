@@ -15,6 +15,7 @@ import {
 import {
   verifyAdmin,
   verifyRole,
+  verifyToken,
 } from "../utils/verifyToken.js";
 
 const router = express.Router();
@@ -31,24 +32,22 @@ router.put(
 //GET ALL SERVICES BY HOTELID TO CHECK VALID
 router.get(
   "/hotel/valid/:id",
-  verifyAdmin,
-  verifyRole,
+  verifyToken,
   getServiceStorageValid
 );
 //GET ALL SERVICES BY HOTELID
+router.get("/hotel/:id", verifyToken, getServiceStorage);
+//GET INFO OF DEDICATED SERVICE BY ID
 router.get(
-  "/hotel/:id",
+  "/hotel/edit/:id",
   verifyAdmin,
   verifyRole,
-  getServiceStorage
+  getInfoServiceStorage
 );
-//GET INFO OF DEDICATED SERVICE BY ID
-router.get("/hotel/edit/:id", verifyAdmin, verifyRole, getInfoServiceStorage);
 //MODIFY SERVICE IN STORAGE
 router.put(
   "/hotel/storage/:id",
-  verifyAdmin,
-  verifyRole,
+  verifyToken,
   updateServiceStorage
 );
 // DELETE SERVICE IN STORAGE
