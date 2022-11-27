@@ -172,15 +172,17 @@ const Booking = () => {
         </>
       );
     }
-    if (checkinDate < today && status === "open") {
+    if (checkinDate <= today && type === "day") {
       return (
         <>
-          <button
-            className="booking__button"
-            onClick={() => handleOrder(id)}
-          >
-            {t("orderService")}
-          </button>
+          {status === "open" ? (
+            <button
+              className="booking__button"
+              onClick={() => handleOrder(id)}
+            >
+              {t("orderService")}
+            </button>
+          ) : null}
           {paymentMethod === "unpaid" ? (
             <button
               className="booking__button"

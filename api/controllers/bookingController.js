@@ -316,7 +316,6 @@ export const bookingVnPay = async (req, res, next) => {
 
     let createDate = dateFormat(date, "yyyymmddHHmmss");
     let amount = parseFloat(req.body.amount);
-    // let bankCode = req.body.bankCode;
     let orderInfo = req.body.orderInfo;
     let orderType = req.body.orderType;
     let bookingId = req.body.bookingId;
@@ -329,7 +328,6 @@ export const bookingVnPay = async (req, res, next) => {
     vnp_Params["vnp_Version"] = "2.1.0";
     vnp_Params["vnp_Command"] = "pay";
     vnp_Params["vnp_TmnCode"] = tmnCode;
-    // vnp_Params['vnp_Merchant'] = ''
     vnp_Params["vnp_Locale"] = locale;
     vnp_Params["vnp_CurrCode"] = currCode;
     vnp_Params["vnp_TxnRef"] = bookingId;
@@ -339,9 +337,6 @@ export const bookingVnPay = async (req, res, next) => {
     vnp_Params["vnp_ReturnUrl"] = returnUrl; // return booking page
     vnp_Params["vnp_IpAddr"] = ipAddr;
     vnp_Params["vnp_CreateDate"] = createDate;
-    // if (bankCode !== null && bankCode !== "") {
-    //   vnp_Params["vnp_BankCode"] = bankCode;
-    // }
 
     vnp_Params = sortObject(vnp_Params);
 
