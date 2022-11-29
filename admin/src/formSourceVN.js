@@ -15,7 +15,7 @@ export const userInputsVN = [
     id: "gender",
     label: "Giới tính",
     type: "select",
-    placeholder: "Male/Female",
+    placeholder: "male/female",
   },
   {
     id: "address",

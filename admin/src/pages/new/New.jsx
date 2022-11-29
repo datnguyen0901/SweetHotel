@@ -33,7 +33,7 @@ const New = ({ inputs, title }) => {
   ) || { roleId: "62b94302966d649ae7c461de" };
   // get role.name of user
   const roleData = useFetch(`/roles/${userData.roleId}`);
-
+  console.log(roleData.data.name, data);
   useEffect(() => {
     if (hotel.data) {
       data.forEach((item) => {
@@ -57,22 +57,19 @@ const New = ({ inputs, title }) => {
         );
       }
       if (roleData.data.name === "Admin") {
-        // just show Receptionist and Customer
         setRoleSelect(data);
       }
       if (
         roleData.data.name === "Manager" ||
-        "Owner" ||
-        "QA"
+        roleData.data.name === "Owner" ||
+        roleData.data.name === "QA"
       ) {
-        // just show Receptionist and Customer
         setRoleSelect(
           data.filter((item) => {
             return (
               item.name === "Receptionist" ||
               item.name === "Customer" ||
               item.name === "Manager" ||
-              item.name === "Owner" ||
               item.name === "QA"
             );
           })
@@ -145,6 +142,11 @@ const New = ({ inputs, title }) => {
       }
       navigate("/users");
     } catch (error) {
+      if (error.response.data.keyValue.email) {
+        alert(t("alertEmailExist"));
+      } else {
+        alert(t("usernameExist"));
+      }
       console.log(error);
     }
   };

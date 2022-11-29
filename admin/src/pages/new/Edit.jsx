@@ -194,7 +194,12 @@ const Edit = ({ inputs, title }) => {
                   onChange={handleChange}
                   value={info.roleId}
                   disabled={
-                    roleData.data?.name === "Receptionist"
+                    roleData.data?.name ===
+                      "Receptionist" ||
+                    roleData.data?.name === "Manager" ||
+                    roleData.data?.name === "Owner" ||
+                    roleData.data?.name === "QA" ||
+                    roleData.data?.name === "Accountant"
                   }
                 >
                   {loading

@@ -15,8 +15,7 @@ const Register = () => {
   const [region, setRegion] = useState(undefined);
   const [term, setTerm] = useState(false);
 
-  const { user, loading, error, dispatch } =
-    useContext(AuthContext);
+  const { loading, error } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -71,13 +70,18 @@ const Register = () => {
     try {
       if (term) {
         await axios.post("/auth/register", info);
-
+        alert(t("alertRegisterSuccess"));
         navigate("/login");
       } else {
         alert(t("alertTerms"));
       }
     } catch (error) {
-      console.log(error);
+      if (error.response.data.keyValue.email) {
+        alert(t("alertEmailExist"));
+      } else {
+        alert(t("usernameExist"));
+      }
+      console.log(error.response.data.keyValue);
     }
   };
 
@@ -124,7 +128,7 @@ const Register = () => {
                 onChange={handleChange}
                 className="registerSelect"
               >
-                <option value="" disabled>
+                <option value="" disabled selected>
                   {t("selectGender")}
                 </option>
                 <option value="male"> {t("male")}</option>

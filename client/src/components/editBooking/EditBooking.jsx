@@ -158,38 +158,24 @@ const EditBooking = ({ setOpen, bookingId, dateState }) => {
     }));
   };
 
-  console.log(info, selectedRooms);
-
   const handleClick = async (e) => {
     e.preventDefault();
     try {
       if (info.checkinDate > info.checkoutDate) {
         alert(t("booking.checkDate"));
       }
-      if (
-        moment(info.checkinDate).format("YYYY-MM-DD") !==
-          moment(bookingData.data.checkinDate).format(
-            "YYYY-MM-DD"
-          ) ||
-        moment(info.checkoutDate).format("YYYY-MM-DD") !==
-          moment(bookingData.data.checkoutDate).format(
-            "YYYY-MM-DD"
-          ) ||
-        selectedRooms !== bookingData.data.roomId
-      ) {
-        deleteRoomCalendar();
-        await Promise.all(
-          selectedRooms.map((roomId) => {
-            const res = axios.put(
-              `/rooms/availability/${roomId}`,
-              {
-                dates: alldates,
-              }
-            );
-            return res.data;
-          })
-        );
-      }
+      deleteRoomCalendar();
+      await Promise.all(
+        selectedRooms.map((roomId) => {
+          const res = axios.put(
+            `/rooms/availability/${roomId}`,
+            {
+              dates: alldates,
+            }
+          );
+          return res.data;
+        })
+      );
 
       const EditBooking = {
         ...info,

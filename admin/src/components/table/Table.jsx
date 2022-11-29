@@ -38,7 +38,7 @@ const List = () => {
               {t("table.paymentMethod")}
             </TableCell>
             <TableCell className="tableCell">
-              {t("table.totalPrice")}
+              {t("table.totalPaid")}
             </TableCell>
             <TableCell className="tableCell">
               {t("table.employeeId")}

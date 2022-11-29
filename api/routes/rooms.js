@@ -16,6 +16,7 @@ import {
 import {
   verifyAdmin,
   verifyRole,
+  verifyUser,
 } from "../utils/verifyToken.js";
 
 const router = express.Router();
@@ -29,11 +30,15 @@ router.post(
 );
 //UPDATE
 router.put("/:id", verifyAdmin, verifyRole, updateRoom);
-router.put("/availability/:id", updateRoomAvailability);
+router.put(
+  "/availability/:id",
+  verifyUser,
+  updateRoomAvailability
+);
 //DELETE available rooms
 router.delete(
   "/availability/delete/:id",
-  verifyAdmin,
+  verifyUser,
   deleteRoomAvailability
 );
 //DELETE rooms by roomNumber

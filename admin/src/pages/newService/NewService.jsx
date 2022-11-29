@@ -45,33 +45,41 @@ const NewService = ({ inputs, title }) => {
         };
         await axios.post(`/services`, newService);
       }
-
-      if (file) {
-        const uploadRes = await axios.post(
-          "https://api.cloudinary.com/v1_1/sweethotel/image/upload",
-          image
-        );
-
-        const { url } = uploadRes.data;
-
-        const newService = {
-          storage: [{ ...info, img: url }],
-        };
-
-        await axios.put(
-          `/services/hotel/${hotelId}`,
-          newService
-        );
+      if (
+        info.name === undefined ||
+        info.desc === undefined ||
+        info.price === undefined ||
+        info.type === undefined
+      ) {
+        alert("Please fill all fields");
       } else {
-        const newService = {
-          storage: [info],
-        };
-        await axios.put(
-          `/services/hotel/${hotelId}`,
-          newService
-        );
+        if (file) {
+          const uploadRes = await axios.post(
+            "https://api.cloudinary.com/v1_1/sweethotel/image/upload",
+            image
+          );
+
+          const { url } = uploadRes.data;
+
+          const newService = {
+            storage: [{ ...info, img: url }],
+          };
+
+          await axios.put(
+            `/services/hotel/${hotelId}`,
+            newService
+          );
+        } else {
+          const newService = {
+            storage: [info],
+          };
+          await axios.put(
+            `/services/hotel/${hotelId}`,
+            newService
+          );
+        }
+        navigate("/services");
       }
-      navigate("/services");
     } catch (err) {
       console.log(err);
     }

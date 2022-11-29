@@ -1,7 +1,7 @@
 import "./newRoom.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
-import {useState } from "react";
+import { useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +24,16 @@ const NewRoom = ({ inputs, title }) => {
   };
 
   const handleClick = async (e) => {
+    if (
+      info.title === undefined ||
+      info.price === undefined ||
+      info.maxPeople === undefined ||
+      info.desc === undefined ||
+      rooms.length === 0 ||
+      hotelId === undefined
+    ) {
+      alert("Please fill all fields");
+    }
     e.preventDefault();
     const roomNumbers = rooms
       .split(",")

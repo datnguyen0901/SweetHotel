@@ -1,9 +1,7 @@
 import "./newRole.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
-import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useState } from "react";
-import { roleInputs } from "../../formSource";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +11,7 @@ const NewRole = ({ inputs, title }) => {
   const [info, setInfo] = useState({});
   const [hotelId, setHotelId] = useState(undefined);
   const navigate = useNavigate();
-  const { data, loading, error } = useFetch("/hotels");
+  const { data, loading } = useFetch("/hotels");
 
   const [t] = useTranslation("common");
 
@@ -34,6 +32,13 @@ const NewRole = ({ inputs, title }) => {
   console.log(hotelId);
 
   const handleClick = async (e) => {
+    if (
+      info.name === "" ||
+      info.type === undefined ||
+      hotelId === undefined
+    ) {
+      alert("Please fill all fields");
+    }
     e.preventDefault();
     try {
       const newRole = {
@@ -75,7 +80,7 @@ const NewRole = ({ inputs, title }) => {
               <div className="formInput">
                 <label>{t("role.type")}</label>
                 <select id="type" onChange={handleSelect}>
-                  <option disabled selected>
+                  <option value="" disabled selected>
                     {t("role.selectType")}
                   </option>
                   <option value="Diamond">Diamond</option>
@@ -91,7 +96,7 @@ const NewRole = ({ inputs, title }) => {
                     setHotelId(e.target.value)
                   }
                 >
-                  <option disabled selected>
+                  <option value="" disabled selected>
                     {t("role.selectHotel")}
                   </option>
                   {loading

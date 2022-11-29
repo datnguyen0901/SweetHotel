@@ -98,6 +98,11 @@
   "confirmPassword": "Confirm Password",
   "enterConfirmPassword": "Please enter confirm password",
   "noteProfile": "If you want to change your information, please contact us!",
+  "alertRegisterSuccess": "Register success!Please check your email to active account!",
+  "usernameExist": "Username is exist!",
+  "alertEmailExist": "Email is exist!",
+  "wrongConfirmPassword": "Wrong confirm password!",
+  "changePasswordSuccess": "Change password success!",
   "welcome": {
     "title": "The best home is our hotel !"
   },

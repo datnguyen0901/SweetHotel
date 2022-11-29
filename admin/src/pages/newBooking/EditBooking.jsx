@@ -15,6 +15,7 @@ const EditBooking = ({ inputs, title }) => {
   const id = booking.bookingId;
   const [info, setInfo] = useState({});
   const [price, setPrice] = useState({});
+  const [totalPaidHour, setTotalPaidHour] = useState({});
   const [selectedRooms, setSelectedRooms] = useState([]);
 
   const [t] = useTranslation("common");
@@ -193,7 +194,10 @@ const EditBooking = ({ inputs, title }) => {
   };
 
   const handleChange = (e) => {
-    if (info.type === "hour") {
+    if (
+      info.type === "hour" ||
+      bookingData.data.type === "hour"
+    ) {
       //get price of the room
       data.forEach((item) => {
         item.roomNumbers.forEach((room) => {
@@ -214,9 +218,11 @@ const EditBooking = ({ inputs, title }) => {
       const hourNext = Math.ceil(hour - 1);
 
       // round the money
-      const totalPaidHour =
+      const totalPaidHourFinal =
         Math.round(priceFirstHour) +
         Math.round(priceNextHour * hourNext);
+      setTotalPaidHour(totalPaidHourFinal);
+      console.log(hour);
       setInfo((prev) => ({
         ...prev,
         [e.target.id]: e.target.value,

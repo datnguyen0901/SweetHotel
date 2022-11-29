@@ -46,7 +46,7 @@ export const register = async (req, res, next) => {
       message: `Sent a verification email to ${req.body.email}`,
     });
   } catch (error) {
-    return res.status(500).send(err);
+    return res.status(500).send(error);
   }
 };
 

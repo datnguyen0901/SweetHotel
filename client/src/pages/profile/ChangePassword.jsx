@@ -13,6 +13,8 @@ const ChangePassword = () => {
     {}
   );
 
+  const [t] = useTranslation("common");
+
   // get token from header
   const token = useParams().id;
 
@@ -24,21 +26,19 @@ const ChangePassword = () => {
   const handleClick = () => {
     if (newPassword !== confirmPassword) {
       // alert wrong confirm password
-      alert("Confirm password is not match");
+      alert(t("wrongConfirmPassword"));
       return;
     } else {
       // update password
       axios.put(`/users/updatepassword/${id}`, {
         password: newPassword,
       });
-      alert("Password updated");
+      alert(t("changePasswordSuccess"));
       navigate("/");
     }
   };
 
   const navigate = useNavigate();
-
-  const [t] = useTranslation("common");
 
   return (
     <div className="profile">

@@ -39,9 +39,23 @@ const NewHotel = ({ inputs, title }) => {
     setRooms(value);
   };
 
-  console.log(files);
+  console.log(info.desc);
 
   const handleClick = async (e) => {
+    if (
+      info.name === "" ||
+      info.type === "" ||
+      info.title === "" ||
+      info.desc === undefined ||
+      info.address === "" ||
+      info.distance === "" ||
+      info.distance === "" ||
+      info.cheapestPrice === "" ||
+      country === undefined ||
+      region === undefined
+    ) {
+      alert("Please fill all fields");
+    }
     e.preventDefault();
     try {
       const list = await Promise.all(

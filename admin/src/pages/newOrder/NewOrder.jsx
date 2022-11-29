@@ -126,6 +126,15 @@ const NewOrder = ({ inputs, title }) => {
   };
 
   const handleClick = async (e) => {
+    if (
+      info.bookingId === undefined ||
+      info.status === undefined ||
+      info.paymentMethod === undefined ||
+      user._id === undefined ||
+      selectedServices.length === 0
+    ) {
+      alert("Please fill all fields");
+    }
     e.preventDefault();
     const serviceOrders = selectedServices.map((item) => ({
       serviceId: item.id,

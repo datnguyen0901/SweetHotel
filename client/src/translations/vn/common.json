@@ -98,6 +98,11 @@
   "confirmPassword": "Xác nhận mật khẩu",
   "enterConfirmPassword": "Vui lòng nhập lại mật khẩu mới",
   "noteProfile": "Nếu bạn muốn thay đổi thông tin cá nhân, vui lòng liên hệ với chúng tôi!",
+  "alertRegisterSuccess": "Đăng ký thành công!Xin hãy kiểm tra email để kích hoạt tài khoản!",
+  "usernameExist": "Tên đăng nhập đã tồn tại!",
+  "alertEmailExist": "Email đã tồn tại!",
+  "wrongConfirmPassword": "Xác nhận mật khẩu không đúng!",
+  "changePasswordSuccess": "Đổi mật khẩu thành công!",
   "welcome": {
     "title": "Khách sạn cũng là nhà !"
   },

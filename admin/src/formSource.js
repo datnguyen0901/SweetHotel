@@ -15,7 +15,7 @@ export const userInputs = [
     id: "gender",
     label: "Gender",
     type: "select",
-    placeholder: "Male/Female",
+    placeholder: "male/female",
   },
   {
     id: "address",

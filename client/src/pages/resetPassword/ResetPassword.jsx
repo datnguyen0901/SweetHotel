@@ -32,6 +32,7 @@ const ResetPassword = () => {
       alert(res.data.message);
       navigate("/");
     } catch (error) {
+      if (error) alert("Email is not exist!");
       console.log(error);
     }
   };

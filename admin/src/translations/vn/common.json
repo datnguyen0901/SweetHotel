@@ -1,5 +1,7 @@
 {
   "revenueToday": "Doanh thu hôm nay(Kế Toán)",
+  "alertEmailExists": "Email đã tồn tại",
+  "usernameExists": "Tên đăng nhập đã tồn tại",
   "welcome": {
     "title": "Khách sạn cũng là nhà !"
   },
@@ -78,7 +80,7 @@
     "email": "Thư điện tử",
     "status": "Trạng thái",
     "paymentMethod": "Phương thức thanh toán",
-    "totalPrice": "Tổng tiền",
+    "totalPaid": "Tổng tiền",
     "employeeId": "ID nhân viên",
     "note": "Ghi chú"
   },

@@ -97,7 +97,15 @@ const NewFinalization = ({ inputs, title }) => {
     }));
   };
 
+  console.log(info.unpaid);
+
   const handleClick = async (e) => {
+    if (
+      info.paymentMethod === undefined ||
+      user._id === undefined
+    ) {
+      alert("Please fill all fields");
+    }
     e.preventDefault();
     try {
       const newFinalization = {

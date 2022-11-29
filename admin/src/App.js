@@ -112,6 +112,20 @@ function App() {
   // get role.name of user
   const { data } = useFetch(`/roles/${userData.roleId}`);
 
+  const AdminRoute = ({ children }) => {
+    if (data) {
+      // 62a07cba02af48b2f8a38d9b is roleId of Admin
+      if (userData.roleId !== "62a07cba02af48b2f8a38d9b") {
+        alert(
+          "You don't have permission to access this page"
+        );
+        return <Navigate to="/" />;
+      }
+    }
+
+    return children;
+  };
+
   const RoleRoute = ({ children }) => {
     if (data) {
       if (data.name === "Receptionist") {
@@ -196,11 +210,13 @@ function App() {
                 index
                 element={
                   <ProtectedRoute>
-                    {i18n.language === "en" ? (
-                      <List columns={roleColumns} />
-                    ) : (
-                      <List columns={roleColumnsVN} />
-                    )}
+                    <AdminRoute>
+                      {i18n.language === "en" ? (
+                        <List columns={roleColumns} />
+                      ) : (
+                        <List columns={roleColumnsVN} />
+                      )}
+                    </AdminRoute>
                   </ProtectedRoute>
                 }
               />
@@ -250,11 +266,13 @@ function App() {
                 index
                 element={
                   <ProtectedRoute>
-                    {i18n.language === "en" ? (
-                      <List columns={hotelColumns} />
-                    ) : (
-                      <List columns={hotelColumnsVN} />
-                    )}
+                    <AdminRoute>
+                      {i18n.language === "en" ? (
+                        <List columns={hotelColumns} />
+                      ) : (
+                        <List columns={hotelColumnsVN} />
+                      )}
+                    </AdminRoute>
                   </ProtectedRoute>
                 }
               />
@@ -304,11 +322,13 @@ function App() {
                 index
                 element={
                   <ProtectedRoute>
-                    {i18n.language === "en" ? (
-                      <List columns={roomColumns} />
-                    ) : (
-                      <List columns={roomColumnsVN} />
-                    )}
+                    <AdminRoute>
+                      {i18n.language === "en" ? (
+                        <List columns={roomColumns} />
+                      ) : (
+                        <List columns={roomColumnsVN} />
+                      )}
+                    </AdminRoute>
                   </ProtectedRoute>
                 }
               />

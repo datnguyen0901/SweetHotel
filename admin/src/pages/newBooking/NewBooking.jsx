@@ -208,6 +208,14 @@ const NewBooking = ({ inputs, title }) => {
   };
 
   const handleClick = async (e) => {
+    if (
+      info.status === undefined ||
+      info.userId === undefined ||
+      user._id === undefined ||
+      selectedRooms.length === 0
+    ) {
+      alert("Please fill all fields");
+    }
     e.preventDefault();
     try {
       const newBooking = {
@@ -257,7 +265,6 @@ const NewBooking = ({ inputs, title }) => {
     }
   };
 
-  console.log(info);
   return (
     <div className="new">
       <Sidebar />

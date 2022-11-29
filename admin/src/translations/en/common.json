@@ -1,5 +1,7 @@
 {
   "revenueToday": "Revenue Today (Accountant)",
+  "alertEmailExists": "Email already exists",
+  "usernameExists": "Username already exists",
   "welcome": {
     "title": "The best home is our hotel !"
   },
