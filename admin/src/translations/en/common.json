@@ -2,6 +2,9 @@
   "revenueToday": "Revenue Today (Accountant)",
   "alertEmailExists": "Email already exists",
   "usernameExists": "Username already exists",
+  "date": "Date",
+  "thisWeek": "This Week",
+  "thisMonth": "This Month",
   "welcome": {
     "title": "The best home is our hotel !"
   },

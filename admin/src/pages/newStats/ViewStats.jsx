@@ -144,13 +144,13 @@ const ViewStats = ({ columns }) => {
             value={"week"}
             onClick={(e) => handleChangeTimeFrame(e.target)}
           >
-            {t("lastWeek")}
+            {t("thisWeek")}
           </button>
           <button
             value={"month"}
             onClick={(e) => handleChangeTimeFrame(e.target)}
           >
-            {t("lastMonth")}
+            {t("thisMonth")}
           </button>
           <button
             value={"lastYear"}

@@ -2,6 +2,9 @@
   "revenueToday": "Doanh thu hôm nay(Kế Toán)",
   "alertEmailExists": "Email đã tồn tại",
   "usernameExists": "Tên đăng nhập đã tồn tại",
+  "date": "Ngày",
+  "thisWeek": "Tuần này",
+  "thisMonth": "Tháng này",
   "welcome": {
     "title": "Khách sạn cũng là nhà !"
   },

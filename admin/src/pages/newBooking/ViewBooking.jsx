@@ -109,14 +109,14 @@ const ViewBooking = ({ columns }) => {
   useEffect(() => {
     list.forEach((item) => {
       if (item.checkinDate) {
-        item.checkinDate = moment(item.checkinDate).format(
-          "YYYY-MM-DD HH:mm"
-        );
+        item.checkinDate = moment(item.checkinDate)
+          .add(-7, "hours")
+          .format("YYYY-MM-DD HH:mm");
       }
       if (item.checkoutDate) {
-        item.checkoutDate = moment(
-          item.checkoutDate
-        ).format("YYYY-MM-DD HH:mm");
+        item.checkoutDate = moment(item.checkoutDate)
+          .add(-7, "hours")
+          .format("YYYY-MM-DD HH:mm");
       }
     });
   }, [list]);

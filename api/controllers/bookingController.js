@@ -122,7 +122,9 @@ export const getBookingIfCheckinDateIsPassed = async (
     const bookings = await Booking.find({
       // yesterday
       checkinDate: {
-        $lt: moment().subtract(1, "days").toDate(),
+        $lt: new Date(
+          new Date().setDate(new Date().getDate() - 1)
+        ).setHours(17, 0, 0, 0),
       },
       status: "waiting",
     });
@@ -398,6 +400,7 @@ export const bookingVnPayReturn = async (
       {
         paymentMethod: "online",
         onlinePaymentId: transactionId,
+        onlinePaymentDate: Date.now(),
         note: "Payment success by VnPAY",
       },
       { new: true }
@@ -543,6 +546,7 @@ export const bookingPaypalPaySuccess = async (
             {
               paymentMethod: "online",
               onlinePaymentId: paymentId,
+              onlinePaymentDate: Date.now(),
               note: "Payment success by Paypal",
             },
             { new: true }
@@ -686,15 +690,20 @@ export const getIncomeBookingByUserId = async (
   res,
   next
 ) => {
+  //get 17p.m of yesterday
+  const yesterday = new Date(
+    new Date().setDate(new Date().getDate() - 1)
+  ).setHours(17, 0, 0, 0);
+  // get 17:00:00 of today
+  const today = new Date(new Date().setHours(17, 0, 0, 0));
+
   try {
     const bookings = await Booking.find({
       employeeId: req.params.id,
       paymentMethod: "cash",
       createdAt: {
-        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-        $lte: new Date(
-          new Date().setHours(23, 59, 59, 999)
-        ),
+        $gte: yesterday,
+        $lte: today,
       },
     });
     const total = bookings.reduce((acc, booking) => {
@@ -926,18 +935,24 @@ export const getIncomeBookingByEmployeeIdThisMonth = async (
       },
     });
 
+    // set lastMonthUTCStart to the first day of last month
+    const lastMonthUTCStart = moment()
+      .startOf("month")
+      .toDate();
+
+    // set lastMonthUTCEnd to 23:59:59
+    const lastMonthUTCEnd = moment()
+      .endOf("month")
+      .toDate();
+
     const bookings = await Booking.find({
       employeeId: {
         $in: users.map((user) => user._id),
       },
-      // checkinDate in last month
+      // checkinDate in this year
       checkinDate: {
-        $gte: new Date(
-          new Date().setMonth(new Date().getMonth() - 1)
-        ),
-        $lte: new Date(
-          new Date().setMonth(new Date().getMonth())
-        ),
+        $lte: lastMonthUTCEnd,
+        $gte: lastMonthUTCStart,
       },
     });
     const income = bookings.reduce((acc, booking) => {
@@ -995,20 +1010,25 @@ export const getIncomeBookingByEmployeeIdThisWeek = async (
       },
     });
 
+    // set lastWeekUTCStart to monday 00:00:00 last week
+    const lastWeekUTCStart = moment()
+      .startOf("isoWeek")
+      .toDate();
+    // set lastWeekUTCEnd to sunday 23:59:59 last week
+    const lastWeekUTCEnd = moment()
+      .endOf("isoWeek")
+      .toDate();
+    // get all booking by users.map(user => user._id)
     const bookings = await Booking.find({
       employeeId: {
         $in: users.map((user) => user._id),
       },
-      // checkinDate in last week
       checkinDate: {
-        $gte: new Date(
-          new Date().setDate(new Date().getDate() - 7)
-        ),
-        $lte: new Date(
-          new Date().setDate(new Date().getDate())
-        ),
+        $gte: lastWeekUTCStart,
+        $lte: lastWeekUTCEnd,
       },
     });
+
     const income = bookings.reduce((acc, booking) => {
       const day = booking.checkinDate.getDate();
       // convert day to English
@@ -1062,33 +1082,12 @@ export const getIncomeBookingByEmployeeIdYesterday = async (
         $in: roles.map((role) => role._id),
       },
     });
-    // get date yesterday
-    const yesterday = new Date(
-      new Date().setDate(new Date().getDate() - 1)
-    );
-    // set yesterdayUTC to 00:00:00
     const yesterdayUTCStart = new Date(
-      Date.UTC(
-        yesterday.getFullYear(),
-        yesterday.getMonth(),
-        yesterday.getDate()-1,
-        7,
-        0,
-        0
-      )
-    );
-    // set yesterdayUTC to 23:59:59
+      new Date().setDate(new Date().getDate() - 2)
+    ).setHours(17, 0, 0, 0);
     const yesterdayUTCEnd = new Date(
-      Date.UTC(
-        yesterday.getFullYear(),
-        yesterday.getMonth(),
-        yesterday.getDate(),
-        6,
-        59,
-        59
-      )
-    );
-
+      new Date().setDate(new Date().getDate() - 1)
+    ).setHours(17, 0, 0, 0);
     const bookings = await Booking.find({
       employeeId: {
         $in: users.map((user) => user._id),
@@ -1160,33 +1159,12 @@ export const getBookingByEmployeeIdYesterday = async (
         $in: roles.map((role) => role._id),
       },
     });
-    // get date yesterday
-    const yesterday = new Date(
-      new Date().setDate(new Date().getDate() - 1)
-    );
-    // set yesterdayUTC to 00:00:00
     const yesterdayUTCStart = new Date(
-      Date.UTC(
-        yesterday.getFullYear(),
-        yesterday.getMonth(),
-        yesterday.getDate()-1,
-        7,
-        0,
-        0
-      )
-    );
-    // set yesterdayUTC to 23:59:59
+      new Date().setDate(new Date().getDate() - 2)
+    ).setHours(17, 0, 0, 0);
     const yesterdayUTCEnd = new Date(
-      Date.UTC(
-        yesterday.getFullYear(),
-        yesterday.getMonth(),
-        yesterday.getDate(),
-        6,
-        59,
-        59
-      )
-    );
-
+      new Date().setDate(new Date().getDate() - 1)
+    ).setHours(17, 0, 0, 0);
     const bookings = await Booking.find({
       employeeId: {
         $in: users.map((user) => user._id),
@@ -1404,30 +1382,17 @@ export const getIncomeBookingAndOrderByEmployeeIdLastMonth =
           $in: roles.map((role) => role._id),
         },
       });
-      // get date this year
-      const thisYear = new Date();
-      // set lastMonthUTCStart to 00:00:00
-      const lastMonthUTCStart = new Date(
-        Date.UTC(
-          thisYear.getFullYear(),
-          thisYear.getMonth() - 1,
-          1,
-          0,
-          0,
-          0
-        )
-      );
+      // set lastMonthUTCStart to the first day of last month
+      const lastMonthUTCStart = moment()
+        .subtract(1, "months")
+        .startOf("month")
+        .toDate();
+
       // set lastMonthUTCEnd to 23:59:59
-      const lastMonthUTCEnd = new Date(
-        Date.UTC(
-          thisYear.getFullYear(),
-          thisYear.getMonth() - 1,
-          31,
-          23,
-          59,
-          59
-        )
-      );
+      const lastMonthUTCEnd = moment()
+        .subtract(1, "months")
+        .endOf("month")
+        .toDate();
 
       const bookings = await Booking.find({
         employeeId: {
@@ -1435,13 +1400,17 @@ export const getIncomeBookingAndOrderByEmployeeIdLastMonth =
         },
         // checkinDate in this year
         checkinDate: {
-          $gte: lastMonthUTCStart,
           $lte: lastMonthUTCEnd,
+          $gte: lastMonthUTCStart,
         },
       });
       const orders = await Order.find({
         bookingId: {
           $in: bookings.map((booking) => booking._id),
+        },
+        createdAt: {
+          $gte: lastMonthUTCStart,
+          $lte: lastMonthUTCEnd,
         },
       });
       const income = bookings.reduce((acc, booking) => {
@@ -1506,30 +1475,16 @@ export const getIncomeBookingAndOrderByEmployeeIdLastWeek =
           $in: roles.map((role) => role._id),
         },
       });
-      // get date this year
-      const thisYear = new Date();
-      // set lastWeekUTCStart to 00:00:00
-      const lastWeekUTCStart = new Date(
-        Date.UTC(
-          thisYear.getFullYear(),
-          thisYear.getMonth(),
-          thisYear.getDate() - 7,
-          0,
-          0,
-          0
-        )
-      );
-      // set lastWeekUTCEnd to 23:59:59
-      const lastWeekUTCEnd = new Date(
-        Date.UTC(
-          thisYear.getFullYear(),
-          thisYear.getMonth(),
-          thisYear.getDate() - 1,
-          23,
-          59,
-          59
-        )
-      );
+      // set lastWeekUTCStart to monday 00:00:00 last week
+      const lastWeekUTCStart = moment()
+        .subtract(1, "weeks")
+        .startOf("isoWeek")
+        .toDate();
+      // set lastWeekUTCEnd to sunday 23:59:59 last week
+      const lastWeekUTCEnd = moment()
+        .subtract(1, "weeks")
+        .endOf("isoWeek")
+        .toDate();
 
       const bookings = await Booking.find({
         employeeId: {
@@ -1544,6 +1499,10 @@ export const getIncomeBookingAndOrderByEmployeeIdLastWeek =
       const orders = await Order.find({
         bookingId: {
           $in: bookings.map((booking) => booking._id),
+        },
+        createdAt: {
+          $gte: lastWeekUTCStart,
+          $lte: lastWeekUTCEnd,
         },
       });
       const income = bookings.reduce((acc, booking) => {
@@ -1607,44 +1566,28 @@ export const getIncomeBookingAndOrderByEmployeeIdYesterday =
           $in: roles.map((role) => role._id),
         },
       });
-      // get date this year
-      const thisYear = new Date();
-      // set yesterdayUTCStart to 00:00:00
       const yesterdayUTCStart = new Date(
-        Date.UTC(
-          thisYear.getFullYear(),
-          thisYear.getMonth(),
-          thisYear.getDate() - 1,
-          7,
-          0,
-          0
-        )
-      );
-      // set yesterdayUTCEnd to 23:59:59
+        new Date().setDate(new Date().getDate() - 2)
+      ).setHours(17, 0, 0, 0);
       const yesterdayUTCEnd = new Date(
-        Date.UTC(
-          thisYear.getFullYear(),
-          thisYear.getMonth(),
-          thisYear.getDate(),
-          6,
-          59,
-          59
-        )
-      );
-
+        new Date().setDate(new Date().getDate() - 1)
+      ).setHours(17, 0, 0, 0);
       const bookings = await Booking.find({
         employeeId: {
           $in: users.map((user) => user._id),
         },
-        // checkinDate in this year
-        checkinDate: {
+        createdAt: {
           $gte: yesterdayUTCStart,
           $lte: yesterdayUTCEnd,
         },
       });
       const orders = await Order.find({
-        bookingId: {
-          $in: bookings.map((booking) => booking._id),
+        employeeId: {
+          $in: users.map((user) => user._id),
+        },
+        createdAt: {
+          $gte: yesterdayUTCStart,
+          $lte: yesterdayUTCEnd,
         },
       });
       const income = bookings.reduce((acc, booking) => {
@@ -1702,25 +1645,13 @@ export const getIncomeBookingAndOrderByEmployeeIdYesterday =
 export const getIncomeBookingAndOrderByEmployeeIdToday =
   async (req, res, next) => {
     try {
+      //get 17p.m of yesterday is 00:00 GMT + 7
       const todayUTCStart = new Date(
-        Date.UTC(
-          new Date().getFullYear(),
-          new Date().getMonth(),
-          new Date().getDate(),
-          0,
-          0,
-          0
-        )
-      );
+        new Date().setDate(new Date().getDate() - 1)
+      ).setHours(17, 0, 0, 0);
+      // get 17:00:00 of today
       const todayUTCEnd = new Date(
-        Date.UTC(
-          new Date().getFullYear(),
-          new Date().getMonth(),
-          new Date().getDate(),
-          23,
-          59,
-          59
-        )
+        new Date().setHours(17, 0, 0, 0)
       );
 
       // get all booking and order by employeeId today by createdAt
@@ -1781,30 +1712,15 @@ export const getIncomeBookingAndOrderByEmployeeIdToday =
 export const getBookingMoneyPayByEachHotelOnlinePayment =
   async (req, res, next) => {
     try {
-      const thisYear = new Date();
       const yesterdayUTCStart = new Date(
-        Date.UTC(
-          thisYear.getFullYear(),
-          thisYear.getMonth(),
-          thisYear.getDate() - 1,
-          7,
-          0,
-          0
-        )
-      );
+        new Date().setDate(new Date().getDate() - 2)
+      ).setHours(17, 0, 0, 0);
       const yesterdayUTCEnd = new Date(
-        Date.UTC(
-          thisYear.getFullYear(),
-          thisYear.getMonth(),
-          thisYear.getDate(),
-          6,
-          59,
-          59
-        )
-      );
+        new Date().setDate(new Date().getDate() - 1)
+      ).setHours(17, 0, 0, 0);
       const bookings = await Booking.find({
         paymentMethod: "online",
-        createdAt: {
+        onlinePaymentDate: {
           $gte: yesterdayUTCStart,
           $lte: yesterdayUTCEnd,
         },

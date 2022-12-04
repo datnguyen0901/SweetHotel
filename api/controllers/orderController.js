@@ -256,16 +256,19 @@ export const getIncomeOrderByUserId = async (
   res,
   next
 ) => {
+  //get 17p.m of yesterday
+  const yesterday = new Date(
+    new Date().setDate(new Date().getDate() - 1)
+  ).setHours(17, 0, 0, 0);
+  // get 17:00:00 of today
+  const today = new Date(new Date().setHours(17, 0, 0, 0));
   try {
     const orders = await Order.find({
       employeeId: req.params.id,
       paymentMethod: "cash",
-      status: "done",
       createdAt: {
-        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-        $lte: new Date(
-          new Date().setHours(23, 59, 59, 999)
-        ),
+        $gte: yesterday,
+        $lte: today,
       },
     });
     const total = orders.reduce((acc, order) => {
@@ -1044,32 +1047,12 @@ export const getIncomeByServiceYesterday = async (
         $in: roles.map((role) => role._id),
       },
     });
-    // get date yesterday
-    const yesterday = new Date(
-      new Date().setDate(new Date().getDate() - 1)
-    );
-    // set yesterdayUTC to 00:00:00
     const yesterdayUTCStart = new Date(
-      Date.UTC(
-        yesterday.getFullYear(),
-        yesterday.getMonth(),
-        yesterday.getDate()-1,
-        7,
-        0,
-        0
-      )
-    );
-    // set yesterdayUTC to 23:59:59
+      new Date().setDate(new Date().getDate() - 2)
+    ).setHours(17, 0, 0, 0);
     const yesterdayUTCEnd = new Date(
-      Date.UTC(
-        yesterday.getFullYear(),
-        yesterday.getMonth(),
-        yesterday.getDate(),
-        6,
-        59,
-        59
-      )
-    );
+      new Date().setDate(new Date().getDate() - 1)
+    ).setHours(17, 0, 0, 0);
     // get all booking by users.map(user => user._id)
     const bookings = await Booking.find({
       employeeId: {

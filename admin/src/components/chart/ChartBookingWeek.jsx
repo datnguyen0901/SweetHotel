@@ -30,7 +30,7 @@ const ChartBookingWeek = ({ aspect, title }) => {
     // draw chart by data
     <div className="chart">
       <div className="title">
-        {t("dataOf")} {t("bookingChart")} {t("lastWeek")}
+        {t("dataOf")} {t("bookingChart")} {t("thisWeek")}
       </div>
       <ResponsiveContainer width="100%" aspect={aspect}>
         <LineChart width={500} height={300} data={data}>

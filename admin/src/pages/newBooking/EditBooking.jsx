@@ -88,12 +88,12 @@ const EditBooking = ({ inputs, title }) => {
       setInfo({
         roomId: bookingData.data.roomId,
         userId: bookingData.data.userId,
-        checkinDate: moment(
-          bookingData.data.checkinDate
-        ).format("YYYY-MM-DDTHH:mm"),
-        checkoutDate: moment(
-          bookingData.data.checkoutDate
-        ).format("YYYY-MM-DDTHH:mm"),
+        checkinDate: moment(bookingData.data.checkinDate)
+          .add(-7, "hours")
+          .format("YYYY-MM-DDTHH:mm"),
+        checkoutDate: moment(bookingData.data.checkoutDate)
+          .add(-7, "hours")
+          .format("YYYY-MM-DDTHH:mm"),
         paymentMethod: bookingData.data.paymentMethod,
         note: bookingData.data.note,
         status: bookingData.data.status,
@@ -123,7 +123,7 @@ const EditBooking = ({ inputs, title }) => {
   };
 
   const numberNight = dayDifference(
-    info.checkinDate,
+    moment(info.checkinDate).format("YYYY-MM-DDT13:00"),
     moment(info.checkoutDate).format("YYYY-MM-DDT12:00")
   );
 
@@ -222,7 +222,6 @@ const EditBooking = ({ inputs, title }) => {
         Math.round(priceFirstHour) +
         Math.round(priceNextHour * hourNext);
       setTotalPaidHour(totalPaidHourFinal);
-      console.log(hour);
       setInfo((prev) => ({
         ...prev,
         [e.target.id]: e.target.value,
@@ -306,6 +305,13 @@ const EditBooking = ({ inputs, title }) => {
 
       const EditBooking = {
         ...info,
+        // plus 7 hours to checkinDate to fix with GMT+7 in Vietnam
+        checkinDate: moment(info.checkinDate)
+          .add(7, "hours")
+          .format("YYYY-MM-DDTHH:mm"),
+        checkoutDate: moment(info.checkoutDate)
+          .add(7, "hours")
+          .format("YYYY-MM-DDTHH:mm"),
         employeeId: user._id,
         roomId: selectedRooms,
         totalPaid: info.totalPaid,

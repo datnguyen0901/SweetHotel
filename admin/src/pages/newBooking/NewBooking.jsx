@@ -103,7 +103,7 @@ const NewBooking = ({ inputs, title }) => {
   };
 
   const numberNight = dayDifference(
-    info.checkinDate,
+    moment(info.checkinDate).format("YYYY-MM-DDT13:00"),
     moment(info.checkoutDate).format("YYYY-MM-DDT12:00")
   );
 
@@ -220,12 +220,13 @@ const NewBooking = ({ inputs, title }) => {
     try {
       const newBooking = {
         ...info,
-        checkinDate: moment(info.checkinDate).format(
-          "YYYY-MM-DDTHH:mm"
-        ),
-        checkoutDate: moment(info.checkoutDate).format(
-          "YYYY-MM-DDTHH:mm"
-        ),
+        // plus 7 hours to checkinDate to fix with GMT+7 in Vietnam
+        checkinDate: moment(info.checkinDate)
+          .add(7, "hours")
+          .format("YYYY-MM-DDTHH:mm"),
+        checkoutDate: moment(info.checkoutDate)
+          .add(7, "hours")
+          .format("YYYY-MM-DDTHH:mm"),
         employeeId: user._id,
         roomId: selectedRooms,
         totalPaid: numberNight * price,

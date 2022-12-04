@@ -340,15 +340,19 @@ export const getUnpaidByUserIdToday = async (
   res,
   next
 ) => {
+  //get 17p.m of yesterday
+  const yesterday = new Date(
+    new Date().setDate(new Date().getDate() - 1)
+  ).setHours(17, 0, 0, 0);
+  // get 17:00:00 of today
+  const today = new Date(new Date().setHours(17, 0, 0, 0));
   try {
     const finalizations = await Finalization.find({
       employeeId: req.params.id,
       paymentMethod: "cash",
       createdAt: {
-        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-        $lte: new Date(
-          new Date().setHours(23, 59, 59, 999)
-        ),
+        $gte: yesterday,
+        $lte: today,
       },
     });
     const total = finalizations.reduce(

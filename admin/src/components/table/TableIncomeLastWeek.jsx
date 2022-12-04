@@ -39,7 +39,7 @@ const ListIncomeLastWeek = () => {
         <TableHead>
           <TableRow>
             <TableCell className="tableCell">
-              {t("no")}
+              {t("date")}
             </TableCell>
             <TableCell className="tableCell">
               {t("day")}
