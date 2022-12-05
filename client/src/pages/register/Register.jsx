@@ -47,16 +47,62 @@ const Register = () => {
     }
   };
 
-  console.log(info);
-  console.log(term);
-
   function checkEmpty() {
-    for (let key in info) {
-      if (info[key] === "") {
-        return true;
-      }
+    if (
+      info.username === undefined ||
+      info.username === ""
+    ) {
+      alert(
+        "Username is empty, please enter your username"
+      );
+      return false;
     }
-    return false;
+    if (info.email === undefined || info.email === "") {
+      alert("Email is empty, please enter your email");
+      return false;
+    }
+    if (
+      info.fullName === undefined ||
+      info.fullName === ""
+    ) {
+      alert(
+        "Full name is empty, please enter your full name"
+      );
+      return false;
+    }
+    if (
+      info.password === undefined ||
+      info.password === ""
+    ) {
+      alert(
+        "Password is empty, please enter your password"
+      );
+      return false;
+    }
+    if (info.gender === undefined || info.gender === "") {
+      alert("Please choose gender");
+      return false;
+    }
+    if (info.country === undefined || info.country === "") {
+      alert("Please choose country");
+      return false;
+    }
+    if (info.city === undefined || info.city === "") {
+      alert("Please choose city");
+      return false;
+    }
+    if (info.address === undefined || info.address === "") {
+      alert("Address is empty, please enter your address");
+      return false;
+    }
+    if (info.phone === undefined || info.phone === "") {
+      alert("Phone is empty, please enter your phone");
+      return false;
+    }
+    if (info.cid === undefined || info.cid === "") {
+      alert("CID is empty, please enter your CID");
+      return false;
+    }
   }
 
   const handleClick = async (e) => {
