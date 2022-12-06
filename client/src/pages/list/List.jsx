@@ -3,7 +3,7 @@ import Navbar from "../../components/navbar/Navbar";
 import Header from "../../components/header/Header";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { DateRange } from "react-date-range";
 import SearchItem from "../../components/searchItem/SearchItem";
 import useFetch from "../../hooks/useFetch";
@@ -100,7 +100,9 @@ const List = () => {
                   </span>
                   <input
                     type="number"
-                    onChange={(e) => setMax(e.target.value)}
+                    onChange={(e) =>
+                      setMax(parseInt(e.target.value) + 1)
+                    }
                     className="lsOptionInput"
                   />
                 </div>
