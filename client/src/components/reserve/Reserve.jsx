@@ -37,12 +37,10 @@ const Reserve = ({ setOpen, hotelId }) => {
   };
 
   const alldates = getDatesInRange(
-    dates[0].startDate,
-    dates[0].endDate
-  );
-
-  console.log(
-    moment(dates[0].startDate).format("YYYY-MM-DDT00:00:00")
+    moment(dates[0].startDate).format(
+      "YYYY-MM-DDT12:00:00"
+    ),
+    moment(dates[0].endDate).format("YYYY-MM-DDT12:00:00")
   );
 
   const isAvailable = (roomNumber) => {
@@ -109,28 +107,34 @@ const Reserve = ({ setOpen, hotelId }) => {
     try {
       await Promise.all(
         selectedRooms.map(async (roomId) => {
-          await axios.put(
-            `/rooms/availability/${roomId}`,
-            {
-              dates: alldates,
-            }
-          );
+          await axios.put(`/rooms/availability/${roomId}`, {
+            dates: alldates,
+          });
           const newBooking = {
             roomId: roomId,
             userId: user._id,
             status: "waiting",
             addIn: false,
             type: "day",
-            checkinDate: dates[0].startDate,
-            checkoutDate: dates[0].endDate,
+            checkinDate: moment(dates[0].startDate)
+              .add(7, "hours")
+              .format("YYYY-MM-DDT12:00"),
+            checkoutDate: moment(dates[0].endDate)
+              .add(7, "hours")
+              .format("YYYY-MM-DDT12:00"),
             employeeId: "628ca6d82d06ce64f49a1882", //default Admin account system
             paymentMethod: "unpaid",
             totalPaid: numberNight * price,
           };
 
-          const bookingId = await axios.post("/bookings", newBooking);
+          const bookingId = await axios.post(
+            "/bookings",
+            newBooking
+          );
 
-          await axios.post(`/bookings/email/${bookingId.data._id}`);
+          await axios.post(
+            `/bookings/email/${bookingId.data._id}`
+          );
         })
       );
       setOpen(false);

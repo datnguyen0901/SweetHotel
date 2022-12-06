@@ -237,6 +237,16 @@ const ViewBooking = ({ columns }) => {
         className="datagrid"
         rows={list}
         columns={columns.concat(actionColumn)}
+        sortModel={[
+          {
+            field: "status",
+            sort: "desc",
+          },
+          {
+            field: "roomNumbers",
+            sort: "asc",
+          },
+        ]}
         pageSize={10}
         rowsPerPageOptions={[10]}
         checkboxSelection

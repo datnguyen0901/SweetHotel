@@ -61,12 +61,8 @@ const EditBooking = ({ setOpen, bookingId, dateState }) => {
   };
 
   const alldates = getDatesInRange(
-    moment(bookingData.data.checkinDate).format(
-      "YYYY-MM-DDTHH:mm"
-    ),
-    moment(bookingData.data.checkoutDate).format(
-      "YYYY-MM-DDTHH:mm"
-    )
+    moment(info.checkinDate).format("YYYY-MM-DDTHH:mm"),
+    moment(info.checkoutDate).format("YYYY-MM-DDTHH:mm")
   );
 
   const deleteRoomCalendar = async () => {

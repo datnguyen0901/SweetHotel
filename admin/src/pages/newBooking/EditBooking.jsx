@@ -52,13 +52,15 @@ const EditBooking = ({ inputs, title }) => {
   };
 
   const alldates = getDatesInRange(
-    moment(bookingData.data.checkinDate).format(
-      "YYYY-MM-DDTHH:mm"
-    ),
-    moment(bookingData.data.checkoutDate).format(
-      "YYYY-MM-DDTHH:mm"
-    )
+    moment(bookingData.data.checkinDate)
+      .add(-7, "hours")
+      .format("YYYY-MM-DDTHH:mm"),
+    moment(bookingData.data.checkoutDate)
+      .add(-7, "hours")
+      .format("YYYY-MM-DDTHH:mm")
   );
+
+  console.log(bookingData.data);
 
   const allDatesInfo = getDatesInRange(
     info.checkinDate,
@@ -77,9 +79,16 @@ const EditBooking = ({ inputs, title }) => {
   };
 
   function refreshPage() {
-    deleteRoomCalendar();
-    window.location.reload();
-    setSelectedRooms([]);
+    if (
+      info.status === "open" ||
+      info.status === "closed"
+    ) {
+      alert("Can not edit room when booking is open");
+    } else {
+      deleteRoomCalendar();
+      window.location.reload();
+      setSelectedRooms([]);
+    }
   }
 
   useEffect(() => {
