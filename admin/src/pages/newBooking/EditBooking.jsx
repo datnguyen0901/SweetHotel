@@ -221,7 +221,7 @@ const EditBooking = ({ inputs, title }) => {
       const hour = getTimeToHour(
         checkOutTime.getTime() - checkInTime.getTime()
       );
-      const priceFirstHour = 0.25 * price; // Fisrt hour is 25% of price
+      const priceFirstHour = 0.25 * price; // First hour is 25% of price
       const priceNextHour = 0.1 * price; // Next hour is 10% of price
       // calculate hour if hour-1 > 0 round up
       const hourNext = Math.ceil(hour - 1);
