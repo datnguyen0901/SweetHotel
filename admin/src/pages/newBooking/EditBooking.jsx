@@ -248,6 +248,48 @@ const EditBooking = ({ inputs, title }) => {
     }
   };
 
+  const handleCalculate = () => {
+    if (
+      info.type === "hour" ||
+      bookingData.data.type === "hour"
+    ) {
+      //get price of the room
+      data.forEach((item) => {
+        item.roomNumbers.forEach((room) => {
+          if (room._id === bookingData.data.roomId) {
+            setPrice(item.price);
+          }
+        });
+      });
+      // calculate hour by checkInTime and checkOutTime
+      const checkInTime = new Date(info.checkinDate);
+      const checkOutTime = new Date(info.checkoutDate);
+      const hour = getTimeToHour(
+        checkOutTime.getTime() - checkInTime.getTime()
+      );
+      const priceFirstHour = 0.25 * price; // Fisrt hour is 25% of price
+      const priceNextHour = 0.1 * price; // Next hour is 10% of price
+      // calculate hour if hour-1 > 0 round up
+      const hourNext = Math.ceil(hour - 1);
+
+      // round the money
+      const totalPaidHourFinal =
+        Math.round(priceFirstHour) +
+        Math.round(priceNextHour * hourNext);
+      setTotalPaidHour(totalPaidHourFinal);
+      setInfo((prev) => ({
+        ...prev,
+        totalPaid: totalPaidHour,
+      }));
+    } else {
+      setInfo((prev) => ({
+        ...prev,
+        totalPaid:
+          numberNight * price || bookingData.totalPaid,
+      }));
+    }
+  };
+
   const handleCheckAddIn = (e) => {
     const checked = e.target.checked;
     // checked ? setInfo totalPaid increase 20%
@@ -526,7 +568,20 @@ const EditBooking = ({ inputs, title }) => {
               </div>
 
               <div className="formInput">
-                <label>{t("booking.total")}</label>
+                <label>
+                  {t("booking.total")}
+                  <button
+                    onClick={handleCalculate}
+                    hidden={
+                      info.type !== "hour" ||
+                      bookingData.data.type !== "hour"
+                        ? true
+                        : false
+                    }
+                  >
+                    {t("calculate")}
+                  </button>
+                </label>
                 <input
                   disabled
                   id="totalPaid"
