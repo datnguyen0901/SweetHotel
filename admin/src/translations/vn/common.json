@@ -6,6 +6,11 @@
   "thisWeek": "Tuần này",
   "thisMonth": "Tháng này",
   "calculate": "Tính",
+  "checkIncome": "Kiểm tra thu nhập",
+  "checkOnline": "Kiểm tra GD trực tuyến",
+  "room": "Phòng",
+  "onlinePaymentDate": "Ngày thanh toán",
+  "onlinePaymentId": "ID thanh toán",
   "welcome": {
     "title": "Khách sạn cũng là nhà !"
   },

@@ -6,6 +6,11 @@
   "thisWeek": "This Week",
   "thisMonth": "This Month",
   "calculate": "Calculate",
+  "checkIncome": "Check Income",
+  "checkOnline": "Check Online",
+  "room": "Room",
+  "onlinePaymentDate": "Online Payment Date",
+  "onlinePaymentId": "Online Payment ID",
   "welcome": {
     "title": "The best home is our hotel !"
   },

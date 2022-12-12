@@ -9,6 +9,8 @@ import TableIncomeLastWeek from "../../components/table/TableIncomeLastWeek";
 import TableIncomeYesterday from "../../components/table/TableIncomeYesterday";
 import TableIncomeToday from "../../components/table/TableIncomeToday";
 import TableRevenueAccountant from "../../components/table/TableRevenueAccountant";
+import TableCheckIncomeHotel from "../../components/table/TableCheckIncomeHotel";
+import TableCheckIncomeHotelOnline from "../../components/table/TableCheckIncomeHotelOnline";
 import useFetch from "../../hooks/useFetch";
 
 const ViewAuditing = ({ columns }) => {
@@ -75,6 +77,16 @@ const ViewAuditing = ({ columns }) => {
     if (timeFrame === "revenueToday") {
       return <TableRevenueAccountant />;
     }
+    if (timeFrame === "checkIncome") {
+      if (employee) {
+        return <TableCheckIncomeHotel userId={employee} />;
+      } else {
+        return <TableCheckIncomeHotel userId={userId} />;
+      }
+    }
+    if (timeFrame === "checkOnline") {
+      return <TableCheckIncomeHotelOnline />;
+    }
   }
 
   return (
@@ -83,16 +95,29 @@ const ViewAuditing = ({ columns }) => {
         {t("auditing")}
 
         <div>
-          {permissions === "Accountant" && (
-            <button
-              value={"revenueToday"}
-              onClick={(e) =>
-                handleChangeTimeFrame(e.target)
-              }
-            >
-              {t("revenueToday")}
-            </button>
-          )}
+          {permissions === "Accountant" ||
+            (permissions === "Admin" && (
+              <button
+                value={"revenueToday"}
+                onClick={(e) =>
+                  handleChangeTimeFrame(e.target)
+                }
+              >
+                {t("revenueToday")}
+              </button>
+            ))}
+          <button
+            value={"checkOnline"}
+            onClick={(e) => handleChangeTimeFrame(e.target)}
+          >
+            {t("checkOnline")}
+          </button>
+          <button
+            value={"checkIncome"}
+            onClick={(e) => handleChangeTimeFrame(e.target)}
+          >
+            {t("checkIncome")}
+          </button>
           <button
             value={"today"}
             onClick={(e) => handleChangeTimeFrame(e.target)}
@@ -131,7 +156,8 @@ const ViewAuditing = ({ columns }) => {
           </button>
         </div>
       </div>
-      {user && timeFrame === "today"
+      {user &&
+      (timeFrame === "today" || timeFrame === "checkIncome")
         ? user.map((user) => (
             <button
               value={user._id}

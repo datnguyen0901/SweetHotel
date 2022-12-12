@@ -11,12 +11,12 @@ import { useTranslation } from "react-i18next";
 import { CSVLink } from "react-csv";
 import { useEffect, useState } from "react";
 
-const ListIncomeToday = (userId) => {
+const CheckIncomeHotel = (userId) => {
+  const id = userId.userId;
   const [totalIncomeToday, setTotalIncomeToday] =
     useState(0);
-  const id = userId.userId;
   const bookingData = useFetch(
-    `/bookings/hotel/info/today/${id}`
+    `/bookings/hotel/info/today/check/${id}`
   ).data;
   const rows = Object.keys(bookingData).map(
     // convert key to int the + 1 set to _id
@@ -33,6 +33,7 @@ const ListIncomeToday = (userId) => {
     Unpaid: row.unpaid,
     PaymentMethod: row.paymentMethod,
     CheckingType: row.checkingType,
+    Note: row.note,
   }));
   const [t] = useTranslation("common");
 
@@ -51,7 +52,6 @@ const ListIncomeToday = (userId) => {
     });
     setTotalIncomeToday(total);
   }, [bookingData, totalIncomeToday]);
-
   return (
     <TableContainer component={Paper} className="table">
       <Table
@@ -86,6 +86,9 @@ const ListIncomeToday = (userId) => {
             </TableCell>
             <TableCell className="tableCell">
               {t("checkingType")}
+            </TableCell>
+            <TableCell className="tableCell">
+              {t("note")}
             </TableCell>
           </TableRow>
         </TableHead>
@@ -123,6 +126,9 @@ const ListIncomeToday = (userId) => {
               <TableCell className="tableCell">
                 {row.checkingType}
               </TableCell>
+              <TableCell className="tableCell">
+                {row.note}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -131,7 +137,7 @@ const ListIncomeToday = (userId) => {
         <CSVLink
           filename={
             new Date().toLocaleDateString() +
-            "IncomeCashToday" +
+            "IncomeNotCashToday" +
             id +
             ".csv"
           }
@@ -152,4 +158,4 @@ const ListIncomeToday = (userId) => {
   );
 };
 
-export default ListIncomeToday;
+export default CheckIncomeHotel;

@@ -61,7 +61,7 @@ export const mailBooking = async (req, res, next) => {
       },
     });
 
-    const url = `http://localhost:3000/bookings/${booking._id}`;
+    const url = `http://localhost:5000/bookings/${booking._id}`;
 
     let img = "";
     let qr = await QRCode.toDataURL(url);
@@ -119,12 +119,10 @@ export const getBookingIfCheckinDateIsPassed = async (
   next
 ) => {
   try {
+    // because checkinDate on the database is GMT, but the user is in GMT+7
     const bookings = await Booking.find({
-      // yesterday
       checkinDate: {
-        $lt: new Date(
-          new Date().setDate(new Date().getDate() - 1)
-        ).setHours(17, 0, 0, 0),
+        $lt: moment().startOf("day").toDate(),
       },
       status: "waiting",
     });
@@ -691,11 +689,9 @@ export const getIncomeBookingByUserId = async (
   next
 ) => {
   //get 17p.m of yesterday
-  const yesterday = new Date(
-    new Date().setDate(new Date().getDate() - 1)
-  ).setHours(17, 0, 0, 0);
+  const yesterday = moment().startOf("day").toDate();
   // get 17:00:00 of today
-  const today = new Date(new Date().setHours(17, 0, 0, 0));
+  const today = moment().endOf("day").toDate();
 
   try {
     const bookings = await Booking.find({
@@ -1082,12 +1078,14 @@ export const getIncomeBookingByEmployeeIdYesterday = async (
         $in: roles.map((role) => role._id),
       },
     });
-    const yesterdayUTCStart = new Date(
-      new Date().setDate(new Date().getDate() - 2)
-    ).setHours(17, 0, 0, 0);
-    const yesterdayUTCEnd = new Date(
-      new Date().setDate(new Date().getDate() - 1)
-    ).setHours(17, 0, 0, 0);
+    const yesterdayUTCStart = moment()
+      .subtract(1, "days")
+      .startOf("day")
+      .toDate();
+    const yesterdayUTCEnd = moment()
+      .subtract(1, "days")
+      .endOf("day")
+      .toDate();
     const bookings = await Booking.find({
       employeeId: {
         $in: users.map((user) => user._id),
@@ -1159,12 +1157,14 @@ export const getBookingByEmployeeIdYesterday = async (
         $in: roles.map((role) => role._id),
       },
     });
-    const yesterdayUTCStart = new Date(
-      new Date().setDate(new Date().getDate() - 2)
-    ).setHours(17, 0, 0, 0);
-    const yesterdayUTCEnd = new Date(
-      new Date().setDate(new Date().getDate() - 1)
-    ).setHours(17, 0, 0, 0);
+    const yesterdayUTCStart = moment()
+      .subtract(1, "days")
+      .startOf("day")
+      .toDate();
+    const yesterdayUTCEnd = moment()
+      .subtract(1, "days")
+      .endOf("day")
+      .toDate();
     const bookings = await Booking.find({
       employeeId: {
         $in: users.map((user) => user._id),
@@ -1566,12 +1566,14 @@ export const getIncomeBookingAndOrderByEmployeeIdYesterday =
           $in: roles.map((role) => role._id),
         },
       });
-      const yesterdayUTCStart = new Date(
-        new Date().setDate(new Date().getDate() - 2)
-      ).setHours(17, 0, 0, 0);
-      const yesterdayUTCEnd = new Date(
-        new Date().setDate(new Date().getDate() - 1)
-      ).setHours(17, 0, 0, 0);
+      const yesterdayUTCStart = moment()
+        .subtract(1, "days")
+        .startOf("day")
+        .toDate();
+      const yesterdayUTCEnd = moment()
+        .subtract(1, "days")
+        .endOf("day")
+        .toDate();
       const bookings = await Booking.find({
         employeeId: {
           $in: users.map((user) => user._id),
@@ -1641,22 +1643,21 @@ export const getIncomeBookingAndOrderByEmployeeIdYesterday =
     }
   };
 
-// get booking and order by employeeId today
+// get booking and order, finalization by employeeId(cash) today
 export const getIncomeBookingAndOrderByEmployeeIdToday =
   async (req, res, next) => {
     try {
       //get 17p.m of yesterday is 00:00 GMT + 7
-      const todayUTCStart = new Date(
-        new Date().setDate(new Date().getDate() - 1)
-      ).setHours(17, 0, 0, 0);
+      const todayUTCStart = moment()
+        .startOf("day")
+        .toDate();
       // get 17:00:00 of today
-      const todayUTCEnd = new Date(
-        new Date().setHours(17, 0, 0, 0)
-      );
+      const todayUTCEnd = moment().endOf("day").toDate();
 
       // get all booking and order by employeeId today by createdAt
       const bookings = await Booking.find({
         employeeId: req.params.id,
+        paymentMethod: "cash",
         createdAt: {
           $gte: todayUTCStart,
           $lte: todayUTCEnd,
@@ -1671,6 +1672,7 @@ export const getIncomeBookingAndOrderByEmployeeIdToday =
       );
       const orders = await Order.find({
         employeeId: req.params.id,
+        paymentMethod: "cash",
         createdAt: {
           $gte: todayUTCStart,
           $lte: todayUTCEnd,
@@ -1697,6 +1699,151 @@ export const getIncomeBookingAndOrderByEmployeeIdToday =
           ...finalization._doc,
           checkingType: "finalization",
         }));
+      // calculate totalPaid of booking, order, finalization
+      const totalIncomeBooking = bookings.reduce(
+        (acc, booking) => acc + booking.totalPaid,
+        0
+      );
+      const totalIncomeOrder = orders.reduce(
+        (acc, order) => acc + order.totalPrice,
+        0
+      );
+      const totalIncomeFinalization = finalizations.reduce(
+        (acc, finalization) => acc + finalization.unpaid,
+        0
+      );
+      const totalIncome =
+        totalIncomeBooking +
+        totalIncomeOrder +
+        totalIncomeFinalization;
+      //merge bookingsWithCheckingType and ordersWithCheckingType and finalizationsWithCheckingType
+      const income = [
+        ...bookingsWithCheckingType,
+        ...ordersWithCheckingType,
+        ...finalizationsWithCheckingType,
+      ];
+      res.status(200).json(income);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+// get income online yesterday
+export const getIncomeOnlineToday = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    //get 17p.m of yesterday is 00:00 GMT + 7
+    const todayUTCStart = moment()
+      .subtract(1, "days")
+      .startOf("day")
+      .toDate();
+    // get 17:00:00 of today
+    const todayUTCEnd = moment()
+      .subtract(1, "days")
+      .endOf("day")
+      .toDate();
+
+    // get roldId by userId
+    const user = await User.findById(req.params.id);
+    const roleId = user.roleId;
+    // get hotelId by roleId
+    const role = await Role.findById(roleId);
+    const rooms = await Room.find({
+      hotelId: role.hotelId,
+    });
+    const roomNumbers = rooms.map((room) => {
+      return room.roomNumbers.map((roomNumber) => {
+        return {
+          _id: roomNumber._id,
+          number: roomNumber.number,
+        };
+      });
+    });
+    const roomNumbersFlat = roomNumbers.flat();
+    // get all bookings by roomNumbers _id
+    const bookings = await Booking.find({
+      roomId: { $in: roomNumbersFlat },
+      onlinePaymentDate: {
+        $gte: todayUTCStart,
+        $lte: todayUTCEnd,
+      },
+    });
+    const bookingRoomNumbers = bookings.map((booking) => {
+      return {
+        ...booking._doc,
+        roomNumber: roomNumbersFlat.find(
+          (roomNumber) =>
+            roomNumber._id.toString() ==
+            booking.roomId.toString()
+        ).number,
+      };
+    });
+    res.status(200).json(bookingRoomNumbers);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get booking and order, finalization by employeeId(not by cash) today
+export const getIncomeBookingAndOrderByEmployeeIdNotCashToday =
+  async (req, res, next) => {
+    try {
+      //get 17p.m of yesterday is 00:00 GMT + 7
+      const todayUTCStart = moment()
+        .startOf("day")
+        .toDate();
+      // get 17:00:00 of today
+      const todayUTCEnd = moment().endOf("day").toDate();
+
+      // get all booking and order by employeeId today by createdAt
+      const bookings = await Booking.find({
+        employeeId: req.params.id,
+        // paymentMethod not equal cash and unpaid
+        paymentMethod: { $ne: "cash" && "unpaid" },
+        createdAt: {
+          $gte: todayUTCStart,
+          $lte: todayUTCEnd,
+        },
+      });
+      // add checkingType = "booking" to booking
+      const bookingsWithCheckingType = bookings.map(
+        (booking) => ({
+          ...booking._doc,
+          checkingType: "booking",
+        })
+      );
+      const orders = await Order.find({
+        employeeId: req.params.id,
+        paymentMethod: { $ne: "cash" || "unpaid" },
+        createdAt: {
+          $gte: todayUTCStart,
+          $lte: todayUTCEnd,
+        },
+      });
+      // add checkingType = "order" to order
+      const ordersWithCheckingType = orders.map(
+        (order) => ({
+          ...order._doc,
+          checkingType: "order",
+        })
+      );
+      const finalizations = await Finalization.find({
+        employeeId: req.params.id,
+        paymentMethod: { $ne: "cash" },
+        createdAt: {
+          $gte: todayUTCStart,
+          $lte: todayUTCEnd,
+        },
+      });
+      // add checkingType = "finalization" to finalization
+      const finalizationsWithCheckingType =
+        finalizations.map((finalization) => ({
+          ...finalization._doc,
+          checkingType: "finalization",
+        }));
       //merge bookingsWithCheckingType and ordersWithCheckingType and finalizationsWithCheckingType
       const income = [
         ...bookingsWithCheckingType,
@@ -1712,12 +1859,16 @@ export const getIncomeBookingAndOrderByEmployeeIdToday =
 export const getBookingMoneyPayByEachHotelOnlinePayment =
   async (req, res, next) => {
     try {
-      const yesterdayUTCStart = new Date(
-        new Date().setDate(new Date().getDate() - 2)
-      ).setHours(17, 0, 0, 0);
-      const yesterdayUTCEnd = new Date(
-        new Date().setDate(new Date().getDate() - 1)
-      ).setHours(17, 0, 0, 0);
+      //get 17p.m of yesterday is 00:00 GMT + 7
+      const yesterdayUTCStart = moment()
+        .subtract(1, "days")
+        .startOf("day")
+        .toDate();
+      // get 17:00:00 of today
+      const yesterdayUTCEnd = moment()
+        .subtract(1, "days")
+        .endOf("day")
+        .toDate();
       const bookings = await Booking.find({
         paymentMethod: "online",
         onlinePaymentDate: {

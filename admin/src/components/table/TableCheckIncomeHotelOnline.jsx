@@ -11,47 +11,43 @@ import { useTranslation } from "react-i18next";
 import { CSVLink } from "react-csv";
 import { useEffect, useState } from "react";
 
-const ListIncomeToday = (userId) => {
+const CheckIncomeHotelOnline = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const id = user._id;
   const [totalIncomeToday, setTotalIncomeToday] =
     useState(0);
-  const id = userId.userId;
   const bookingData = useFetch(
-    `/bookings/hotel/info/today/${id}`
+    `/bookings/hotel/info/today/check/online/${id}`
   ).data;
   const rows = Object.keys(bookingData).map(
     // convert key to int the + 1 set to _id
     (key) => ({ ...bookingData[key], no: +key })
   );
 
+  console.log(bookingData);
+
   const csvData = rows.map((row) => ({
     No: row.no,
     ID: row._id,
     CreatedAt: row.createdAt,
-    UpdatedAt: row.updatedAt,
+    Room: row.roomNumber,
     TotalPaid: row.totalPaid,
-    Paid: row.paid,
-    Unpaid: row.unpaid,
+    PayDate: row.onlinePaymentDate,
+    PayId: row.onlinePaymentId,
     PaymentMethod: row.paymentMethod,
-    CheckingType: row.checkingType,
+    Note: row.note,
   }));
   const [t] = useTranslation("common");
 
   useEffect(() => {
     var total = 0;
     bookingData.forEach((item) => {
-      if (item.checkingType === "booking") {
+      if (item.paymentMethod === "online") {
         total += item.totalPaid;
-      }
-      if (item.checkingType === "order") {
-        total += item.totalPaid;
-      }
-      if (item.checkingType === "finalization") {
-        total += item.unpaid;
       }
     });
     setTotalIncomeToday(total);
   }, [bookingData, totalIncomeToday]);
-
   return (
     <TableContainer component={Paper} className="table">
       <Table
@@ -70,22 +66,22 @@ const ListIncomeToday = (userId) => {
               {t("createdAt")}
             </TableCell>
             <TableCell className="tableCell">
-              {t("updatedAt")}
+              {t("room")}
             </TableCell>
             <TableCell className="tableCell">
               {t("totalPaid")}
             </TableCell>
             <TableCell className="tableCell">
-              {t("paid")}
+              {t("onlinePaymentDate")}
             </TableCell>
             <TableCell className="tableCell">
-              {t("unpaid")}
+              {t("onlinePaymentId")}
             </TableCell>
             <TableCell className="tableCell">
               {t("paymentMethod")}
             </TableCell>
             <TableCell className="tableCell">
-              {t("checkingType")}
+              {t("note")}
             </TableCell>
           </TableRow>
         </TableHead>
@@ -104,7 +100,7 @@ const ListIncomeToday = (userId) => {
                 </div>
               </TableCell>
               <TableCell className="tableCell">
-                {row.updatedAt}
+                {row.roomNumber}
               </TableCell>
               <TableCell className="tableCell">
                 <span className="tableCell">
@@ -112,16 +108,16 @@ const ListIncomeToday = (userId) => {
                 </span>
               </TableCell>
               <TableCell className="tableCell">
-                {row.paid}
+                {row.onlinePaymentDate}
               </TableCell>
               <TableCell className="tableCell">
-                {row.unpaid}
+                {row.onlinePaymentId}
               </TableCell>
               <TableCell className="tableCell">
                 {row.paymentMethod}
               </TableCell>
               <TableCell className="tableCell">
-                {row.checkingType}
+                {row.note}
               </TableCell>
             </TableRow>
           ))}
@@ -131,7 +127,7 @@ const ListIncomeToday = (userId) => {
         <CSVLink
           filename={
             new Date().toLocaleDateString() +
-            "IncomeCashToday" +
+            "IncomeOnlineToday" +
             id +
             ".csv"
           }
@@ -152,4 +148,4 @@ const ListIncomeToday = (userId) => {
   );
 };
 
-export default ListIncomeToday;
+export default CheckIncomeHotelOnline;

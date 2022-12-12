@@ -103,6 +103,7 @@
   "alertEmailExist": "Email is exist!",
   "wrongConfirmPassword": "Wrong confirm password!",
   "changePasswordSuccess": "Change password success!",
+  "tokenExpired": "Token expired!",
   "welcome": {
     "title": "The best home is our hotel !"
   },

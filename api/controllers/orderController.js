@@ -257,11 +257,9 @@ export const getIncomeOrderByUserId = async (
   next
 ) => {
   //get 17p.m of yesterday
-  const yesterday = new Date(
-    new Date().setDate(new Date().getDate() - 1)
-  ).setHours(17, 0, 0, 0);
+  const yesterday = moment().startOf("day").toDate();
   // get 17:00:00 of today
-  const today = new Date(new Date().setHours(17, 0, 0, 0));
+  const today = moment().endOf("day").toDate();
   try {
     const orders = await Order.find({
       employeeId: req.params.id,
@@ -956,16 +954,14 @@ export const getIncomeByServiceLastWeek = async (
         $in: users.map((user) => user._id),
       },
       checkinDate: {
-        $gte: new Date(
-          new Date().getFullYear(),
-          new Date().getMonth(),
-          new Date().getDate() - 7
-        ),
-        $lte: new Date(
-          new Date().getFullYear(),
-          new Date().getMonth(),
-          new Date().getDate()
-        ),
+        $gte: moment()
+          .subtract(1, "weeks")
+          .startOf("isoWeek")
+          .toDate(),
+        $lte: moment()
+          .subtract(1, "weeks")
+          .endOf("isoWeek")
+          .toDate(),
       },
     });
     // get all order by bookings.map(booking => booking._id)
@@ -1047,12 +1043,14 @@ export const getIncomeByServiceYesterday = async (
         $in: roles.map((role) => role._id),
       },
     });
-    const yesterdayUTCStart = new Date(
-      new Date().setDate(new Date().getDate() - 2)
-    ).setHours(17, 0, 0, 0);
-    const yesterdayUTCEnd = new Date(
-      new Date().setDate(new Date().getDate() - 1)
-    ).setHours(17, 0, 0, 0);
+    const yesterdayUTCStart = moment()
+      .subtract(1, "days")
+      .startOf("day")
+      .toDate();
+    const yesterdayUTCEnd = moment()
+      .subtract(1, "days")
+      .endOf("day")
+      .toDate();
     // get all booking by users.map(user => user._id)
     const bookings = await Booking.find({
       employeeId: {

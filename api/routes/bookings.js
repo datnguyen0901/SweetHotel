@@ -35,6 +35,8 @@ import {
   bookingPaypalPaySuccess,
   mailBooking,
   getBookingMoneyPayByEachHotelOnlinePayment,
+  getIncomeBookingAndOrderByEmployeeIdNotCashToday,
+  getIncomeOnlineToday,
 } from "../controllers/BookingController.js";
 import {
   verifyAdmin,
@@ -52,11 +54,7 @@ router.post("/email/:id", verifyToken, mailBooking);
 //UPDATE
 router.put("/:id", verifyToken, updateBooking);
 //DELETE
-router.delete(
-  "/:id",
-  verifyAdmin,
-  deleteBooking
-);
+router.delete("/:id", verifyAdmin, deleteBooking);
 //DELETEBOOKINGIFCHECKINDATEISPASSED
 router.get(
   "/deletebooking/checkindate",
@@ -216,6 +214,20 @@ router.get(
   "/hotel/revenue/yesterday",
   verifyAdmin,
   getBookingMoneyPayByEachHotelOnlinePayment
+);
+
+//getIncomeByEmployeeIdNotByCashToday
+router.get(
+  "/hotel/info/today/check/:id",
+  verifyAdmin,
+  getIncomeBookingAndOrderByEmployeeIdNotCashToday
+);
+
+//getIncomeOnlineToday
+router.get(
+  "/hotel/info/today/check/online/:id",
+  verifyAdmin,
+  getIncomeOnlineToday
 );
 
 export default router;

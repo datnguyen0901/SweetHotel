@@ -103,6 +103,7 @@
   "alertEmailExist": "Email đã tồn tại!",
   "wrongConfirmPassword": "Xác nhận mật khẩu không đúng!",
   "changePasswordSuccess": "Đổi mật khẩu thành công!",
+  "tokenExpired": "Token đã hết hiệu lực!",
   "welcome": {
     "title": "Khách sạn cũng là nhà !"
   },

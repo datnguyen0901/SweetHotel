@@ -1,10 +1,9 @@
 import { AuthContext } from "../../context/AuthContext";
 import "./profile.css";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import useFetch from "../../hooks/useFetch";
 
 const ChangePassword = () => {
   const { error } = useContext(AuthContext);
@@ -13,6 +12,8 @@ const ChangePassword = () => {
     {}
   );
 
+  const navigate = useNavigate();
+
   const [t] = useTranslation("common");
 
   // get token from header
@@ -20,6 +21,13 @@ const ChangePassword = () => {
 
   //get user id from token
   const info = JSON.parse(atob(token.split(".")[1]));
+
+  useEffect(() => {
+    if (info.exp * 1000 < new Date().getTime()) {
+      alert(t("tokenExpired"));
+      navigate("/");
+    }
+  }, [info.exp, t, navigate]);
 
   const id = info._id;
 
@@ -37,8 +45,6 @@ const ChangePassword = () => {
       navigate("/");
     }
   };
-
-  const navigate = useNavigate();
 
   return (
     <div className="profile">

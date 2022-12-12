@@ -149,7 +149,7 @@ export const sendMailResetPassword = async (
     const token = jwt.sign(
       { _id: user._id },
       process.env.RESET_PASSWORD_KEY,
-      { expiresIn: "20m" }
+      { expiresIn: "10m" }
     );
 
     const url = `http://localhost:3000/profile/changepassword/${token}`;
@@ -180,7 +180,7 @@ export const changePassword = async (req, res, next) => {
     const token = jwt.sign(
       { _id: user._id },
       process.env.RESET_PASSWORD_KEY,
-      { expiresIn: "20m" }
+      { expiresIn: "10m" }
     );
 
     const url = `http://localhost:3000/profile/changepassword/${token}`;
