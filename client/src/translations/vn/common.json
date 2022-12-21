@@ -104,6 +104,7 @@
   "wrongConfirmPassword": "Xác nhận mật khẩu không đúng!",
   "changePasswordSuccess": "Đổi mật khẩu thành công!",
   "tokenExpired": "Token đã hết hiệu lực!",
+  "alertEditBooking": "Xin hãy liên hệ chúng tôi để sửa thông tin đặt phòng!",
   "welcome": {
     "title": "Khách sạn cũng là nhà !"
   },

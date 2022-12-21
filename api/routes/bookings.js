@@ -50,7 +50,7 @@ const router = express.Router();
 //CREATE
 router.post("/", verifyToken, createBooking);
 //SEND EMAIL
-router.post("/email/:id", verifyToken, mailBooking);
+router.get("/email/:id", verifyToken, mailBooking);
 //UPDATE
 router.put("/:id", verifyToken, updateBooking);
 //DELETE

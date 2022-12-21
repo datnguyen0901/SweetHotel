@@ -1,5 +1,6 @@
 import Hotel from "../models/Hotel.js";
 import Room from "../models/Room.js";
+import Booking from "../models/Booking.js";
 
 export const createHotel = async (req, res, next) => {
   const newHotel = new Hotel(req.body);
@@ -134,14 +135,27 @@ export const getHotelCities = async (req, res, next) => {
 //test get hotel name by roomNumber._id
 export const getHotelName = async (req, res, next) => {
   try {
+    const bookingId = req.params.id;
+    const booking = await Booking.findById(bookingId);
+
     const rooms = await Room.find();
-    //return hotelId if roomNumber._id === req.params.id
-    const hotelId = rooms.find((room) =>
-      room.roomNumbers.filter(
-        (roomNumber) => roomNumber._id == req.params.id
-      )
-    ).hotelId;
-    const hotel = await Hotel.findOne({ _id: hotelId });
+    const roomNumbers = rooms.map((room) => {
+      return room.roomNumbers.map((roomNumber) => {
+        if (
+          roomNumber._id.toString() ===
+          booking.roomId.toString()
+        ) {
+          return room.hotelId;
+        }
+      });
+    });
+    // flat and filter the array
+    const hotelId = roomNumbers
+      .flat()
+      .filter((room) => room !== undefined);
+    const hotel = await Hotel.findOne({
+      _id: hotelId,
+    });
     res.status(200).json(hotel);
   } catch (error) {
     next(error);

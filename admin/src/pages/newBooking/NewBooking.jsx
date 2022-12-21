@@ -74,7 +74,7 @@ const NewBooking = ({ inputs, title }) => {
   };
 
   const alldates = getDatesInRange(
-    info.checkinDate,
+    moment(info.checkinDate).format("YYYY-MM-DDT12:00"),
     // format  to YYYY-MM-DDT12:00
     moment(info.checkoutDate).format("YYYY-MM-DDT12:00")
   );

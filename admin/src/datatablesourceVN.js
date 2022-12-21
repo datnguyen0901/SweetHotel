@@ -1,5 +1,5 @@
 export const userColumnsVN = [
-  { field: "_id", headerName: "ID", width: 120 },
+  { field: "_id", headerName: "ID", width: 230 },
   {
     field: "user",
     headerName: "Người dùng",
@@ -246,7 +246,7 @@ export const orderColumnsVN = [
 ];
 
 export const finalizationColumnsVN = [
-  { field: "_id", headerName: "ID", width: 150 },
+  { field: "_id", headerName: "ID", width: 230 },
   {
     field: "bookingId",
     headerName: "ID đặt phòng",

@@ -38,18 +38,28 @@ export const mailBooking = async (req, res, next) => {
     const user = await User.findById(booking.userId);
 
     const checkInDate = dateFormat(
-      booking.checkInDate,
+      booking.checkinDate,
       "dd/mm/yyyy"
     );
 
     const rooms = await Room.find();
-    //return hotelId if roomNumber._id === req.params.id
-    const hotelId = rooms.find((room) =>
-      room.roomNumbers.filter(
-        (roomNumber) => roomNumber._id == req.params.id
-      )
-    ).hotelId;
-    const hotel = await Hotel.findOne({ _id: hotelId });
+    const roomNumbers = rooms.map((room) => {
+      return room.roomNumbers.map((roomNumber) => {
+        if (
+          roomNumber._id.toString() ===
+          booking.roomId.toString()
+        ) {
+          return room.hotelId;
+        }
+      });
+    });
+    // flat and filter the array
+    const hotelId = roomNumbers
+      .flat()
+      .filter((room) => room !== undefined);
+    const hotel = await Hotel.findOne({
+      _id: hotelId,
+    });
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -71,12 +81,12 @@ export const mailBooking = async (req, res, next) => {
       to: user.email,
       subject: "Booking Information",
       attachDataUrls: true,
-      html: `This is your booking code: ${booking._id}. Check-in Date: ${checkInDate} at ${hotel.name}. Please Check In after 14 p.m to make sure your room is ready. It's our pleasure to serve you.  <br> <br> <img src="' + ${img} + '"> `,
+      html: `This is your booking code: ${booking._id}. Check-in Date: ${checkInDate} at ${hotel.name}. Please Check In after 14 p.m to make sure your room is ready. It's our pleasure to serve you.  <br> <br> <img src="' + ${img} `,
     });
     return res.status(201).send({
       message: `Sent a booking code to ${user.email}`,
     });
-  } catch (error) {
+  } catch (err) {
     return res.status(500).send(err);
   }
 };
@@ -312,7 +322,9 @@ export const bookingVnPay = async (req, res, next) => {
     let returnUrl =
       "http://localhost:8800/api/bookings/onlinepayment/vnpay_return";
 
+    //we have to add 1 more hour to the current time to fix with the VNPAY server
     let date = new Date();
+    date.setHours(date.getHours() + 1);
 
     let createDate = dateFormat(date, "yyyymmddHHmmss");
     let amount = parseFloat(req.body.amount);
@@ -931,7 +943,7 @@ export const getIncomeBookingByEmployeeIdThisMonth = async (
       },
     });
 
-    // set lastMonthUTCStart to the first day of last month
+    // set lastMonthUTCStart to the first day of this month
     const lastMonthUTCStart = moment()
       .startOf("month")
       .toDate();
@@ -984,7 +996,7 @@ export const getIncomeBookingByEmployeeIdThisMonth = async (
   }
 };
 
-// get sum of totalPaid of booking by employeeId in each day of last week if type is day or hour or both
+// get sum of totalPaid of booking by employeeId in each day of this week if type is day or hour or both
 export const getIncomeBookingByEmployeeIdThisWeek = async (
   req,
   res,
@@ -1008,12 +1020,10 @@ export const getIncomeBookingByEmployeeIdThisWeek = async (
 
     // set lastWeekUTCStart to monday 00:00:00 last week
     const lastWeekUTCStart = moment()
-      .startOf("isoWeek")
+      .startOf("week")
       .toDate();
     // set lastWeekUTCEnd to sunday 23:59:59 last week
-    const lastWeekUTCEnd = moment()
-      .endOf("isoWeek")
-      .toDate();
+    const lastWeekUTCEnd = moment().endOf("week").toDate();
     // get all booking by users.map(user => user._id)
     const bookings = await Booking.find({
       employeeId: {
@@ -1407,10 +1417,6 @@ export const getIncomeBookingAndOrderByEmployeeIdLastMonth =
       const orders = await Order.find({
         bookingId: {
           $in: bookings.map((booking) => booking._id),
-        },
-        createdAt: {
-          $gte: lastMonthUTCStart,
-          $lte: lastMonthUTCEnd,
         },
       });
       const income = bookings.reduce((acc, booking) => {

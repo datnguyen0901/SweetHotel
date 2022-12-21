@@ -9,6 +9,7 @@ import { AuthContext } from "../../context/AuthContext";
 import useFetch from "../../hooks/useFetch";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 const Navbar = () => {
   const { dispatchDark } = useContext(DarkModeContext);
@@ -23,6 +24,15 @@ const Navbar = () => {
     (order) => order.status === "waiting"
   ).length;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (ordersWaiting === 0) {
+      // reload page to update ordersWaiting after 5mins
+      setTimeout(() => {
+        window.location.reload();
+      }, 300000);
+    }
+  }, [ordersWaiting]);
 
   const [t, i18n] = useTranslation("common");
 

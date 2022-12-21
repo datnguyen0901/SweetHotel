@@ -237,14 +237,14 @@ const ViewBooking = ({ columns }) => {
         className="datagrid"
         rows={list}
         columns={columns.concat(actionColumn)}
-        sortModel={[
+        sort={[
           {
             field: "status",
-            sort: "desc",
+            sort: "asc",
           },
           {
             field: "roomNumbers",
-            sort: "asc",
+            sort: "dsc",
           },
         ]}
         pageSize={10}

@@ -37,10 +37,8 @@ const Reserve = ({ setOpen, hotelId }) => {
   };
 
   const alldates = getDatesInRange(
-    moment(dates[0].startDate).format(
-      "YYYY-MM-DDT12:00:00"
-    ),
-    moment(dates[0].endDate).format("YYYY-MM-DDT12:00:00")
+    moment(dates[0].startDate).format("YYYY-MM-DDT12:00"),
+    moment(dates[0].endDate).format("YYYY-MM-DDT12:00")
   );
 
   const isAvailable = (roomNumber) => {
@@ -116,12 +114,14 @@ const Reserve = ({ setOpen, hotelId }) => {
             status: "waiting",
             addIn: false,
             type: "day",
-            checkinDate: moment(dates[0].startDate)
-              .add(7, "hours")
-              .format("YYYY-MM-DDT12:00"),
-            checkoutDate: moment(dates[0].endDate)
-              .add(7, "hours")
-              .format("YYYY-MM-DDT12:00"),
+            checkinDate: moment(dates[0].startDate).add(
+              5,
+              "hours"
+            ),
+            checkoutDate: moment(dates[0].endDate).add(
+              5,
+              "hours"
+            ),
             employeeId: "628ca6d82d06ce64f49a1882", //default Admin account system
             paymentMethod: "unpaid",
             totalPaid: numberNight * price,
@@ -132,7 +132,7 @@ const Reserve = ({ setOpen, hotelId }) => {
             newBooking
           );
 
-          await axios.post(
+          await axios.get(
             `/bookings/email/${bookingId.data._id}`
           );
         })

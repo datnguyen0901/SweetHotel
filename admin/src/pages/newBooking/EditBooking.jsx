@@ -52,18 +52,16 @@ const EditBooking = ({ inputs, title }) => {
   };
 
   const alldates = getDatesInRange(
-    moment(bookingData.data.checkinDate)
-      .add(-7, "hours")
-      .format("YYYY-MM-DDTHH:mm"),
-    moment(bookingData.data.checkoutDate)
-      .add(-7, "hours")
-      .format("YYYY-MM-DDTHH:mm")
+    moment(bookingData.data.checkinDate).format(
+      "YYYY-MM-DDT12:00"
+    ),
+    moment(bookingData.data.checkoutDate).format(
+      "YYYY-MM-DDT12:00"
+    )
   );
 
-  console.log(bookingData.data);
-
   const allDatesInfo = getDatesInRange(
-    info.checkinDate,
+    moment(info.checkinDate).format("YYYY-MM-DDT12:00"),
     moment(info.checkoutDate).format("YYYY-MM-DDT12:00")
   );
 
@@ -411,14 +409,18 @@ const EditBooking = ({ inputs, title }) => {
                     defaultValue={info.paymentMethod}
                     value={info.paymentMethod}
                     disabled={
-                      info.paymentMethod !== "unpaid" &&
-                      user.roleId !==
-                        "62a07cba02af48b2f8a38d9b"
+                      (info.paymentMethod !== "unpaid" &&
+                        user.roleId !==
+                          "62a07cba02af48b2f8a38d9b") ||
+                      info.paymentMethod === "online"
                         ? // 62a07cba02af48b2f8a38d9b is admin roleId
                           true
                         : false
                     }
                   >
+                    <option value="online" disabled>
+                      {t("online")}
+                    </option>
                     <option value="unpaid">
                       {t("unpaid")}
                     </option>

@@ -1,5 +1,5 @@
 export const userColumns = [
-  { field: "_id", headerName: "ID", width: 120 },
+  { field: "_id", headerName: "ID", width: 230 },
   {
     field: "user",
     headerName: "User",
@@ -245,7 +245,7 @@ export const orderColumns = [
 ];
 
 export const finalizationColumns = [
-  { field: "_id", headerName: "ID", width: 150 },
+  { field: "_id", headerName: "ID", width: 230 },
   {
     field: "bookingId",
     headerName: "Booking ID",

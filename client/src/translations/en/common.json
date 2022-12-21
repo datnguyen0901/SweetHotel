@@ -104,6 +104,7 @@
   "wrongConfirmPassword": "Wrong confirm password!",
   "changePasswordSuccess": "Change password success!",
   "tokenExpired": "Token expired!",
+  "alertEditBooking": "Please contact us to edit your booking!",
   "welcome": {
     "title": "The best home is our hotel !"
   },

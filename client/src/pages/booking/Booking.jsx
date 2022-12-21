@@ -83,11 +83,15 @@ const Booking = () => {
     navigate(`/order/${id}`);
   };
 
-  const handleClick = (id) => {
+  const handleClick = (id, paymentMethod) => {
     if (user) {
-      setPage("editBooking");
-      setBookingId({ id });
-      setOpenModal(true);
+      if (paymentMethod === "unpaid") {
+        setPage("editBooking");
+        setBookingId({ id });
+        setOpenModal(true);
+      } else {
+        alert(t("alertEditBooking"));
+      }
     } else {
       navigate("/login");
     }
@@ -136,14 +140,7 @@ const Booking = () => {
         <>
           <button
             className="booking__button"
-            onClick={() =>
-              handleClick(
-                id,
-                roomId,
-                checkinDate,
-                checkoutDate
-              )
-            }
+            onClick={() => handleClick(id, paymentMethod)}
           >
             {t("edit")}
           </button>

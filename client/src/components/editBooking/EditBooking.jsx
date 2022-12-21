@@ -61,8 +61,8 @@ const EditBooking = ({ setOpen, bookingId, dateState }) => {
   };
 
   const alldates = getDatesInRange(
-    moment(info.checkinDate).format("YYYY-MM-DDTHH:mm"),
-    moment(info.checkoutDate).format("YYYY-MM-DDTHH:mm")
+    moment(info.checkinDate).format("YYYY-MM-DDT12:00"),
+    moment(info.checkoutDate).format("YYYY-MM-DDT12:00")
   );
 
   const deleteRoomCalendar = async () => {
@@ -175,6 +175,12 @@ const EditBooking = ({ setOpen, bookingId, dateState }) => {
 
       const EditBooking = {
         ...info,
+        checkinDate: moment(info.checkinDate)
+          .add(7, "hours")
+          .format("YYYY-MM-DDTHH:mm"),
+        checkoutDate: moment(info.checkoutDate)
+          .add(7, "hours")
+          .format("YYYY-MM-DDTHH:mm"),
         employeeId: "630351005bc852bafce88230", // set default is Admin account
         roomId: selectedRooms,
         totalPaid: info.totalPaid,
@@ -207,11 +213,11 @@ const EditBooking = ({ setOpen, bookingId, dateState }) => {
           <div className="labelEditBooking">
             <h3>{t("booking.checkInTime")}</h3>
             <input
-              type="datetime-local"
+              type="date"
               id="checkinDate"
               disabled={dateState}
               value={moment(info.checkinDate).format(
-                "YYYY-MM-DDTHH:mm"
+                "YYYY-MM-DD"
               )}
               onChange={handleChange}
             />
@@ -219,11 +225,11 @@ const EditBooking = ({ setOpen, bookingId, dateState }) => {
           <div className="labelEditBooking">
             <h3>{t("booking.checkOutTime")}</h3>
             <input
-              type="datetime-local"
+              type="date"
               id="checkoutDate"
               disabled={dateState}
               value={moment(info.checkoutDate).format(
-                "YYYY-MM-DDTHH:mm"
+                "YYYY-MM-DD"
               )}
               onChange={handleChange}
             />
