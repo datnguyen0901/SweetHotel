@@ -129,10 +129,12 @@ export const getBookingIfCheckinDateIsPassed = async (
   next
 ) => {
   try {
+    const day = moment().startOf("day").toDate();
+    const today = moment(day).add(7, "hours");
     // because checkinDate on the database is GMT, but the user is in GMT+7
     const bookings = await Booking.find({
       checkinDate: {
-        $lt: moment().startOf("day").toDate(),
+        $lt: today,
       },
       status: "waiting",
     });
@@ -700,10 +702,22 @@ export const getIncomeBookingByUserId = async (
   res,
   next
 ) => {
-  //get 17p.m of yesterday
-  const yesterday = moment().startOf("day").toDate();
-  // get 17:00:00 of today
-  const today = moment().endOf("day").toDate();
+  const yesterdayStart = moment()
+    .subtract(1, "days")
+    .startOf("day")
+    .toDate();
+  const yesterdayUTCStart = moment(yesterdayStart).add(
+    7,
+    "hours"
+  );
+  const yesterdayEnd = moment()
+    .subtract(1, "days")
+    .endOf("day")
+    .toDate();
+  const yesterdayUTCEnd = moment(yesterdayEnd).add(
+    7,
+    "hours"
+  );
 
   try {
     const bookings = await Booking.find({
@@ -944,14 +958,20 @@ export const getIncomeBookingByEmployeeIdThisMonth = async (
     });
 
     // set lastMonthUTCStart to the first day of this month
-    const lastMonthUTCStart = moment()
+    const lastMonthStart = moment()
       .startOf("month")
       .toDate();
+    const lastMonthUTCStart = moment(lastMonthStart).add(
+      7,
+      "hours"
+    );
 
     // set lastMonthUTCEnd to 23:59:59
-    const lastMonthUTCEnd = moment()
-      .endOf("month")
-      .toDate();
+    const lastMonthEnd = moment().endOf("month").toDate();
+    const lastMonthUTCEnd = moment(lastMonthEnd).add(
+      7,
+      "hours"
+    );
 
     const bookings = await Booking.find({
       employeeId: {
@@ -1019,11 +1039,17 @@ export const getIncomeBookingByEmployeeIdThisWeek = async (
     });
 
     // set lastWeekUTCStart to monday 00:00:00 last week
-    const lastWeekUTCStart = moment()
-      .startOf("week")
-      .toDate();
+    const lastWeekStart = moment().startOf("week").toDate();
+    const lastWeekUTCStart = moment(lastWeekStart).add(
+      7,
+      "hours"
+    );
     // set lastWeekUTCEnd to sunday 23:59:59 last week
-    const lastWeekUTCEnd = moment().endOf("week").toDate();
+    const lastWeekEnd = moment().endOf("week").toDate();
+    const lastWeekUTCEnd = moment(lastWeekEnd).add(
+      7,
+      "hours"
+    );
     // get all booking by users.map(user => user._id)
     const bookings = await Booking.find({
       employeeId: {
@@ -1088,14 +1114,22 @@ export const getIncomeBookingByEmployeeIdYesterday = async (
         $in: roles.map((role) => role._id),
       },
     });
-    const yesterdayUTCStart = moment()
+    const yesterdayStart = moment()
       .subtract(1, "days")
       .startOf("day")
       .toDate();
-    const yesterdayUTCEnd = moment()
+    const yesterdayUTCStart = moment(yesterdayStart).add(
+      7,
+      "hours"
+    );
+    const yesterdayEnd = moment()
       .subtract(1, "days")
       .endOf("day")
       .toDate();
+    const yesterdayUTCEnd = moment(yesterdayEnd).add(
+      7,
+      "hours"
+    );
     const bookings = await Booking.find({
       employeeId: {
         $in: users.map((user) => user._id),
@@ -1167,14 +1201,22 @@ export const getBookingByEmployeeIdYesterday = async (
         $in: roles.map((role) => role._id),
       },
     });
-    const yesterdayUTCStart = moment()
+    const yesterdayStart = moment()
       .subtract(1, "days")
       .startOf("day")
       .toDate();
-    const yesterdayUTCEnd = moment()
+    const yesterdayUTCStart = moment(yesterdayStart).add(
+      7,
+      "hours"
+    );
+    const yesterdayEnd = moment()
       .subtract(1, "days")
       .endOf("day")
       .toDate();
+    const yesterdayUTCEnd = moment(yesterdayEnd).add(
+      7,
+      "hours"
+    );
     const bookings = await Booking.find({
       employeeId: {
         $in: users.map((user) => user._id),
@@ -1393,16 +1435,24 @@ export const getIncomeBookingAndOrderByEmployeeIdLastMonth =
         },
       });
       // set lastMonthUTCStart to the first day of last month
-      const lastMonthUTCStart = moment()
+      const lastMonthStart = moment()
         .subtract(1, "months")
         .startOf("month")
         .toDate();
+      const lastMonthUTCStart = moment(lastMonthStart).add(
+        7,
+        "hours"
+      );
 
       // set lastMonthUTCEnd to 23:59:59
-      const lastMonthUTCEnd = moment()
+      const lastMonthEnd = moment()
         .subtract(1, "months")
         .endOf("month")
         .toDate();
+      const lastMonthUTCEnd = moment(lastMonthEnd).add(
+        7,
+        "hours"
+      );
 
       const bookings = await Booking.find({
         employeeId: {
@@ -1481,16 +1531,25 @@ export const getIncomeBookingAndOrderByEmployeeIdLastWeek =
           $in: roles.map((role) => role._id),
         },
       });
+
       // set lastWeekUTCStart to monday 00:00:00 last week
-      const lastWeekUTCStart = moment()
+      const lastWeekStart = moment()
         .subtract(1, "weeks")
-        .startOf("isoWeek")
+        .startOf("week")
         .toDate();
+      const lastWeekUTCStart = moment(lastWeekStart).add(
+        7,
+        "hours"
+      );
       // set lastWeekUTCEnd to sunday 23:59:59 last week
-      const lastWeekUTCEnd = moment()
+      const lastWeekEnd = moment()
         .subtract(1, "weeks")
-        .endOf("isoWeek")
+        .endOf("week")
         .toDate();
+      const lastWeekUTCEnd = moment(lastWeekEnd).add(
+        7,
+        "hours"
+      );
 
       const bookings = await Booking.find({
         employeeId: {
@@ -1572,14 +1631,22 @@ export const getIncomeBookingAndOrderByEmployeeIdYesterday =
           $in: roles.map((role) => role._id),
         },
       });
-      const yesterdayUTCStart = moment()
+      const yesterdayStart = moment()
         .subtract(1, "days")
         .startOf("day")
         .toDate();
-      const yesterdayUTCEnd = moment()
+      const yesterdayUTCStart = moment(yesterdayStart).add(
+        7,
+        "hours"
+      );
+      const yesterdayEnd = moment()
         .subtract(1, "days")
         .endOf("day")
         .toDate();
+      const yesterdayUTCEnd = moment(yesterdayEnd).add(
+        7,
+        "hours"
+      );
       const bookings = await Booking.find({
         employeeId: {
           $in: users.map((user) => user._id),
@@ -1653,12 +1720,22 @@ export const getIncomeBookingAndOrderByEmployeeIdYesterday =
 export const getIncomeBookingAndOrderByEmployeeIdToday =
   async (req, res, next) => {
     try {
-      //get 17p.m of yesterday is 00:00 GMT + 7
-      const todayUTCStart = moment()
+      const yesterdayStart = moment()
+        .subtract(1, "days")
         .startOf("day")
         .toDate();
-      // get 17:00:00 of today
-      const todayUTCEnd = moment().endOf("day").toDate();
+      const todayUTCStart = moment(yesterdayStart).add(
+        7,
+        "hours"
+      );
+      const yesterdayEnd = moment()
+        .subtract(1, "days")
+        .endOf("day")
+        .toDate();
+      const todayUTCEnd = moment(yesterdayEnd).add(
+        7,
+        "hours"
+      );
 
       // get all booking and order by employeeId today by createdAt
       const bookings = await Booking.find({
@@ -1741,16 +1818,22 @@ export const getIncomeOnlineToday = async (
   next
 ) => {
   try {
-    //get 17p.m of yesterday is 00:00 GMT + 7
-    const todayUTCStart = moment()
+    const yesterdayStart = moment()
       .subtract(1, "days")
       .startOf("day")
       .toDate();
-    // get 17:00:00 of today
-    const todayUTCEnd = moment()
+    const yesterdayUTCStart = moment(yesterdayStart).add(
+      7,
+      "hours"
+    );
+    const yesterdayEnd = moment()
       .subtract(1, "days")
       .endOf("day")
       .toDate();
+    const yesterdayUTCEnd = moment(yesterdayEnd).add(
+      7,
+      "hours"
+    );
 
     // get roldId by userId
     const user = await User.findById(req.params.id);
@@ -1773,8 +1856,8 @@ export const getIncomeOnlineToday = async (
     const bookings = await Booking.find({
       roomId: { $in: roomNumbersFlat },
       onlinePaymentDate: {
-        $gte: todayUTCStart,
-        $lte: todayUTCEnd,
+        $gte: yesterdayUTCStart,
+        $lte: yesterdayUTCEnd,
       },
     });
     const bookingRoomNumbers = bookings.map((booking) => {
@@ -1797,12 +1880,22 @@ export const getIncomeOnlineToday = async (
 export const getIncomeBookingAndOrderByEmployeeIdNotCashToday =
   async (req, res, next) => {
     try {
-      //get 17p.m of yesterday is 00:00 GMT + 7
-      const todayUTCStart = moment()
+      const yesterdayStart = moment()
+        .subtract(1, "days")
         .startOf("day")
         .toDate();
-      // get 17:00:00 of today
-      const todayUTCEnd = moment().endOf("day").toDate();
+      const todayUTCStart = moment(yesterdayStart).add(
+        7,
+        "hours"
+      );
+      const yesterdayEnd = moment()
+        .subtract(1, "days")
+        .endOf("day")
+        .toDate();
+      const todayUTCEnd = moment(yesterdayEnd).add(
+        7,
+        "hours"
+      );
 
       // get all booking and order by employeeId today by createdAt
       const bookings = await Booking.find({
@@ -1865,23 +1958,22 @@ export const getIncomeBookingAndOrderByEmployeeIdNotCashToday =
 export const getBookingMoneyPayByEachHotelOnlinePayment =
   async (req, res, next) => {
     try {
-      //get 17p.m of yesterday is 00:00 GMT + 7
-      const yesterdayUTCStart = moment()
+      const yesterdayStart = moment()
         .subtract(1, "days")
         .startOf("day")
         .toDate();
-      // get 17:00:00 of today
-      const yesterdayUTCEnd = moment()
+      const yesterdayUTCStart = moment(yesterdayStart).add(
+        7,
+        "hours"
+      );
+      const yesterdayEnd = moment()
         .subtract(1, "days")
         .endOf("day")
         .toDate();
-      const bookings = await Booking.find({
-        paymentMethod: "online",
-        onlinePaymentDate: {
-          $gte: yesterdayUTCStart,
-          $lte: yesterdayUTCEnd,
-        },
-      });
+      const yesterdayUTCEnd = moment(yesterdayEnd).add(
+        7,
+        "hours"
+      );
       // get roomId by hotelId
       const rooms = await Room.find()
         .populate("hotelId")

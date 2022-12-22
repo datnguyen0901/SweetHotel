@@ -111,6 +111,11 @@ export const roleColumns = [
     headerName: "Type",
     width: 200,
   },
+  {
+    field: "hotelId",
+    headerName: "Working Hotel",
+    width: 200,
+  },
 ];
 
 export const bookingColumns = [

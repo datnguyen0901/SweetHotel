@@ -95,7 +95,11 @@ const NewBooking = ({ inputs, title }) => {
           date >=
             moment(info.checkinDate).format(
               "YYYY-MM-DDT00:00:00"
-            ) && date <= checkoutDate
+            ) &&
+          date <=
+            moment(checkoutDate).format(
+              "YYYY-MM-DDT13:00:00"
+            )
         );
       }
     );

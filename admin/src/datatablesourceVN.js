@@ -111,6 +111,11 @@ export const roleColumnsVN = [
     headerName: "Loại",
     width: 200,
   },
+  {
+    field: "hotelId",
+    headerName: "ID khách sạn",
+    width: 200,
+  },
 ];
 
 export const bookingColumnsVN = [

@@ -26,7 +26,7 @@ const Booking = () => {
   const [t] = useTranslation("common");
 
   //get today format YYYY-MM-DDT12:00
-  const today = moment().format("YYYY-MM-DDT12:00");
+  const today = moment().format("YYYY-MM-DDT18:00");
 
   const navigate = useNavigate();
 
@@ -135,7 +135,11 @@ const Booking = () => {
     type,
     paymentMethod
   ) {
-    if (checkinDate > today && type === "day") {
+    if (
+      checkinDate > today &&
+      type === "day" &&
+      status === "waiting"
+    ) {
       return (
         <>
           <button
@@ -151,8 +155,7 @@ const Booking = () => {
                 id,
                 roomId,
                 checkinDate,
-                checkoutDate,
-                type
+                checkoutDate
               )
             }
           >
@@ -169,6 +172,7 @@ const Booking = () => {
         </>
       );
     }
+    console.log(checkinDate, today);
     if (checkinDate <= today && type === "day") {
       return (
         <>

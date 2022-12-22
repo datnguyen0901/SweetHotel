@@ -16,6 +16,11 @@ const Reserve = ({ setOpen, hotelId }) => {
   const getDate = JSON.parse(
     localStorage.getItem("search")
   );
+  const managerId = useFetch(
+    `/users/manager/${hotelId}`
+  ).data;
+
+  console.log(managerId._id);
 
   const dates = getDate.dates;
 
@@ -122,7 +127,7 @@ const Reserve = ({ setOpen, hotelId }) => {
               5,
               "hours"
             ),
-            employeeId: "628ca6d82d06ce64f49a1882", //default Admin account system
+            employeeId: managerId._id, //default Manager account of the booking Hotel
             paymentMethod: "unpaid",
             totalPaid: numberNight * price,
           };

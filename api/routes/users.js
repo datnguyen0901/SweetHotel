@@ -10,10 +10,12 @@ import {
   sendMailResetPassword,
   changePassword,
   updatePassword,
+  getManagerByHotelId,
 } from "../controllers/UserController.js";
 import {
   verifyUser,
   verifyAdmin,
+  verifyToken,
 } from "../utils/verifyToken.js";
 
 const router = express.Router();
@@ -42,5 +44,7 @@ router.post("/resetpassword/email", sendMailResetPassword);
 router.get("/resetpassword/id/:id", changePassword);
 //UPDATEPASSWORD
 router.put("/updatepassword/:id", updatePassword);
+//GETMANAGERHOTELINFO
+router.get("/manager/:id", verifyUser, getManagerByHotelId);
 
 export default router;

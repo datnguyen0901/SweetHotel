@@ -341,10 +341,20 @@ export const getUnpaidByUserIdToday = async (
   res,
   next
 ) => {
-  //get 17p.m of yesterday
-  const yesterday = moment().startOf("day").toDate();
-  // get 17:00:00 of today
-  const today = moment().endOf("day").toDate();
+  const yesterdayStart = moment()
+  .startOf("day")
+  .toDate();
+const yesterday = moment(yesterdayStart).add(
+  7,
+  "hours"
+);
+const yesterdayEnd = moment()
+  .endOf("day")
+  .toDate();
+const today = moment(yesterdayEnd).add(
+  7,
+  "hours"
+);
   try {
     const finalizations = await Finalization.find({
       employeeId: req.params.id,

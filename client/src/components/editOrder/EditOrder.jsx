@@ -1,8 +1,6 @@
 import "./editOder.css";
 import React, { useEffect, useState } from "react";
-import useFetch from "../../hooks/useFetch";
 import axios from "axios";
-import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -15,8 +13,6 @@ const EditOrder = ({
   serviceOrders,
 }) => {
   const [openModal, setOpenModal] = useState(false);
-  const [info, setInfo] = useState({});
-  const [price, setPrice] = useState({});
   const [selectedServices, setSelectedServices] = useState(
     []
   );
@@ -26,14 +22,6 @@ const EditOrder = ({
 
   useEffect(() => {
     if (serviceOrders) {
-      setInfo({
-        bookingId: bookingId,
-        employeeId: "628ca6d82d06ce64f49a1882", //default Admin account system
-        status: "waiting",
-        serviceOrders: serviceOrders,
-        paymentMethod: "unpaid",
-        totalPaid: 0,
-      });
       setSelectedServices(serviceOrders);
     }
   }, [serviceOrders]);

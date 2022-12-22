@@ -6,6 +6,8 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 import { useTranslation } from "react-i18next";
+import moment from "moment";
+
 const NewFinalization = ({ inputs, title }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const [info, setInfo] = useState({});
@@ -30,7 +32,12 @@ const NewFinalization = ({ inputs, title }) => {
       `/rooms/availability/delete/${bookingData.data.roomId}`,
       {
         data: {
-          dates: [bookingData.data.checkinDate],
+          dates: [
+            moment(bookingData.data.checkinDate).add(
+              -7,
+              "hours"
+            ),
+          ],
         },
       }
     );

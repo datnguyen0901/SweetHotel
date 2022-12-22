@@ -25,7 +25,7 @@ router.post("/", verifyAdmin, verifyRole, createService);
 //ADD MORE SERVICES INTO HOTEL STORAGE
 router.put(
   "/hotel/:id",
-  verifyAdmin,
+  verifyToken,
   verifyRole,
   addMoreServiceStorage
 );
@@ -53,8 +53,7 @@ router.put(
 // DELETE SERVICE IN STORAGE
 router.delete(
   "/hotel/storage/:id",
-  verifyAdmin,
-  verifyRole,
+  verifyToken,
   deleteServiceStorage
 );
 //UPDATE

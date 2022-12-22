@@ -4,12 +4,11 @@ import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
 import { DarkModeContext } from "../../context/darkModeContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import useFetch from "../../hooks/useFetch";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
 
 const Navbar = () => {
   const { dispatchDark } = useContext(DarkModeContext);
@@ -27,12 +26,12 @@ const Navbar = () => {
 
   useEffect(() => {
     if (ordersWaiting === 0) {
-      // reload page to update ordersWaiting after 5mins
+      // if no order waiting, reFetch every 3 minutes
       setTimeout(() => {
-        window.location.reload();
-      }, 300000);
+        orders.reFetch();
+      }, 180000);
     }
-  }, [ordersWaiting]);
+  }, [ordersWaiting, orders]);
 
   const [t, i18n] = useTranslation("common");
 

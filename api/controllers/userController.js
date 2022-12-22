@@ -208,3 +208,24 @@ export const updatePassword = async (req, res, next) => {
     next(error);
   }
 };
+
+//get user by hotel id and role name contain Manager*
+export const getManagerByHotelId = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const hotelId = req.params.id;
+    const roles = await Role.find({
+      hotelId: hotelId,
+      name: { $regex: "Manager" },
+    });
+    const users = await User.findOne({
+      roleId: roles.map((role) => role._id),
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    next(error);
+  }
+};

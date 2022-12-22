@@ -42,6 +42,8 @@ const ViewBooking = ({ columns }) => {
 
   const [t] = useTranslation("common");
 
+  console.log(bookingFailed.data);
+
   const handleClearBooking = async () => {
     try {
       if (bookingFailed.data) {
@@ -61,7 +63,6 @@ const ViewBooking = ({ columns }) => {
           );
         });
       }
-      window.location.reload();
     } catch (err) {
       console.log(err);
     }

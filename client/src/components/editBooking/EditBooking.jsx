@@ -22,6 +22,9 @@ const EditBooking = ({ setOpen, bookingId, dateState }) => {
   ).data;
   const hotelData = useFetch(`/hotels/find/${hotelId}`);
   const { data } = useFetch(`/hotels/room/${hotelId}`);
+  const managerId = useFetch(
+    `/users/manager/${hotelId}`
+  ).data;
 
   useEffect(() => {
     if (bookingData.data) {
@@ -181,7 +184,7 @@ const EditBooking = ({ setOpen, bookingId, dateState }) => {
         checkoutDate: moment(info.checkoutDate)
           .add(7, "hours")
           .format("YYYY-MM-DDTHH:mm"),
-        employeeId: "630351005bc852bafce88230", // set default is Admin account
+        employeeId: managerId._id, //default Manager account of the booking Hotel
         roomId: selectedRooms,
         totalPaid: info.totalPaid,
       };
