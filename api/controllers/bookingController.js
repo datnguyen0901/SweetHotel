@@ -702,30 +702,22 @@ export const getIncomeBookingByUserId = async (
   res,
   next
 ) => {
-  const yesterdayStart = moment()
+  const yesterdayUTCStart = moment()
     .subtract(1, "days")
     .startOf("day")
     .toDate();
-  const yesterdayUTCStart = moment(yesterdayStart).add(
-    7,
-    "hours"
-  );
-  const yesterdayEnd = moment()
+  const yesterdayUTCEnd = moment()
     .subtract(1, "days")
     .endOf("day")
     .toDate();
-  const yesterdayUTCEnd = moment(yesterdayEnd).add(
-    7,
-    "hours"
-  );
 
   try {
     const bookings = await Booking.find({
       employeeId: req.params.id,
       paymentMethod: "cash",
       createdAt: {
-        $gte: yesterday,
-        $lte: today,
+        $gte: yesterdayUTCStart,
+        $lte: yesterdayUTCEnd,
       },
     });
     const total = bookings.reduce((acc, booking) => {
@@ -1566,8 +1558,8 @@ export const getIncomeBookingAndOrderByEmployeeIdLastWeek =
           $in: bookings.map((booking) => booking._id),
         },
         createdAt: {
-          $gte: lastWeekUTCStart,
-          $lte: lastWeekUTCEnd,
+          $gte: lastWeekStart,
+          $lte: lastWeekEnd,
         },
       });
       const income = bookings.reduce((acc, booking) => {
@@ -1631,22 +1623,14 @@ export const getIncomeBookingAndOrderByEmployeeIdYesterday =
           $in: roles.map((role) => role._id),
         },
       });
-      const yesterdayStart = moment()
+      const yesterdayUTCStart = moment()
         .subtract(1, "days")
         .startOf("day")
         .toDate();
-      const yesterdayUTCStart = moment(yesterdayStart).add(
-        7,
-        "hours"
-      );
-      const yesterdayEnd = moment()
+      const yesterdayUTCEnd = moment()
         .subtract(1, "days")
         .endOf("day")
         .toDate();
-      const yesterdayUTCEnd = moment(yesterdayEnd).add(
-        7,
-        "hours"
-      );
       const bookings = await Booking.find({
         employeeId: {
           $in: users.map((user) => user._id),
@@ -1720,22 +1704,14 @@ export const getIncomeBookingAndOrderByEmployeeIdYesterday =
 export const getIncomeBookingAndOrderByEmployeeIdToday =
   async (req, res, next) => {
     try {
-      const yesterdayStart = moment()
+      const todayUTCStart = moment()
         .subtract(1, "days")
         .startOf("day")
         .toDate();
-      const todayUTCStart = moment(yesterdayStart).add(
-        7,
-        "hours"
-      );
-      const yesterdayEnd = moment()
+      const todayUTCEnd = moment()
         .subtract(1, "days")
         .endOf("day")
         .toDate();
-      const todayUTCEnd = moment(yesterdayEnd).add(
-        7,
-        "hours"
-      );
 
       // get all booking and order by employeeId today by createdAt
       const bookings = await Booking.find({
@@ -1880,22 +1856,14 @@ export const getIncomeOnlineToday = async (
 export const getIncomeBookingAndOrderByEmployeeIdNotCashToday =
   async (req, res, next) => {
     try {
-      const yesterdayStart = moment()
+      const todayUTCStart = moment()
         .subtract(1, "days")
         .startOf("day")
         .toDate();
-      const todayUTCStart = moment(yesterdayStart).add(
-        7,
-        "hours"
-      );
-      const yesterdayEnd = moment()
+      const todayUTCEnd = moment()
         .subtract(1, "days")
         .endOf("day")
         .toDate();
-      const todayUTCEnd = moment(yesterdayEnd).add(
-        7,
-        "hours"
-      );
 
       // get all booking and order by employeeId today by createdAt
       const bookings = await Booking.find({
@@ -1958,22 +1926,14 @@ export const getIncomeBookingAndOrderByEmployeeIdNotCashToday =
 export const getBookingMoneyPayByEachHotelOnlinePayment =
   async (req, res, next) => {
     try {
-      const yesterdayStart = moment()
+      const yesterdayUTCStart = moment()
         .subtract(1, "days")
         .startOf("day")
         .toDate();
-      const yesterdayUTCStart = moment(yesterdayStart).add(
-        7,
-        "hours"
-      );
-      const yesterdayEnd = moment()
+      const yesterdayUTCEnd = moment()
         .subtract(1, "days")
         .endOf("day")
         .toDate();
-      const yesterdayUTCEnd = moment(yesterdayEnd).add(
-        7,
-        "hours"
-      );
       // get roomId by hotelId
       const rooms = await Room.find()
         .populate("hotelId")
@@ -1993,7 +1953,14 @@ export const getBookingMoneyPayByEachHotelOnlinePayment =
 
       // flat roomNumbersId
       const flatRoomNumbersId = roomNumbersId.flat();
-
+      // get all bookings by roomNumbers _id
+      const bookings = await Booking.find({
+        paymentMethod: "online",
+        onlinePaymentDate: {
+          $gte: yesterdayUTCStart,
+          $lte: yesterdayUTCEnd,
+        },
+      });
       // get totalPaid of booking by roomId filter by hotel name
       const income = hotels.map((hotel) => {
         const totalPaid = bookings
