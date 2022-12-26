@@ -20,8 +20,6 @@ const Reserve = ({ setOpen, hotelId }) => {
     `/users/manager/${hotelId}`
   ).data;
 
-  console.log(managerId._id);
-
   const dates = getDate.dates;
 
   const getDatesInRange = (startDate, endDate) => {

@@ -1794,22 +1794,14 @@ export const getIncomeOnlineToday = async (
   next
 ) => {
   try {
-    const yesterdayStart = moment()
+    const yesterdayUTCStart = moment()
       .subtract(1, "days")
       .startOf("day")
       .toDate();
-    const yesterdayUTCStart = moment(yesterdayStart).add(
-      7,
-      "hours"
-    );
-    const yesterdayEnd = moment()
+    const yesterdayUTCEnd = moment()
       .subtract(1, "days")
       .endOf("day")
       .toDate();
-    const yesterdayUTCEnd = moment(yesterdayEnd).add(
-      7,
-      "hours"
-    );
 
     // get roldId by userId
     const user = await User.findById(req.params.id);
